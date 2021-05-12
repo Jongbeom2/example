@@ -1,0 +1,35 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "es2021": true
+  },
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "plugins": ["react"],
+  "rules": {
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "always-multiline"
+      }
+    ],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "no-debugger": "off",
+    "max-len": "off",
+    "no-unused-vars": "off",
+    "linebreak-style": "off"
+  }
+}

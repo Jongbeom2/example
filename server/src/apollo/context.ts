@@ -1,0 +1,58 @@
+import shortid from 'shortid';
+import { auth } from 'src/apollo/auth';
+
+const websocketContext = (connection: any, payload: any) => {
+  // preserve until websocket disconnected
+  // console.info(connection, payload);
+  // connection.context; // this is the context which insert to onConnect triggered
+  return {};
+};
+
+// "context", "argument" variable names are different depends on Server Framework types.
+// e.g., in Express, variable names are "req" and "res" but in Koa, Lambda, names are "request" and "response".
+
+const graphqlContext = (req: any, res: any) => {
+  // test only
+  if (process.env.NODE_ENV === 'development') {
+    // Cookie settings
+    if (res.cookie) {
+      res.cookie('contextLevelCookie1', 'contextLevelCookie1', {
+        httpOnly: true,
+        secure: false,
+        maxAge: 1000 * 30,
+      });
+      res.cookie('contextLevelCookie2', 'contextLevelCookie2', {
+        httpOnly: false,
+        secure: false,
+        maxAge: 1000 * 30,
+      });
+    }
+
+    // Authorization header(case-insensitive)
+    const testAuthToken = shortid.generate();
+    // res.setHeader('authorization', testAuthToken);
+    // res.setHeader('Authorization', testAuthToken);
+  }
+  const my = auth(req, res);
+
+  return { req, res, my };
+};
+
+export const context = async (ctx: any) => {
+  const { req, res, connection, payload } = ctx;
+  if (connection) {
+    return websocketContext(connection, payload);
+  } else if (req && res) {
+    return graphqlContext(req, res);
+  } else {
+    throw new Error('Invalid context');
+  }
+};
+
+export interface GraphqlContext {
+  token?: any;
+  my?: any;
+  req: any;
+  res: any;
+  session: any;
+}

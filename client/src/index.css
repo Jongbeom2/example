@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'NanumBarunGothic';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot');
+  src: url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot?#iefix')
+      format('embedded-opentype'),
+    url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.woff')
+      format('woff'),
+    url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.ttf')
+      format('truetype');
+}
+html {
+  font-family: 'Noto Sans KR' !important;
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  font-size: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+}
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+}
+p {
+  margin: 0px;
+}
+pre {
+  white-space: pre-wrap; /* pre tag내에 word wrap */
+}
+@media (max-width: 960px) {
+  html {
+    font-size: 100%;
+  }
+}

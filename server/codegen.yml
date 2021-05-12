@@ -1,0 +1,33 @@
+overwrite: true
+schema:
+  - 'src/api/**/*.graphql'
+generates:
+  ./src/types/graphql.d.ts:
+    config:
+      # Grpahql Schame에서 Scalar가 typescript에서 무엇인지 정의
+      scalars:
+        # Graphql Schema에서 Date 타입은 ts에서 Date로 정의
+        Date: Date
+        # Graphql Schema에서 Upload 타입은 ts에서 Upload로 정의
+        Upload: Upload
+      # config mapper (https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
+      # resolver의 return type을 정의할 때 Graphql Schema말고 .model의 변수를 따르도록 설정
+      mappers:
+        User: 'src/models/User.model.ts#UserDoc'
+      # Resolver의 ContextType 타입 정의
+      contextType: 'src/apollo/context#GraphqlContext'
+    plugins:
+      - typescript
+      - typescript-resolvers
+      # plugins add (https://graphql-code-generator.com/docs/plugins/add)
+      # generate한 코드에 내용 추가
+      - add:
+          # ts에서 Upload 타입은 없으므로 정의 (https://github.com/dotansimha/graphql-code-generator/discussions/4320).
+          content: 'import { ReadStream } from "fs-capacitor";
+            export interface Upload {
+            filename: string;
+            mimetype: string;
+            encoding: string;
+            createReadStream(): ReadStream;
+            }'
+          # 참고로 ts에서 Date 타입은 있으므로 따로 정의 x
