@@ -1,5 +1,5 @@
 type Query {
-  getUser: User!
+  getUser(_id: ID!): User!
 }
 
 type User {

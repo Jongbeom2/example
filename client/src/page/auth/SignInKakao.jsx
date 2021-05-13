@@ -26,6 +26,7 @@ const SignInKakao = () => {
   useEffect(() => {
     if (error) {
       alert(MESSAGE_SIGNIN_FAIL_KAKAO);
+      history.push('/signin');
     }
   }, [error]);
   useEffect(() => {

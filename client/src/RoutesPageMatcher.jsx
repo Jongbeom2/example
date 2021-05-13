@@ -6,7 +6,7 @@ import SignInKakao from './page/auth/SignInKakao';
 import SignUp from './page/auth/SignUp';
 import ChatMain from './page/chat/ChatMain';
 import FeedMain from './page/feed/FeedMain';
-import MyInfo from './page/user/MyInfo';
+import UserRouter from './page/user/UserRouter';
 
 const RoutesPageMatcher = () => {
   const { page } = useParams();
@@ -17,8 +17,8 @@ const RoutesPageMatcher = () => {
       return <SignInKakao />;
     case 'signup':
       return <SignUp />;
-    case 'myinfo':
-      return <MyInfo />;
+    case 'user':
+      return <UserRouter />;
     case 'feed':
       return <FeedMain />;
     case 'chat':

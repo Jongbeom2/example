@@ -29,7 +29,7 @@ export const extendToken = async (decoded) => {
  * @description
  * JWT 토큰 생성
  */
-export const generateJWT = (payload, duration = 60) => {
+export const generateJWT = (payload, duration = 60 * 10) => {
   // https://www.npmjs.com/package/jsonwebtoken#usage
   return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
     // , sub(제목), aud(대상자), exp(만료시간), nbf(토큰의 활성날짜), iat(발급된시간), jti()

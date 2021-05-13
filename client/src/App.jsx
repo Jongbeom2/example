@@ -69,6 +69,7 @@ const myTheme = createMuiTheme({
       white: '#ffffff',
       yellow: '#f9e000',
       teal: '#00B8D9',
+      grey: '#666666',
     },
   },
 });

@@ -11,7 +11,7 @@ const existUserEmailError = new ApolloError('EXIST_USER_EMAIL', 'EXIST_USER_EMAI
 const resolvers: Resolvers = {
   Query: {
     getUser: async (_, args, ctx) => {
-      const user = await UserModel.findById(ctx.my.userId);
+      const user = await UserModel.findById(args._id);
       // _id에 해당하는 user 없음.
       if (user === null) {
         throw invalidUserIdError;
@@ -40,15 +40,19 @@ const resolvers: Resolvers = {
       });
       // 유저 정보 쿠키에 저장함.
       ctx.res.cookie('accessToken', accessToken, {
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 10,
         httpOnly: true,
       });
+      ctx.res.cookie('_id', user._id.toString(), {
+        maxAge: 1000 * 60 * 10,
+        httpOnly: false,
+      });
       ctx.res.cookie('nickname', user.nickname, {
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
       ctx.res.cookie('thumbnailImageURL', user.thumbnailImageURL, {
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
       return user;
@@ -77,15 +81,19 @@ const resolvers: Resolvers = {
       });
       // 유저 정보 쿠키에 저장함.
       ctx.res.cookie('accessToken', accessToken, {
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 10,
         httpOnly: true,
       });
+      ctx.res.cookie('_id', user._id.toString(), {
+        maxAge: 1000 * 60 * 10,
+        httpOnly: false,
+      });
       ctx.res.cookie('nickname', user.nickname, {
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
       ctx.res.cookie('thumbnailImageURL', user.thumbnailImageURL, {
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
       return user;

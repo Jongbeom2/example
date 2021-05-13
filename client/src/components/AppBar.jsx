@@ -96,7 +96,7 @@ const CustomAppBar = () => {
     setOpen(false);
   };
   const onClickMyInfoBtn = () => {
-    history.push('/myinfo');
+    history.push(`/user/${Cookie.get('_id')}`);
   };
   const onClickSignOutBtn = () => {
     setOpen(false);
