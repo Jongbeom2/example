@@ -28,7 +28,7 @@ const myTheme = createMuiTheme({
   typography: {
     fontFamily: ['NanumBarunGothic'],
     body2: {
-      fontSize: '1rem',
+      fontSize: '0.8rem',
     },
     subtitle1: {
       fontSize: '0.8rem',
@@ -43,6 +43,7 @@ const myTheme = createMuiTheme({
     snackbar: 1400,
     tooltip: 1500,
     fixedBtn: 1500,
+    popper: 1500,
     loadingPage: 1600,
     errorPage: 1600,
   },

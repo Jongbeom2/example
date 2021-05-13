@@ -27,11 +27,6 @@ const graphqlContext = (req: any, res: any) => {
         maxAge: 1000 * 30,
       });
     }
-
-    // Authorization header(case-insensitive)
-    const testAuthToken = shortid.generate();
-    // res.setHeader('authorization', testAuthToken);
-    // res.setHeader('Authorization', testAuthToken);
   }
   const my = auth(req, res);
 

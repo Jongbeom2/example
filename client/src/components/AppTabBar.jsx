@@ -1,14 +1,9 @@
-import React, { memo, useContext, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { memo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import { useHistory, useParams } from 'react-router-dom';
-import { AppContext } from 'src/App';
-import cookie from 'js-cookie';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,7 +54,7 @@ const CustomAppTabBar = () => {
   const history = useHistory();
   // 전달 받은 page에 맞게 tab 하이라이트
   const getValue = () => {
-    let value = 0;
+    let value = -1;
     tabList.forEach((tab, idx) => {
       if (tab.route === page) {
         value = idx;

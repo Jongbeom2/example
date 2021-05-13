@@ -16,7 +16,7 @@ const decodeCookieToken = (cookieString: any) => {
     }
   } catch (err) {
     // If token value is manipulated or counterfeited, then cookie will be deleted
-    errorFields = ['accessToken', 'loggedIn'];
+    errorFields = ['accessToken'];
   }
   return { decoded, errorFields };
 };
@@ -45,7 +45,7 @@ export const auth = (req: any, res: any) => {
     console.info(`## query: ${colors.blue.bold(queryName)}`);
   }
 
-  const queryWhiteList = ['login', 'logout', 'viewerToken'];
+  const queryWhiteList = ['createUser'];
   if (queryWhiteList.includes(queryName)) {
     return {};
   }
@@ -59,7 +59,7 @@ export const auth = (req: any, res: any) => {
     if (process.env.NODE_ENV === 'production') {
       throw new Error('Not Authorized');
     } else if (process.env.NODE_ENV === 'development') {
-      // pass
+      // throw new Error('Not Authorized');
     } else {
       throw environmentError;
     }

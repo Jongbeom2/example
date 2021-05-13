@@ -73,3 +73,5 @@ dist
 # Auto-generated graphql schema file
 graphql.d.ts
 package-lock.json
+
+.env

@@ -1,17 +1,32 @@
 type Query {
-  getUser(_id: ID!): User!
-  login(email: String!, password: String!): User!
+  getUser: User!
 }
 
 type User {
   _id: ID!
-  email: String!
-  password: String!
+  email: String
+  password: String
   nickname: String!
+  profileImageURL: String
+  thumbnailImageURL: String
+  loginType: String!
+  kakaoId: String
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User
+  createUser(createUserInput: CreateUserInput!): User!
+  signIn(signInInput: SignInInput!): User!
+  signInWithKakao(signInWithKakaoInput: SignInWithKakaoInput!): User!
+  signOut: User
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input SignInWithKakaoInput {
+  accessToken: String!
 }
 
 input CreateUserInput {

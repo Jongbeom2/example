@@ -6,6 +6,7 @@ import { useMutation } from '@apollo/client';
 import { CREATE_USER } from 'src/page/auth/auth.query';
 import Loading from 'src/components/Loading';
 import {
+  MESSAGE_ERROR,
   MESSAGE_SIGNUP_FAIL_EXIST_EMAIL,
   MESSAGE_SIGNUP_SUCCESS,
 } from 'src/res/message';
@@ -53,7 +54,11 @@ const SignUp = () => {
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
   useEffect(() => {
     if (error) {
-      alert(MESSAGE_SIGNUP_FAIL_EXIST_EMAIL);
+      if (error.message === 'EXIST_USER_EMAIL') {
+        alert(MESSAGE_SIGNUP_FAIL_EXIST_EMAIL);
+      } else {
+        alert(MESSAGE_ERROR);
+      }
     }
   }, [error]);
   useEffect(() => {

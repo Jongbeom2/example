@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, TextField, Typography } from '@material-ui/core';
 import { useHistory } from 'react-router';
-import { LOGIN } from './auth.query';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { SINGIN } from './auth.query';
+import { useMutation } from '@apollo/client';
 import {
   MESSAGE_SIGNIN_FAIL_INVALID_USER,
   MESSAGE_INPUT_FAIL_ALL_REQUIRED,
   MESSAGE_SIGNIN_SUCCESS_SIGNIN,
+  MESSAGE_ERROR,
 } from 'src/res/message';
 import Loading from 'src/components/Loading';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -49,10 +51,14 @@ const Signin = () => {
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [login, { data, loading, error }] = useLazyQuery(LOGIN);
+  const [signIn, { data, loading, error }] = useMutation(SINGIN);
   useEffect(() => {
     if (error) {
-      alert(MESSAGE_SIGNIN_FAIL_INVALID_USER);
+      if (error.message === 'INVALID_USER_INFO') {
+        alert(MESSAGE_SIGNIN_FAIL_INVALID_USER);
+      } else {
+        alert(MESSAGE_ERROR);
+      }
     }
   }, [error]);
   useEffect(() => {
@@ -75,11 +81,19 @@ const Signin = () => {
       alert(MESSAGE_INPUT_FAIL_ALL_REQUIRED);
       return;
     }
-    login({
+    signIn({
       variables: {
-        email,
-        password,
+        signInInput: {
+          email,
+          password,
+        },
       },
+    });
+  };
+  const onClickKakaoSignInBtn = async () => {
+    // 로그인 성공하면 code값과 함께 redirectUri로 redirect함.
+    await window.Kakao.Auth.authorize({
+      redirectUri: 'http://localhost:3200/signinkakao',
     });
   };
   return (
@@ -130,9 +144,14 @@ const Signin = () => {
           SNS 계정으로 간편 로그인
         </Typography>
         <div className={classes.socialSignInBtnWrapper}>
-          <div>카카오톡</div>
-          <div>네이버</div>
-          <div>구글</div>
+          <div
+            style={{ background: '#fee500' }}
+            onClick={onClickKakaoSignInBtn}
+          >
+            K
+          </div>
+          <div style={{ background: '#04cf5c' }}>N</div>
+          <div style={{ background: '#4f8df5' }}>G</div>
         </div>
       </div>
     </div>

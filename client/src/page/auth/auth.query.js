@@ -8,9 +8,25 @@ export const CREATE_USER = gql`
   }
 `;
 
-export const LOGIN = gql`
-  query login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+export const SINGIN = gql`
+  mutation signIn($signInInput: SignInInput!) {
+    signIn(signInInput: $signInInput) {
+      _id
+    }
+  }
+`;
+
+export const SIGNIN_WITH_KAKAO = gql`
+  mutation signInWithKakao($signInWithKakaoInput: SignInWithKakaoInput!) {
+    signInWithKakao(signInWithKakaoInput: $signInWithKakaoInput) {
+      _id
+    }
+  }
+`;
+
+export const SIGNOUT = gql`
+  mutation signOut {
+    signOut {
       _id
     }
   }
