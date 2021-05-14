@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import { DEFAULT_PROFILE_URL } from 'src/lib/const';
 
 export const UserSchema = new mongoose.Schema(
   {
@@ -14,9 +15,13 @@ export const UserSchema = new mongoose.Schema(
     },
     profileImageURL: {
       type: String,
+      default: DEFAULT_PROFILE_URL,
+      required: true,
     },
-    thumbnailImageURL: {
+    profileThumbnailImageURL: {
       type: String,
+      default: DEFAULT_PROFILE_URL,
+      required: true,
     },
     loginType: {
       type: String,
@@ -25,22 +30,29 @@ export const UserSchema = new mongoose.Schema(
     kakaoId: {
       type: String,
     },
+    roomIdList: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
   },
   { timestamps: true },
 );
 
-const User = mongoose.model<UserDoc>('User', UserSchema);
+const UserModel = mongoose.model<UserDoc>('User', UserSchema);
 
 interface User {
   email?: string;
   password?: string;
   nickname: string;
   profileImageURL?: string;
-  thumbnailImageURL?: string;
+  profileThumbnailImageURL?: string;
   loginType?: string;
   kakaoId: string;
+  roomIdList: string[];
 }
 
 export interface UserDoc extends User, Document {}
 
-export default User;
+export default UserModel;

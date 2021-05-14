@@ -1,0 +1,8 @@
+type Query {
+  getPresignedGetURL(key: String!): PresginedURLObject!
+  getPresignedPutURL(key: String!): PresginedURLObject!
+}
+
+type PresginedURLObject {
+  presignedURL: String!
+}

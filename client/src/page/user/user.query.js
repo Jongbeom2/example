@@ -6,6 +6,15 @@ export const GET_USER = gql`
       _id
       nickname
       profileImageURL
+      profileThumbnailImageURL
+    }
+  }
+`;
+
+export const UPDATE_USER = gql`
+  mutation updateUser($updateUserInput: UpdateUserInput!) {
+    updateUser(updateUserInput: $updateUserInput) {
+      _id
     }
   }
 `;

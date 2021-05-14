@@ -33,10 +33,18 @@ const UserMain = () => {
   const classes = useStyles();
   const history = useHistory();
   const { userId } = useParams();
+  const [user, setUser] = useState(null);
+  // 유저 정보 로드
   const { data, loading, error } = useQuery(GET_USER, {
     variables: { _id: userId },
   });
-  const [user, setUser] = useState(null);
+  // 유저 정보 로드 성공
+  useEffect(() => {
+    if (data && !error) {
+      setUser(data.getUser);
+    }
+  }, [data]);
+  // 유저 정보 로드 실패
   useEffect(() => {
     if (error) {
       if (error.message === 'INVALID_USER_ID') {
@@ -46,11 +54,6 @@ const UserMain = () => {
       }
     }
   }, [error]);
-  useEffect(() => {
-    if (data && !error) {
-      setUser(data.getUser);
-    }
-  }, [data]);
   const onClickEditBtn = () => {
     history.push(`/user/${userId}/edit`);
   };

@@ -2,12 +2,17 @@ import bcrypt from 'bcrypt';
 import { ApolloError } from 'apollo-server';
 import { Resolvers } from 'src/types/graphql';
 import UserModel from 'src/models/User.model';
+import RoomModel from 'src/models/Room.model';
+
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
+import { DEFAULT_PROFILE_URL } from 'src/lib/const';
 const invalidUserIdError = new ApolloError('INVALID_USER_ID', 'INVALID_USER_ID');
 const invalidUserEmailError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
 const invalidUserPasswordError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
 const existUserEmailError = new ApolloError('EXIST_USER_EMAIL', 'EXIST_USER_EMAIL');
+const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID');
+
 const resolvers: Resolvers = {
   Query: {
     getUser: async (_, args, ctx) => {
@@ -17,6 +22,12 @@ const resolvers: Resolvers = {
         throw invalidUserIdError;
       }
       return user;
+    },
+  },
+  User: {
+    roomList: async (parent, args, ctx) => {
+      const roomList = await RoomModel.find({ _id: { $in: parent.roomIdList } });
+      return roomList;
     },
   },
   Mutation: {
@@ -51,7 +62,7 @@ const resolvers: Resolvers = {
         maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
-      ctx.res.cookie('thumbnailImageURL', user.thumbnailImageURL, {
+      ctx.res.cookie('profileThumbnailImageURL', user.profileThumbnailImageURL, {
         maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
@@ -68,7 +79,7 @@ const resolvers: Resolvers = {
           nickname: data.kakao_account.profile.nickname,
           kakaoId: data.id,
           profileImageURL: data.kakao_account.profile.profile_image_url,
-          thumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
+          profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
           loginType: 'kakao',
         }).save();
       }
@@ -92,7 +103,7 @@ const resolvers: Resolvers = {
         maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
-      ctx.res.cookie('thumbnailImageURL', user.thumbnailImageURL, {
+      ctx.res.cookie('profileThumbnailImageURL', user.profileThumbnailImageURL, {
         maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
@@ -101,7 +112,7 @@ const resolvers: Resolvers = {
     signOut: async (_, args, ctx) => {
       ctx.res.clearCookie('accessToken');
       ctx.res.clearCookie('nickname');
-      ctx.res.clearCookie('thumbnailImageURL');
+      ctx.res.clearCookie('profileThumbnailImageURL');
       return null;
     },
     createUser: async (_, args, ctx) => {
@@ -118,8 +129,75 @@ const resolvers: Resolvers = {
         password: hash,
         loginType: 'host',
       }).save();
-
       return user;
+    },
+    updateUser: async (_, args, ctx) => {
+      const { _id, nickname, profileImageURL, profileThumbnailImageURL } = args.updateUserInput;
+      const user = await UserModel.findByIdAndUpdate(
+        _id,
+        {
+          nickname,
+          profileImageURL: profileImageURL || DEFAULT_PROFILE_URL,
+          profileThumbnailImageURL: profileThumbnailImageURL || DEFAULT_PROFILE_URL,
+        },
+        { new: true },
+      );
+      // 존재하지 않는 user _id임.
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      ctx.res.cookie('_id', user._id.toString(), {
+        maxAge: 1000 * 60 * 10,
+        httpOnly: false,
+      });
+      ctx.res.cookie('nickname', user.nickname, {
+        maxAge: 1000 * 60 * 10,
+        httpOnly: false,
+      });
+      ctx.res.cookie('profileThumbnailImageURL', user.profileThumbnailImageURL, {
+        maxAge: 1000 * 60 * 10,
+        httpOnly: false,
+      });
+      return user;
+    },
+    updateUserAddRoom: async (_, args, ctx) => {
+      const { userId, roomId } = args.updateUserAddRoomInput;
+      // room 수정
+      const room = await RoomModel.findById(roomId);
+      if (room === null) {
+        throw invalidRoomIdError;
+      }
+      const userIdList = room.userIdList;
+      userIdList.push(userId);
+      await room.save();
+      // user 수정
+      const user = await UserModel.findById(userId);
+      // _id에 해당하는 user 없음.
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      const roomIdList = user.roomIdList;
+      roomIdList.push(roomId);
+      return await user.save();
+    },
+    updateUserRemoveRoom: async (_, args, ctx) => {
+      const { userId, roomId } = args.updateUserRemoveRoomInput;
+      // room 수정
+      const room = await RoomModel.findById(roomId);
+      if (room === null) {
+        throw invalidRoomIdError;
+      }
+      const userIdList = room.userIdList;
+      room.userIdList = userIdList.filter((ele) => ele.toString() !== userId.toString());
+      await room.save();
+      // user 수정
+      const user = await UserModel.findById(userId);
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      const roomIdList = user.roomIdList;
+      user.roomIdList = roomIdList.filter((ele) => ele.toString() !== roomId.toString());
+      return await user.save();
     },
   },
 };

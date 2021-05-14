@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery } from '@apollo/client';
-import { GET_USER } from './user.query';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { GET_USER, UPDATE_USER } from './user.query';
 import { useHistory, useParams } from 'react-router';
 import { MESSAGE_ERROR, MESSAGE_USER_FAIL } from 'src/res/message';
 import Loading from 'src/components/Loading';
 import MainWrapper from 'src/components/MainWrapper';
 import { Avatar, Button, Grid, TextField, Typography } from '@material-ui/core';
+import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
+import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'relative',
+    width: '100%',
     height: '100%',
   },
   content: {
     padding: theme.spacing(5),
+    width: '100%',
   },
   contentTitle: {
     display: 'flex',
@@ -52,51 +56,124 @@ const UserEdit = () => {
   const classes = useStyles();
   const history = useHistory();
   const { userId } = useParams();
-  const { data, loading, error } = useQuery(GET_USER, {
-    variables: { _id: userId },
-  });
   const [user, setUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  // 유저 정보 로드
+  const {
+    data: queryData,
+    loading: queryLoading,
+    error: queryError,
+  } = useQuery(GET_USER, {
+    variables: { _id: userId },
+  });
+  // 이미지 업로드용 presigned url 로드
+  const [
+    getPresignedPutURL,
+    { data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError },
+  ] = useLazyQuery(GET_PRESIGNED_PUT_URL);
+  // 유저 정보 업데이트
+  const [
+    updateUser,
+    { data: mutationData, loading: mutaionLoading, error: mutationError },
+  ] = useMutation(UPDATE_USER);
+  // 유저 정보 로드 성공
   useEffect(() => {
-    if (error) {
-      if (error.message === 'INVALID_USER_ID') {
+    if (queryData && !queryError) {
+      setUser(queryData.getUser);
+    }
+  }, [queryData]);
+  // 유저 정보 로드 실패
+  useEffect(() => {
+    if (queryError) {
+      if (queryError.message === 'INVALID_USER_ID') {
         alert(MESSAGE_USER_FAIL);
       } else {
         alert(MESSAGE_ERROR);
       }
     }
-  }, [error]);
+  }, [queryError]);
+  // presigned url 로드 성공
   useEffect(() => {
-    if (data && !error) {
-      setUser(data.getUser);
+    if (lazyQueryData && !lazyQueryError) {
+      const presignedURL = lazyQueryData.getPresignedPutURL.presignedURL;
+      (async function () {
+        try {
+          // Presigned put url을 이용하여 업로드
+          const result = await axios.put(presignedURL, imageFile);
+          const url = result.config.url.split('?')[0];
+          setUser({
+            ...user,
+            profileImageURL: url,
+            profileThumbnailImageURL: url.replace(
+              'profile',
+              'profileThumbnail',
+            ),
+          });
+        } catch (error) {
+          alert('사진 업로드 실패');
+        }
+        setIsLoading(false);
+      })();
     }
-  }, [data]);
+  }, [lazyQueryData]);
+  // 유저 정보 수정 성공
+  useEffect(() => {
+    if (mutationData && !mutationError) {
+      alert('유저 정보 수정');
+      history.push(`/user/${userId}`);
+    }
+  }, [mutationData]);
+  // 유저 정보 수정 실패
+  useEffect(() => {
+    if (mutationError) {
+      if (mutationError.message === 'INVALID_USER_ID') {
+        alert(MESSAGE_USER_FAIL);
+      } else {
+        alert(MESSAGE_ERROR);
+      }
+    }
+  }, [mutationError]);
   const onClickCancelBtn = () => {
     history.push(`/user/${userId}`);
   };
   const onClickSaveBtn = () => {
-    console.log(imageFile);
+    updateUser({
+      variables: {
+        updateUserInput: {
+          _id: user._id,
+          nickname: user.nickname,
+          profileImageURL: user.profileImageURL,
+          profileThumbnailImageURL: user.profileThumbnailImageURL,
+        },
+      },
+    });
   };
   const onClickDeleteBtn = () => {
-    setUser({ ...user, profileImageURL: '' });
+    setUser({ ...user, profileImageURL: '', profileThumbnailImageURL: '' });
   };
   const onChangeFileChange = (event) => {
+    setIsLoading(true);
     event.preventDefault();
-    let reader = new FileReader();
     let file = event.target.files[0];
     setImageFile(file);
-    reader.readAsDataURL(file);
-    reader.onload = (e) => {
-      setUser({
-        ...user,
-        profileImageURL: e.target.result,
-      });
-    };
+    // Presigned put url을 가져옴.
+    getPresignedPutURL({
+      variables: {
+        key: `profile/${userId}/${new Date().getTime()}.png`,
+      },
+    });
+  };
+  const onChangeNickname = (event) => {
+    setUser({
+      ...user,
+      nickname: event.target.value,
+    });
   };
   return (
     <MainWrapper>
       <div className={classes.root}>
-        {loading && <Loading />}
+        {(queryLoading || isLoading) && <Loading />}
         <Grid className={classes.content} container spacing={4}>
           <Grid className={classes.contentTitle} item xs={12}>
             <Typography variant='h6' gutterBottom>
@@ -130,7 +207,7 @@ const UserEdit = () => {
                   </Button>
                 </>
               ) : (
-                <label for='image-upload-input-tag'>
+                <label htmlFor='image-upload-input-tag'>
                   <Avatar
                     classes={{ root: classes.defaultProfile }}
                     alt='Avatar'
@@ -150,7 +227,7 @@ const UserEdit = () => {
             <Typography gutterBottom>닉네임</Typography>
           </Grid>
           <Grid item xs={9}>
-            <TextField value={user?.nickname} />
+            <TextField onChange={onChangeNickname} value={user?.nickname} />
           </Grid>
         </Grid>
       </div>

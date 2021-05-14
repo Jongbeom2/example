@@ -64,8 +64,8 @@ const CustomAppBar = () => {
   const history = useHistory();
   const anchorRef = useRef(null);
   const [nickname, setNickname] = useState(Cookie.get('nickname'));
-  const [thumbnailImageURL, setThumbnailImageURL] = useState(
-    Cookie.get('thumbnailImageURL'),
+  const [profileThumbnailImageURL, setProfileThumbnailImageURL] = useState(
+    Cookie.get('profileThumbnailImageURL'),
   );
   const [open, setOpen] = useState(false);
   const [signOut, { loading, error, data }] = useMutation(SIGNOUT);
@@ -73,7 +73,7 @@ const CustomAppBar = () => {
     if (data && !error) {
       alert('로그아웃');
       setNickname('');
-      setThumbnailImageURL('');
+      setProfileThumbnailImageURL('');
       history.push('/home');
     }
   }, [data]);
@@ -123,12 +123,12 @@ const CustomAppBar = () => {
           >
             {'예제'}
           </Typography>
-          {nickname && thumbnailImageURL ? (
+          {nickname && profileThumbnailImageURL ? (
             <div className={classes.userWrapper}>
               <Typography color='textPrimary' variant='body2'>
                 {nickname}
               </Typography>
-              <Avatar alt='Avatar' src={thumbnailImageURL} />
+              <Avatar alt='Avatar' src={profileThumbnailImageURL} />
               <IconButton
                 aria-label='delete'
                 className={classes.margin}

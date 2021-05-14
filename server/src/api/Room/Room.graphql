@@ -1,0 +1,24 @@
+type Query {
+  getRoom(_id: ID!): Room!
+  getRoomList(userId: ID!): [Room!]!
+}
+
+type Room {
+  _id: ID!
+  name: String
+  type: String!
+  userNum: Int!
+  userList: [User!]!
+  recentMessageContent: String
+  recentMessageCreatedAt: String
+}
+
+type Mutation {
+  createRoom(createRoomInput: CreateRoomInput!): Room!
+}
+
+input CreateRoomInput {
+  name: String
+  type: String!
+  userNum: Int!
+}

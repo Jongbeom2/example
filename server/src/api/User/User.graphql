@@ -8,16 +8,20 @@ type User {
   password: String
   nickname: String!
   profileImageURL: String
-  thumbnailImageURL: String
+  profileThumbnailImageURL: String
   loginType: String!
   kakaoId: String
+  roomList: [Room!]!
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
   signIn(signInInput: SignInInput!): User!
   signInWithKakao(signInWithKakaoInput: SignInWithKakaoInput!): User!
   signOut: User
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  updateUserAddRoom(updateUserAddRoomInput: UpdateUserAddRoomInput!): User!
+  updateUserRemoveRoom(updateUserRemoveRoomInput: UpdateUserRemoveRoomInput!): User!
 }
 
 input SignInInput {
@@ -33,4 +37,21 @@ input CreateUserInput {
   email: String!
   password: String!
   nickname: String!
+}
+
+input UpdateUserInput {
+  _id: ID!
+  nickname: String!
+  profileImageURL: String
+  profileThumbnailImageURL: String
+}
+
+input UpdateUserAddRoomInput {
+  userId: ID!
+  roomId: ID!
+}
+
+input UpdateUserRemoveRoomInput {
+  userId: ID!
+  roomId: ID!
 }
