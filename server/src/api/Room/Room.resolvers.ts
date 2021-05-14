@@ -31,13 +31,20 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    createRoom: async (_, args, ctx) => {
-      const { name, type, userNum } = args.createRoomInput;
+    createPrivateRoom: async (_, args, ctx) => {
+      const { userIdList } = args.createPrivateRoomInput;
+      // room 수정
       const room = await new RoomModel({
-        name,
-        type,
-        userNum,
+        type: 'private',
+        userNum: 2,
+        userIdList,
       }).save();
+      // user 수정
+      const userList = await UserModel.find({ _id: { $in: userIdList } });
+      for (let i = 0; i < userList.length; i++) {
+        userList[i].roomIdList.push(room._id);
+        await userList[i].save();
+      }
       return room;
     },
   },

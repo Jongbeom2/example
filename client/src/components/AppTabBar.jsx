@@ -40,7 +40,7 @@ const tabList = [
   },
   {
     label: '대화',
-    route: 'chat',
+    route: 'room',
   },
   {
     label: '피드',

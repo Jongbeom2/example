@@ -14,11 +14,9 @@ type Room {
 }
 
 type Mutation {
-  createRoom(createRoomInput: CreateRoomInput!): Room!
+  createPrivateRoom(createPrivateRoomInput: CreatePrivateRoomInput!): Room!
 }
 
-input CreateRoomInput {
-  name: String
-  type: String!
-  userNum: Int!
+input CreatePrivateRoomInput {
+  userIdList: [String!]!
 }

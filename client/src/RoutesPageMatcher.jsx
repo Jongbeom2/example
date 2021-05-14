@@ -4,7 +4,7 @@ import HomeMain from 'src/page/home/HomeMain';
 import SignIn from './page/auth/SignIn';
 import SignInKakao from './page/auth/SignInKakao';
 import SignUp from './page/auth/SignUp';
-import ChatMain from './page/chat/ChatMain';
+import RoomMain from './page/room/RoomMain';
 import FeedMain from './page/feed/FeedMain';
 import UserRouter from './page/user/UserRouter';
 
@@ -21,8 +21,8 @@ const RoutesPageMatcher = () => {
       return <UserRouter />;
     case 'feed':
       return <FeedMain />;
-    case 'chat':
-      return <ChatMain />;
+    case 'room':
+      return <RoomMain />;
     default:
       return <HomeMain />;
   }
