@@ -16,12 +16,19 @@ const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID')
 const resolvers: Resolvers = {
   Query: {
     getUser: async (_, args, ctx) => {
-      const user = await UserModel.findById(args._id);
+      const user = await UserModel.findById(args.userId);
       // _id에 해당하는 user 없음.
       if (user === null) {
         throw invalidUserIdError;
       }
       return user;
+    },
+    getUserList: async (_, args, ctx) => {
+      const userList = await UserModel.find();
+      const filteredUserList = userList.filter(
+        (user) => user._id.toString() !== args.userId.toString(),
+      );
+      return filteredUserList;
     },
   },
   User: {

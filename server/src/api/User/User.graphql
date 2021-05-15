@@ -1,5 +1,6 @@
 type Query {
-  getUser(_id: ID!): User!
+  getUser(userId: ID!): User!
+  getUserList(userId: ID!): [User!]!
 }
 
 type User {

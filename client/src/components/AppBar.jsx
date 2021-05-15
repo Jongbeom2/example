@@ -72,6 +72,10 @@ const CustomAppBar = () => {
   useEffect(() => {
     if (data && !error) {
       alert('로그아웃');
+      Cookie.remove('_id');
+      Cookie.remove('nickname');
+      Cookie.remove('accessToken');
+      Cookie.remove('profileThumbnailImageURL');
       setNickname('');
       setProfileThumbnailImageURL('');
       history.push('/home');

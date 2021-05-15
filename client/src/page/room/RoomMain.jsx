@@ -6,6 +6,7 @@ import { GET_ROOM_LIST } from './room.query';
 import Loading from 'src/components/Loading';
 import RoomCard from './RoomCard';
 import Cookie from 'js-cookie';
+import { MESSAGE_ERROR } from 'src/res/message';
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
@@ -31,7 +32,7 @@ const RoomMain = () => {
   // 대화방 리스트 로드 실패
   useEffect(() => {
     if (error) {
-      alert('대화방 리스트 로드 실패');
+      alert(MESSAGE_ERROR);
     }
   }, [error]);
   return (

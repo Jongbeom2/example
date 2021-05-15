@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_USER = gql`
-  query getUser($_id: ID!) {
-    getUser(_id: $_id) {
+  query getUser($userId: ID!) {
+    getUser(userId: $userId) {
       _id
       nickname
       profileImageURL

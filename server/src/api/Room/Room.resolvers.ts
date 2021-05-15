@@ -7,7 +7,7 @@ const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID')
 const resolvers: Resolvers = {
   Query: {
     getRoom: async (_, args, ctx) => {
-      const room = await RoomModel.findById(args._id);
+      const room = await RoomModel.findById(args.roomId);
       // _id에 해당하는 room 없음.
       if (room === null) {
         throw invalidRoomIdError;

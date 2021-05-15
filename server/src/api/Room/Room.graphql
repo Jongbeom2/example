@@ -1,5 +1,5 @@
 type Query {
-  getRoom(_id: ID!): Room!
+  getRoom(roomId: ID!): Room!
   getRoomList(userId: ID!): [Room!]!
 }
 

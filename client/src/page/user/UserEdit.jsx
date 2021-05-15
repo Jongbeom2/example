@@ -65,7 +65,7 @@ const UserEdit = () => {
     loading: queryLoading,
     error: queryError,
   } = useQuery(GET_USER, {
-    variables: { _id: userId },
+    variables: { userId: userId },
   });
   // 이미지 업로드용 presigned url 로드
   const [
