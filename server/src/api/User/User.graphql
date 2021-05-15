@@ -1,6 +1,6 @@
 type Query {
   getUser(userId: ID!): User!
-  getUserList(userId: ID!): [User!]!
+  getFriendList(userId: ID!): [Friend!]!
 }
 
 type User {
@@ -12,7 +12,12 @@ type User {
   profileThumbnailImageURL: String
   loginType: String!
   kakaoId: String
-  roomList: [Room!]!
+  friendList: [Friend!]!
+}
+
+type Friend {
+  nickname: String!
+  roomId: String
 }
 
 type Mutation {

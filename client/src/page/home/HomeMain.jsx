@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import MainWrapper from 'src/components/MainWrapper';
-import { GET_USER_LIST } from './home.query';
+import { GET_FRIEND_LIST } from './home.query';
 import Cookie from 'js-cookie';
 import { MESSAGE_ERROR } from 'src/res/message';
 import Loading from 'src/components/Loading';
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 const Home = () => {
   const classes = useStyles();
   const userId = Cookie.get('_id');
-  const { data, loading, error } = useQuery(GET_USER_LIST, {
+  const { data, loading, error } = useQuery(GET_FRIEND_LIST, {
     variables: {
       userId: userId,
     },
@@ -25,7 +25,7 @@ const Home = () => {
   // 유저 리스트 로드
   useEffect(() => {
     if (data && !error) {
-      setUserList(data.getUserList);
+      setUserList(data.getFriendList);
     }
   }, [data]);
   // 유저 리스트 로드 실패

@@ -23,18 +23,16 @@ const resolvers: Resolvers = {
       }
       return user;
     },
-    getUserList: async (_, args, ctx) => {
-      const userList = await UserModel.find();
-      const filteredUserList = userList.filter(
-        (user) => user._id.toString() !== args.userId.toString(),
-      );
-      return filteredUserList;
-    },
-  },
-  User: {
-    roomList: async (parent, args, ctx) => {
-      const roomList = await RoomModel.find({ _id: { $in: parent.roomIdList } });
-      return roomList;
+    getFriendList: async (_, args, ctx) => {
+      const user = await UserModel.findById(args.userId);
+      // _id에 해당하는 user 없음.
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      return user.friendList.map((friend) => ({
+        nickname: 'asdf',
+        roomId: friend.roomId,
+      }));
     },
   },
   Mutation: {
@@ -129,6 +127,8 @@ const resolvers: Resolvers = {
       if (preUser !== null) {
         throw existUserEmailError;
       }
+      // 기존 user
+      const userList = await UserModel.find();
       const hash = await bcrypt.hash(password, 10);
       const user = await new UserModel({
         nickname,
@@ -174,8 +174,7 @@ const resolvers: Resolvers = {
       if (room === null) {
         throw invalidRoomIdError;
       }
-      const userIdList = room.userIdList;
-      userIdList.push(userId);
+      room.userIdList.push(userId);
       await room.save();
       // user 수정
       const user = await UserModel.findById(userId);
@@ -183,8 +182,7 @@ const resolvers: Resolvers = {
       if (user === null) {
         throw invalidUserIdError;
       }
-      const roomIdList = user.roomIdList;
-      roomIdList.push(roomId);
+      user.roomIdList.push(room._id);
       return await user.save();
     },
     updateUserRemoveRoom: async (_, args, ctx) => {
@@ -194,16 +192,14 @@ const resolvers: Resolvers = {
       if (room === null) {
         throw invalidRoomIdError;
       }
-      const userIdList = room.userIdList;
-      room.userIdList = userIdList.filter((ele) => ele.toString() !== userId.toString());
+      room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
       await room.save();
       // user 수정
       const user = await UserModel.findById(userId);
       if (user === null) {
         throw invalidUserIdError;
       }
-      const roomIdList = user.roomIdList;
-      user.roomIdList = roomIdList.filter((ele) => ele.toString() !== roomId.toString());
+      user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
       return await user.save();
     },
   },

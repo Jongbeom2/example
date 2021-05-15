@@ -30,6 +30,17 @@ export const UserSchema = new mongoose.Schema(
     kakaoId: {
       type: String,
     },
+    friendList: [
+      {
+        userId: {
+          type: String,
+          required: true,
+        },
+        roomId: {
+          type: String,
+        },
+      },
+    ],
     roomIdList: [
       {
         type: String,
@@ -51,6 +62,12 @@ interface User {
   loginType?: string;
   kakaoId: string;
   roomIdList: string[];
+  friendList: Friend[];
+}
+
+interface Friend {
+  userId: string;
+  roomId?: string;
 }
 
 export interface UserDoc extends User, Document {}

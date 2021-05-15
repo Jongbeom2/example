@@ -18,5 +18,6 @@ type Mutation {
 }
 
 input CreatePrivateRoomInput {
-  userIdList: [String!]!
+  user1Id: ID!
+  user2Id: ID!
 }
