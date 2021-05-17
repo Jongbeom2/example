@@ -1,12 +1,12 @@
 type Query {
-  getRoom(roomId: ID!): Room!
+  getRoom(_id: ID!): Room!
+  getMyRoomList(userId: ID!): [Room!]!
   getRoomList(userId: ID!): [Room!]!
 }
 
 type Room {
   _id: ID!
-  name: String
-  type: String!
+  name: String!
   userNum: Int!
   userList: [User!]!
   recentMessageContent: String
@@ -14,10 +14,10 @@ type Room {
 }
 
 type Mutation {
-  createPrivateRoom(createPrivateRoomInput: CreatePrivateRoomInput!): Room!
+  createRoom(createRoomInput: CreateRoomInput!): Room!
 }
 
-input CreatePrivateRoomInput {
-  user1Id: ID!
-  user2Id: ID!
+input CreateRoomInput {
+  userId: ID!
+  name: String!
 }

@@ -7,14 +7,14 @@ const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID')
 const resolvers: Resolvers = {
   Query: {
     getRoom: async (_, args, ctx) => {
-      const room = await RoomModel.findById(args.roomId);
+      const room = await RoomModel.findById(args._id);
       // _id에 해당하는 room 없음.
       if (room === null) {
         throw invalidRoomIdError;
       }
       return room;
     },
-    getRoomList: async (_, args, ctx) => {
+    getMyRoomList: async (_, args, ctx) => {
       const user = await UserModel.findById(args.userId);
       // _id에 해당하는 room 없음.
       if (user === null) {
@@ -22,6 +22,18 @@ const resolvers: Resolvers = {
       }
       const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } });
       return roomList;
+    },
+    getRoomList: async (_, args, ctx) => {
+      const user = await UserModel.findById(args.userId);
+      // _id에 해당하는 room 없음.
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      const roomList = await RoomModel.find();
+      const filteredRoomList = roomList.filter(
+        (room) => user.roomIdList.indexOf(room._id.toString()) === -1,
+      );
+      return filteredRoomList;
     },
   },
   Room: {
@@ -31,24 +43,21 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    createPrivateRoom: async (_, args, ctx) => {
-      const { user1Id, user2Id } = args.createPrivateRoomInput;
-      // room 수정
+    createRoom: async (_, args, ctx) => {
+      const { userId, name } = args.createRoomInput;
+      // room 생성
       const room = await new RoomModel({
-        type: 'private',
-        userNum: 2,
-        userIdList: [user1Id, user2Id],
+        name,
+        userNum: 1,
+        userIdList: [userId],
       }).save();
       // user 수정
-      const user1 = await UserModel.findById(user1Id);
-      const user2 = await UserModel.findById(user2Id);
-      if (!user1 || !user2) {
+      const user = await UserModel.findById(userId);
+      if (!user) {
         throw invalidUserIdError;
       }
-      user1.roomIdList.push(room._id);
-      user2.roomIdList.push(room._id);
-      await user1.save();
-      await user2.save();
+      user.roomIdList.push(room._id);
+      await user.save();
       return room;
     },
   },

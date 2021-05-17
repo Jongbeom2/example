@@ -62,14 +62,15 @@ const myTheme = createMuiTheme({
       secondary: '#666666',
     },
     custom: {
+      black: '#000000',
       background: '#ecf0f1',
       border: '#ecf0f1',
-      black: '#000000',
+      grey: '#666666',
       red: '#e74c3c',
-      white: '#ffffff',
       yellow: '#f9e000',
       teal: '#00B8D9',
-      grey: '#666666',
+      lightBlue: '#DEEBFF',
+      white: '#ffffff',
     },
   },
 });

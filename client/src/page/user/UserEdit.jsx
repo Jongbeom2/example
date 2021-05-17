@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { GET_USER, UPDATE_USER } from './user.query';
 import { useHistory, useParams } from 'react-router';
-import { MESSAGE_ERROR, MESSAGE_USER_FAIL } from 'src/res/message';
+import { MESSAGE_ERROR } from 'src/res/message';
 import Loading from 'src/components/Loading';
 import MainWrapper from 'src/components/MainWrapper';
 import { Avatar, Button, Grid, TextField, Typography } from '@material-ui/core';
@@ -65,18 +65,8 @@ const UserEdit = () => {
     loading: queryLoading,
     error: queryError,
   } = useQuery(GET_USER, {
-    variables: { userId: userId },
+    variables: { _id: userId },
   });
-  // 이미지 업로드용 presigned url 로드
-  const [
-    getPresignedPutURL,
-    { data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError },
-  ] = useLazyQuery(GET_PRESIGNED_PUT_URL);
-  // 유저 정보 업데이트
-  const [
-    updateUser,
-    { data: mutationData, loading: mutaionLoading, error: mutationError },
-  ] = useMutation(UPDATE_USER);
   // 유저 정보 로드 성공
   useEffect(() => {
     if (queryData && !queryError) {
@@ -86,14 +76,15 @@ const UserEdit = () => {
   // 유저 정보 로드 실패
   useEffect(() => {
     if (queryError) {
-      if (queryError.message === 'INVALID_USER_ID') {
-        alert(MESSAGE_USER_FAIL);
-      } else {
-        alert(MESSAGE_ERROR);
-      }
+      alert(MESSAGE_ERROR);
     }
   }, [queryError]);
-  // presigned url 로드 성공
+  // presigned url 로드
+  const [
+    getPresignedPutURL,
+    { data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError },
+  ] = useLazyQuery(GET_PRESIGNED_PUT_URL);
+  // presigned url 로드 성공 및 실패
   useEffect(() => {
     if (lazyQueryData && !lazyQueryError) {
       const presignedURL = lazyQueryData.getPresignedPutURL.presignedURL;
@@ -106,8 +97,8 @@ const UserEdit = () => {
             ...user,
             profileImageURL: url,
             profileThumbnailImageURL: url.replace(
-              'profile',
-              'profileThumbnail',
+              'example-jb',
+              'example-jb-thumbnail',
             ),
           });
         } catch (error) {
@@ -117,6 +108,12 @@ const UserEdit = () => {
       })();
     }
   }, [lazyQueryData]);
+  // 유저 정보 업데이트
+  const [
+    updateUser,
+    { data: mutationData, loading: mutaionLoading, error: mutationError },
+  ] = useMutation(UPDATE_USER);
+
   // 유저 정보 수정 성공
   useEffect(() => {
     if (mutationData && !mutationError) {
@@ -127,11 +124,7 @@ const UserEdit = () => {
   // 유저 정보 수정 실패
   useEffect(() => {
     if (mutationError) {
-      if (mutationError.message === 'INVALID_USER_ID') {
-        alert(MESSAGE_USER_FAIL);
-      } else {
-        alert(MESSAGE_ERROR);
-      }
+      alert(MESSAGE_ERROR);
     }
   }, [mutationError]);
   const onClickCancelBtn = () => {

@@ -51,7 +51,16 @@ const SignUp = () => {
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
   const [nickname, setNickname] = useState('');
+  // 회원가입
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  // 회원가입 성공
+  useEffect(() => {
+    if (data && !error) {
+      alert(MESSAGE_SIGNUP_SUCCESS);
+      history.push('/signin');
+    }
+  }, [data]);
+  // 회원가입 실패
   useEffect(() => {
     if (error) {
       if (error.message === 'EXIST_USER_EMAIL') {
@@ -61,12 +70,6 @@ const SignUp = () => {
       }
     }
   }, [error]);
-  useEffect(() => {
-    if (data && !error) {
-      alert(MESSAGE_SIGNUP_SUCCESS);
-      history.push('/signin');
-    }
-  }, [data]);
   const onChangeEmail = (e) => {
     setEmail(e.target.value);
   };

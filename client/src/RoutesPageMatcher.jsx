@@ -4,10 +4,10 @@ import HomeMain from 'src/page/home/HomeMain';
 import SignIn from './page/auth/SignIn';
 import SignInKakao from './page/auth/SignInKakao';
 import SignUp from './page/auth/SignUp';
-import RoomMain from './page/room/RoomMain';
 import FeedMain from './page/feed/FeedMain';
 import UserRouter from './page/user/UserRouter';
 import AuthRoute from './components/AuthRoute';
+import RoomRouter from './page/room/RoomRouter';
 
 const RoutesPageMatcher = () => {
   const { page } = useParams();
@@ -45,7 +45,7 @@ const RoutesPageMatcher = () => {
     case 'room':
       return (
         <AuthRoute>
-          <RoomMain />
+          <RoomRouter />
         </AuthRoute>
       );
     default:

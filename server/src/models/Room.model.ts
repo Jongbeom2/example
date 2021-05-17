@@ -4,9 +4,6 @@ export const RoomSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-    },
-    type: {
-      type: String,
       required: true,
     },
     userNum: {

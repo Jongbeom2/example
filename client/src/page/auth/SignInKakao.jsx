@@ -20,21 +20,25 @@ const SignInKakao = () => {
   const classes = useStyles();
   const history = useHistory();
   const code = queryString.parse(history.location.search).code;
+  // 카카오 로그인
   const [signInWithKakao, { data, loading, error }] = useMutation(
     SIGNIN_WITH_KAKAO,
   );
-  useEffect(() => {
-    if (error) {
-      alert(MESSAGE_SIGNIN_FAIL_KAKAO);
-      history.push('/signin');
-    }
-  }, [error]);
+  // 카카오 로그인 성공
   useEffect(() => {
     if (data && !error) {
       alert(MESSAGE_SIGNIN_SUCCESS_KAKAO);
       history.push('/home');
     }
   }, [data]);
+  // 카카오 로그인 실패
+  useEffect(() => {
+    if (error) {
+      alert(MESSAGE_SIGNIN_FAIL_KAKAO);
+      history.push('/signin');
+    }
+  }, [error]);
+  // 카카오 로그인 시작
   useEffect(() => {
     if (code) {
       (async function () {

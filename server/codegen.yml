@@ -15,6 +15,8 @@ generates:
       mappers:
         User: 'src/models/User.model.ts#UserDoc'
         Room: 'src/models/Room.model.ts#RoomDoc'
+        Chat: 'src/models/Chat.model.ts#ChatDoc'
+
       # Resolver의 ContextType 타입 정의
       contextType: 'src/apollo/context#GraphqlContext'
     plugins:

@@ -4,7 +4,7 @@ import MainWrapper from 'src/components/MainWrapper';
 import { useQuery } from '@apollo/client';
 import { GET_USER } from './user.query';
 import Loading from 'src/components/Loading';
-import { MESSAGE_ERROR, MESSAGE_USER_FAIL } from 'src/res/message';
+import { MESSAGE_ERROR } from 'src/res/message';
 import { Avatar, Button, Typography } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router';
 import Cookie from 'js-cookie';
@@ -36,7 +36,7 @@ const UserMain = () => {
   const [user, setUser] = useState(null);
   // 유저 정보 로드
   const { data, loading, error } = useQuery(GET_USER, {
-    variables: { userId: userId },
+    variables: { _id: userId },
   });
   // 유저 정보 로드 성공
   useEffect(() => {
@@ -47,11 +47,7 @@ const UserMain = () => {
   // 유저 정보 로드 실패
   useEffect(() => {
     if (error) {
-      if (error.message === 'INVALID_USER_ID') {
-        alert(MESSAGE_USER_FAIL);
-      } else {
-        alert(MESSAGE_ERROR);
-      }
+      alert(MESSAGE_ERROR);
     }
   }, [error]);
   const onClickEditBtn = () => {

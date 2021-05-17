@@ -7,6 +7,7 @@ import RoomModel from 'src/models/Room.model';
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
 import { DEFAULT_PROFILE_URL } from 'src/lib/const';
+import ChatModel from 'src/models/Chat.model';
 const invalidUserIdError = new ApolloError('INVALID_USER_ID', 'INVALID_USER_ID');
 const invalidUserEmailError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
 const invalidUserPasswordError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
@@ -16,23 +17,19 @@ const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID')
 const resolvers: Resolvers = {
   Query: {
     getUser: async (_, args, ctx) => {
-      const user = await UserModel.findById(args.userId);
+      const user = await UserModel.findById(args._id);
       // _id에 해당하는 user 없음.
       if (user === null) {
         throw invalidUserIdError;
       }
       return user;
     },
-    getFriendList: async (_, args, ctx) => {
-      const user = await UserModel.findById(args.userId);
-      // _id에 해당하는 user 없음.
-      if (user === null) {
-        throw invalidUserIdError;
-      }
-      return user.friendList.map((friend) => ({
-        nickname: 'asdf',
-        roomId: friend.roomId,
-      }));
+    getUserList: async (_, args, ctx) => {
+      const userList = await UserModel.find();
+      const filteredUserList = userList.filter(
+        (user) => user._id.toString() !== args._id.toString(),
+      );
+      return filteredUserList;
     },
   },
   Mutation: {
@@ -127,8 +124,6 @@ const resolvers: Resolvers = {
       if (preUser !== null) {
         throw existUserEmailError;
       }
-      // 기존 user
-      const userList = await UserModel.find();
       const hash = await bcrypt.hash(password, 10);
       const user = await new UserModel({
         nickname,
@@ -175,6 +170,7 @@ const resolvers: Resolvers = {
         throw invalidRoomIdError;
       }
       room.userIdList.push(userId);
+      room.userNum++;
       await room.save();
       // user 수정
       const user = await UserModel.findById(userId);
@@ -183,6 +179,13 @@ const resolvers: Resolvers = {
         throw invalidUserIdError;
       }
       user.roomIdList.push(room._id);
+      // chat 추가
+      await new ChatModel({
+        roomId,
+        userId,
+        isSystem: true,
+        content: '님이 입장하셨습니다.',
+      }).save();
       return await user.save();
     },
     updateUserRemoveRoom: async (_, args, ctx) => {
@@ -193,13 +196,22 @@ const resolvers: Resolvers = {
         throw invalidRoomIdError;
       }
       room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
+      room.userNum--;
       await room.save();
       // user 수정
       const user = await UserModel.findById(userId);
+      // _id에 해당하는 user 없음.
       if (user === null) {
         throw invalidUserIdError;
       }
       user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
+      // chat 추가
+      await new ChatModel({
+        roomId,
+        userId,
+        isSystem: true,
+        content: '님이 퇴장하셨습니다.',
+      }).save();
       return await user.save();
     },
   },

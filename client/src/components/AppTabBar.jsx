@@ -39,12 +39,12 @@ const tabList = [
     route: 'home',
   },
   {
-    label: '대화',
-    route: 'room',
-  },
-  {
     label: '피드',
     route: 'feed',
+  },
+  {
+    label: '대화',
+    route: 'room',
   },
 ];
 

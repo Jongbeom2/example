@@ -13,5 +13,6 @@ export const MESSAGE_SIGNUP_FAIL_INVALID_EMAIL = '이메일 형식에 맞지 않
 export const MESSAGE_SIGNUP_FAIL_EXIST_EMAIL = '이미 이메일이 존재합니다.';
 // Common
 export const MESSAGE_ERROR = '문제가 발생했습니다.';
-// User
-export const MESSAGE_USER_FAIL = '유저 정보가 없습니다.';
+export const MESSAGE_AUTH_ERROR = '로그인이 필요합니다.';
+// Room
+export const MESSAGE_UPDATE_USER_ADD_ROOM = '대화방 참여에 성공했습니다.';

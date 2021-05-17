@@ -51,7 +51,16 @@ const Signin = () => {
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // 로그인
   const [signIn, { data, loading, error }] = useMutation(SINGIN);
+  // 로그인 성공
+  useEffect(() => {
+    if (data && !error) {
+      alert(MESSAGE_SIGNIN_SUCCESS_SIGNIN);
+      history.push('/home');
+    }
+  }, [data]);
+  // 로그인 실패
   useEffect(() => {
     if (error) {
       if (error.message === 'INVALID_USER_INFO') {
@@ -61,12 +70,6 @@ const Signin = () => {
       }
     }
   }, [error]);
-  useEffect(() => {
-    if (data && !error) {
-      alert(MESSAGE_SIGNIN_SUCCESS_SIGNIN);
-      history.push('/home');
-    }
-  }, [data]);
   const onChangeEmail = (e) => {
     setEmail(e.target.value);
   };
