@@ -3,12 +3,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { GET_USER, UPDATE_USER } from './user.query';
 import { useHistory, useParams } from 'react-router';
-import { MESSAGE_ERROR } from 'src/res/message';
+import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
 import Loading from 'src/components/Loading';
 import MainWrapper from 'src/components/MainWrapper';
 import { Avatar, Button, Grid, TextField, Typography } from '@material-ui/core';
 import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
 import axios from 'axios';
+import produce from 'immer';
+import { isNotAuthorizedError } from 'src/lib/error';
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'relative',
@@ -66,6 +68,7 @@ const UserEdit = () => {
     error: queryError,
   } = useQuery(GET_USER, {
     variables: { _id: userId },
+    fetchPolicy: 'cache-first',
   });
   // 유저 정보 로드 성공
   useEffect(() => {
@@ -75,7 +78,10 @@ const UserEdit = () => {
   }, [queryData]);
   // 유저 정보 로드 실패
   useEffect(() => {
-    if (queryError) {
+    if (isNotAuthorizedError(queryError)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (queryError) {
       alert(MESSAGE_ERROR);
     }
   }, [queryError]);
@@ -84,7 +90,7 @@ const UserEdit = () => {
     getPresignedPutURL,
     { data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError },
   ] = useLazyQuery(GET_PRESIGNED_PUT_URL);
-  // presigned url 로드 성공 및 실패
+  // presigned url 로드 성공
   useEffect(() => {
     if (lazyQueryData && !lazyQueryError) {
       const presignedURL = lazyQueryData.getPresignedPutURL.presignedURL;
@@ -108,12 +114,20 @@ const UserEdit = () => {
       })();
     }
   }, [lazyQueryData]);
+  // presigned url 로드 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(lazyQueryError)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (lazyQueryError) {
+      alert(MESSAGE_ERROR);
+    }
+  }, [lazyQueryError]);
   // 유저 정보 업데이트
   const [
     updateUser,
     { data: mutationData, loading: mutaionLoading, error: mutationError },
   ] = useMutation(UPDATE_USER);
-
   // 유저 정보 수정 성공
   useEffect(() => {
     if (mutationData && !mutationError) {
@@ -123,7 +137,10 @@ const UserEdit = () => {
   }, [mutationData]);
   // 유저 정보 수정 실패
   useEffect(() => {
-    if (mutationError) {
+    if (isNotAuthorizedError(mutationError)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (mutationError) {
       alert(MESSAGE_ERROR);
     }
   }, [mutationError]);
@@ -139,6 +156,22 @@ const UserEdit = () => {
           profileImageURL: user.profileImageURL,
           profileThumbnailImageURL: user.profileThumbnailImageURL,
         },
+      },
+      update(cache, { data: { updateUser } }) {
+        cache.writeQuery({
+          query: UPDATE_USER,
+          variables: {
+            updateUserInput: {
+              _id: user._id,
+              nickname: user.nickname,
+              profileImageURL: user.profileImageURL,
+              profileThumbnailImageURL: user.profileThumbnailImageURL,
+            },
+          },
+          data: {
+            user: updateUser,
+          },
+        });
       },
     });
   };

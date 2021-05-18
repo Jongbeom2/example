@@ -4,8 +4,8 @@ import axios from 'axios';
 import queryString from 'query-string';
 import { useHistory } from 'react-router';
 import {
-  MESSAGE_SIGNIN_FAIL_KAKAO,
-  MESSAGE_SIGNIN_SUCCESS_KAKAO,
+  MESSAGE_ERROR_SIGNIN_KAKAO,
+  MESSAGE_SUCCESS_SIGNIN_KAKAO,
 } from 'src/res/message';
 import Loading from 'src/components/Loading';
 import { SIGNIN_WITH_KAKAO } from './auth.query';
@@ -27,14 +27,14 @@ const SignInKakao = () => {
   // 카카오 로그인 성공
   useEffect(() => {
     if (data && !error) {
-      alert(MESSAGE_SIGNIN_SUCCESS_KAKAO);
+      alert(MESSAGE_SUCCESS_SIGNIN_KAKAO);
       history.push('/home');
     }
   }, [data]);
   // 카카오 로그인 실패
   useEffect(() => {
     if (error) {
-      alert(MESSAGE_SIGNIN_FAIL_KAKAO);
+      alert(MESSAGE_ERROR_SIGNIN_KAKAO);
       history.push('/signin');
     }
   }, [error]);
@@ -63,12 +63,12 @@ const SignInKakao = () => {
           });
           // accesstoken 서버에 전달하여 로그인 또는 회원가입함.
         } catch (error) {
-          alert(MESSAGE_SIGNIN_FAIL_KAKAO);
+          alert(MESSAGE_ERROR_SIGNIN_KAKAO);
           history.push('/signin');
         }
       })();
     } else {
-      alert(MESSAGE_SIGNIN_FAIL_KAKAO);
+      alert(MESSAGE_ERROR_SIGNIN_KAKAO);
       history.push('/signin');
     }
   }, []);

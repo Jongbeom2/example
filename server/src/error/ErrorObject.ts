@@ -11,44 +11,68 @@
  * 참고 자료 : https://www.apollographql.com/docs/apollo-server/data/errors
  */
 import { AuthenticationError, ForbiddenError, UserInputError, ApolloError } from 'apollo-server';
-
-/**
- * @name AuthenticationError
- * @description
- * Login할 때 User가 존재하지 않는 경우
- * Login할 때 비밀번호 틀린 경우
- * Sigin up할 때 User가 존재하는 경우
- */
-const autehnticationError = new AuthenticationError('Authentication Error');
-
-/**
- * @name ForbiddenError
- * @description
- * 주어진 권한으로 접근할 수 없는 리소스에 접근한 경우
- */
-const forbiddenError = new ForbiddenError('Forbidden Error');
-
-/**
- * @name UserInputError
- * @description
- * 잘못된 Input이 들어온 경우 ex) input이 0~100이어야하는 경우 로직에서 처리하여 에러 발생
- * 단순히 Graghql에서 정의한 Schema에 맞지 않는 경우는 제외함 (이 경우는 알아서 처리해줌)
- */
-const userInputError = new UserInputError('유저 인풋 에러');
-
 /**
  * @name CustomError
  * @param {string} errorMessage
  * @param {string} errorCode
  * @param {string} errorProperties
  * @description
- * Error 포멧
- * 이 포멧에 맞춰서 에러 객체를 정의해야함
+ * 이 포멧에 맞춰서 에러 객체를 정의해야함.
  */
-const customError = new ApolloError('Custom Error', 'CUSTOM_ERROR', {
+export const customError = new ApolloError('Custom Error', 'CUSTOM_ERROR', {
   customProperty: 'Custom Property',
 });
-
-const environmentError = new Error('Check environment: ' + process.env.NODE_ENV);
-
-export { autehnticationError, forbiddenError, userInputError, customError, environmentError };
+/**
+ * @name EnvironmentError
+ * @description
+ * 환경 변수 설정이 잘못됨.
+ */
+export const environmentError = new Error('INVALID_ENVIRONMENT: ' + process.env.NODE_ENV);
+/**
+ * @name NotAuthorizedError
+ * @description
+ * 로그인이 안됨.
+ */
+export const notAuthorizedError = new ApolloError('NOT_AUTHORIZED', 'NOT_AUTHORIZED');
+/**
+ * @name InvalidContextError
+ * @description
+ * 잘못된 컨텐스트임.
+ */
+export const invalidContextError = new Error('INVALID_CONTEXT');
+/**
+ * @name CorsError
+ * @description
+ * 잘못된 origin임.
+ */
+export const corsError = new Error('CORS');
+/**
+ * @name InvalidUserIdError
+ * @description
+ * 존재하지않는 userId임.
+ */
+export const invalidUserIdError = new ApolloError('INVALID_USER_ID', 'INVALID_USER_ID');
+/**
+ * @name InvalidUserInfo
+ * @description
+ * 존재하지 않는 user email임.
+ */
+export const invalidUserEmailError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
+/**
+ * @name InvalidUserPasswordError
+ * @description
+ * 잘못된 user password임.
+ */
+export const invalidUserPasswordError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
+/**
+ * @name existUserEmailError
+ * @description
+ * 이미 존재하는 eamil임.
+ */
+export const existUserEmailError = new ApolloError('EXIST_USER_EMAIL', 'EXIST_USER_EMAIL');
+/**
+ * @name invalidRoomIdError
+ * @description
+ * 존재하지 않는 roomId임.
+ */
+export const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID');

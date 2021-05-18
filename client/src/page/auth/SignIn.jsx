@@ -5,9 +5,9 @@ import { useHistory } from 'react-router';
 import { SINGIN } from './auth.query';
 import { useMutation } from '@apollo/client';
 import {
-  MESSAGE_SIGNIN_FAIL_INVALID_USER,
-  MESSAGE_INPUT_FAIL_ALL_REQUIRED,
-  MESSAGE_SIGNIN_SUCCESS_SIGNIN,
+  MESSAGE_ERROR_SIGNIN_INVALID_USER,
+  MESSAGE_ERROR_INPUT_ALL_REQUIRED,
+  MESSAGE_SUCCESS_SIGNIN,
   MESSAGE_ERROR,
 } from 'src/res/message';
 import Loading from 'src/components/Loading';
@@ -56,7 +56,7 @@ const Signin = () => {
   // 로그인 성공
   useEffect(() => {
     if (data && !error) {
-      alert(MESSAGE_SIGNIN_SUCCESS_SIGNIN);
+      alert(MESSAGE_SUCCESS_SIGNIN);
       history.push('/home');
     }
   }, [data]);
@@ -64,7 +64,7 @@ const Signin = () => {
   useEffect(() => {
     if (error) {
       if (error.message === 'INVALID_USER_INFO') {
-        alert(MESSAGE_SIGNIN_FAIL_INVALID_USER);
+        alert(MESSAGE_ERROR_SIGNIN_INVALID_USER);
       } else {
         alert(MESSAGE_ERROR);
       }
@@ -81,7 +81,7 @@ const Signin = () => {
   };
   const onClickSignInBtn = () => {
     if (email === '' || password === '') {
-      alert(MESSAGE_INPUT_FAIL_ALL_REQUIRED);
+      alert(MESSAGE_ERROR_INPUT_ALL_REQUIRED);
       return;
     }
     signIn({

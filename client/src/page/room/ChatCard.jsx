@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Avatar, Typography } from '@material-ui/core';
+import moment from 'moment';
+import 'moment/locale/ko';
 const useStyles = makeStyles((theme) => ({
   systemChatRoot: {
     display: 'flex',
@@ -80,7 +82,7 @@ const ChatCard = ({ chat, userId }) => {
           color='textSecondary'
           variant='body2'
         >
-          {chat.createdAt}
+          {moment(new Date(chat.createdAt)).fromNow()}
         </Typography>
         <Typography className={classes.myChatContent}>
           {chat.content}
@@ -103,7 +105,7 @@ const ChatCard = ({ chat, userId }) => {
         color='textSecondary'
         variant='body2'
       >
-        {chat.createdAt}
+        {moment(new Date(chat.createdAt)).fromNow()}
       </Typography>
     </div>
   );

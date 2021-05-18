@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import colors from 'colors';
+import { environmentError } from 'src/error/ErrorObject';
 mongoose.set('debug', true);
 mongoose.connection
   .once('open', () => {
@@ -26,7 +27,7 @@ let _db: typeof mongoose; // database client
 
 export const connectDatabase = async () => {
   if (!process.env.MONGO_URL) {
-    throw new Error('Invalid MongoDB URL');
+    throw environmentError;
   }
   const mongooseObject = await mongoose.connect(process.env.MONGO_URL || '', {
     useNewUrlParser: true,

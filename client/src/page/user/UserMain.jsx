@@ -4,10 +4,11 @@ import MainWrapper from 'src/components/MainWrapper';
 import { useQuery } from '@apollo/client';
 import { GET_USER } from './user.query';
 import Loading from 'src/components/Loading';
-import { MESSAGE_ERROR } from 'src/res/message';
+import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
 import { Avatar, Button, Typography } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router';
 import Cookie from 'js-cookie';
+import { isNotAuthorizedError } from 'src/lib/error';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,6 +38,7 @@ const UserMain = () => {
   // 유저 정보 로드
   const { data, loading, error } = useQuery(GET_USER, {
     variables: { _id: userId },
+    fetchPolicy: 'cache-first',
   });
   // 유저 정보 로드 성공
   useEffect(() => {
@@ -46,7 +48,10 @@ const UserMain = () => {
   }, [data]);
   // 유저 정보 로드 실패
   useEffect(() => {
-    if (error) {
+    if (isNotAuthorizedError(error)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
       alert(MESSAGE_ERROR);
     }
   }, [error]);

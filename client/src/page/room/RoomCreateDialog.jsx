@@ -12,6 +12,13 @@ import { useMutation } from '@apollo/client';
 import Cookie from 'js-cookie';
 import { CREATE_ROOM } from './room.query';
 import Loading from 'src/components/Loading';
+import {
+  MESSAGE_ERROR_AUTH,
+  MESSAGE_ERROR,
+  MESSAGE_SUCCESS_CREATE_ROOM,
+} from 'src/res/message';
+import { isNotAuthorizedError } from 'src/lib/error';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const RoomCreateDialog = ({ isOpened = false, onClose = () => {} }) => {
   const classes = useStyles();
+  const history = useHistory();
   const userId = Cookie.get('_id');
   const [roomName, setRoomName] = useState('');
   // 대화방 생성
@@ -30,14 +38,17 @@ const RoomCreateDialog = ({ isOpened = false, onClose = () => {} }) => {
   // 대화방 생성 성공
   useEffect(() => {
     if (data && !error) {
-      alert('대화방 생성 성공');
+      alert(MESSAGE_SUCCESS_CREATE_ROOM);
       onCloseDialog();
     }
   }, [data]);
   // 대화방 생성 실패
   useEffect(() => {
-    if (error) {
-      alert('대화방 생성 실패');
+    if (isNotAuthorizedError(error)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
+      alert(MESSAGE_ERROR);
     }
   }, [error]);
   const onChangeRoomName = (event) => {

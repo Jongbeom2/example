@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Avatar, Typography } from '@material-ui/core';
+import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(2.5),
@@ -20,8 +21,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 const UserCard = ({ user }) => {
   const classes = useStyles();
+  const history = useHistory();
+  const onClick = () => {
+    history.push(`user/${user._id}`);
+  };
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={onClick}>
       <Avatar alt='avatar' src={user.profileThumbnailImageURL} />
       <Typography className={classes.nickname}>{user.nickname}</Typography>
     </div>

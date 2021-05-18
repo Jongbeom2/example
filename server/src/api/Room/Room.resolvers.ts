@@ -2,8 +2,7 @@ import RoomModel from 'src/models/Room.model';
 import { ApolloError } from 'apollo-server';
 import { Resolvers } from 'src/types/graphql';
 import UserModel from 'src/models/User.model';
-const invalidUserIdError = new ApolloError('INVALID_USER_ID', 'INVALID_USER_ID');
-const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID');
+import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 const resolvers: Resolvers = {
   Query: {
     getRoom: async (_, args, ctx) => {

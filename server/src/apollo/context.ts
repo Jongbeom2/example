@@ -1,11 +1,13 @@
 import shortid from 'shortid';
-import { auth } from 'src/apollo/auth';
+import { auth, authSocket } from 'src/apollo/auth';
+import { invalidContextError } from 'src/error/ErrorObject';
 
 const websocketContext = (connection: any, payload: any) => {
   // preserve until websocket disconnected
   // console.info(connection, payload);
   // connection.context; // this is the context which insert to onConnect triggered
-  return {};
+  const my = authSocket(connection.context.Headers);
+  return { my };
 };
 
 // "context", "argument" variable names are different depends on Server Framework types.
@@ -40,7 +42,7 @@ export const context = async (ctx: any) => {
   } else if (req && res) {
     return graphqlContext(req, res);
   } else {
-    throw new Error('Invalid context');
+    throw invalidContextError;
   }
 };
 

@@ -11,14 +11,16 @@ const apolloServer = new ApolloServer({
   context,
   introspection: true,
   subscriptions: {
+    // path: '/subscriptions',
     // https://github.com/apollographql/subscriptions-transport-ws#constructoroptions-socketoptions--socketserver
     onConnect: (connectionParams, websocket, connectionContext) => {
-      // console.info('## WebSocket Connected');
+      console.info('## WebSocket Connected');
+
       // console.info(connectionParams, websocket, connectionContext);
       // console.info('## connectionParams', connectionParams);
 
       return new Promise((res) => {
-        res({ flag: 2 });
+        res({ Headers: connectionContext.request.headers });
       });
 
       // if (connectionParams.authToken) {
@@ -31,6 +33,9 @@ const apolloServer = new ApolloServer({
       //     });
       // }
       // throw new Error('Missing auth token!');
+    },
+    onDisconnect: (webSocket, context) => {
+      console.info('## WebSocket Disconnected');
     },
     keepAlive: 3000,
   },

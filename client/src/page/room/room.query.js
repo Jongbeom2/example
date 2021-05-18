@@ -6,6 +6,7 @@ export const GET_MY_ROOM_LIST = gql`
       _id
       name
       userNum
+      recentMessageContent
     }
   }
 `;
@@ -36,9 +37,21 @@ export const UPDATE_USER_ADD_ROOM = gql`
   }
 `;
 
+export const UPDATE_USER_REMOVE_ROOM = gql`
+  mutation updateUserRemoveRoom(
+    $updateUserRemoveRoomInput: UpdateUserRemoveRoomInput!
+  ) {
+    updateUserRemoveRoom(
+      updateUserRemoveRoomInput: $updateUserRemoveRoomInput
+    ) {
+      _id
+    }
+  }
+`;
+
 export const GET_CHAT_LIST = gql`
-  query getChatList($roomId: ID!) {
-    getChatList(roomId: $roomId) {
+  query getChatList($roomId: ID!, $skip: Int!, $size: Int!) {
+    getChatList(roomId: $roomId, skip: $skip, size: $size) {
       _id
       user {
         _id
@@ -58,6 +71,24 @@ export const CREATE_CHAT = gql`
   mutation createChat($createChatInput: CreateChatInput!) {
     createChat(createChatInput: $createChatInput) {
       _id
+    }
+  }
+`;
+
+export const CHAT_CREATED = gql`
+  subscription {
+    chatCreated {
+      _id
+      user {
+        _id
+        nickname
+        profileThumbnailImageURL
+      }
+      isSystem
+      content
+      fileType
+      fileURL
+      createdAt
     }
   }
 `;

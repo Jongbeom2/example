@@ -1,5 +1,5 @@
 type Query {
-  getChatList(roomId: ID!): [Chat!]!
+  getChatList(roomId: ID!, skip: Int!, size: Int!): [Chat!]!
 }
 
 type Chat {
@@ -9,7 +9,7 @@ type Chat {
   content: String!
   fileType: String
   fileURL: String
-  createdAt: String!
+  createdAt: DateTime!
 }
 
 type Mutation {
@@ -22,4 +22,8 @@ input CreateChatInput {
   content: String
   fileType: String
   fileURL: String
+}
+
+type Subscription {
+  chatCreated: Chat!
 }

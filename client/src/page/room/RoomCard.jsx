@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import { Avatar, Typography } from '@material-ui/core';
 import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,9 +15,19 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     cursor: 'pointer',
   },
-  nickname: {},
+  avatar: {
+    marginRight: theme.spacing(2),
+  },
+  contentTop: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  nickname: {
+    marginRight: theme.spacing(2),
+    fontWeight: 'bold',
+  },
   userNum: {
-    paddingLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
 }));
 const RoomCard = ({ room }) => {
@@ -28,10 +38,18 @@ const RoomCard = ({ room }) => {
   };
   return (
     <div className={classes.root} onClick={onClick}>
-      <Typography className={classes.nickname}>{room.name}</Typography>
-      <Typography color='textSecondary' className={classes.userNum}>
-        {room.userNum}명
-      </Typography>
+      <Avatar className={classes.avatar} />
+      <div className={classes.content}>
+        <div className={classes.contentTop}>
+          <Typography className={classes.nickname}>{room.name}</Typography>
+          <Typography color='textSecondary' className={classes.userNum}>
+            {room.userNum}명
+          </Typography>
+        </div>
+        <Typography className={classes.contentBottom} color='textSecondary'>
+          {room.recentMessageContent || '-'}
+        </Typography>
+      </div>
     </div>
   );
 };

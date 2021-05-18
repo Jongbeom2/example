@@ -13,9 +13,19 @@ import {
 } from '@material-ui/core';
 import { useMutation, useQuery } from '@apollo/client';
 import Cookie from 'js-cookie';
-import { GET_ROOM_LIST, UPDATE_USER_ADD_ROOM } from './room.query';
+import {
+  GET_MY_ROOM_LIST,
+  GET_ROOM_LIST,
+  UPDATE_USER_ADD_ROOM,
+} from './room.query';
 import Loading from 'src/components/Loading';
-import { MESSAGE_ERROR, MESSAGE_UPDATE_USER_ADD_ROOM } from 'src/res/message';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_ERROR_AUTH,
+  MESSAGE_SUCCESS_UPDATE_USER_ADD_ROOM,
+} from 'src/res/message';
+import { isNotAuthorizedError } from 'src/lib/error';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const RoomSearchDialog = ({ isOpened = false, onClose = () => {} }) => {
   const classes = useStyles();
+  const history = useHistory();
   const userId = Cookie.get('_id');
   const [value, setValue] = useState(null);
   const [roomList, setRoomList] = useState([]);
@@ -47,7 +58,10 @@ const RoomSearchDialog = ({ isOpened = false, onClose = () => {} }) => {
   }, [data]);
   // 대화방 로드 실패
   useEffect(() => {
-    if (error) {
+    if (isNotAuthorizedError(error)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
       alert(MESSAGE_ERROR);
     }
   }, [error]);
@@ -59,7 +73,7 @@ const RoomSearchDialog = ({ isOpened = false, onClose = () => {} }) => {
   // 대화방 참여 성공
   useEffect(() => {
     if (data && !error) {
-      alert(MESSAGE_UPDATE_USER_ADD_ROOM);
+      alert(MESSAGE_SUCCESS_UPDATE_USER_ADD_ROOM);
       onCloseDialog();
     }
   }, [mutationData]);

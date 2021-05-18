@@ -17,7 +17,7 @@ type User {
 type Mutation {
   signIn(signInInput: SignInInput!): User!
   signInWithKakao(signInWithKakaoInput: SignInWithKakaoInput!): User!
-  signOut: User
+  signOut: Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   updateUserAddRoom(updateUserAddRoomInput: UpdateUserAddRoomInput!): User!

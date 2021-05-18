@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import MainWrapper from 'src/components/MainWrapper';
 import { GET_USER_LIST } from './home.query';
 import Cookie from 'js-cookie';
-import { MESSAGE_ERROR } from 'src/res/message';
+import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
 import Loading from 'src/components/Loading';
 import UserCard from './UserCard';
 import { makeStyles, Typography } from '@material-ui/core';
+import { useHistory } from 'react-router';
+import { isNotAuthorizedError } from 'src/lib/error';
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
@@ -24,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const Home = () => {
   const classes = useStyles();
+  const history = useHistory();
   const userId = Cookie.get('_id');
   const { data, loading, error } = useQuery(GET_USER_LIST, {
     variables: {
@@ -39,7 +42,10 @@ const Home = () => {
   }, [data]);
   // 유저 리스트 로드 실패
   useEffect(() => {
-    if (error) {
+    if (isNotAuthorizedError(error)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
       alert(MESSAGE_ERROR);
     }
   }, [error]);

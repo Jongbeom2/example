@@ -7,8 +7,8 @@ import { CREATE_USER } from 'src/page/auth/auth.query';
 import Loading from 'src/components/Loading';
 import {
   MESSAGE_ERROR,
-  MESSAGE_SIGNUP_FAIL_EXIST_EMAIL,
-  MESSAGE_SIGNUP_SUCCESS,
+  MESSAGE_ERROR_SIGNUP_EXIST_EMAIL,
+  MESSAGE_SUCCESS_SIGNUP,
 } from 'src/res/message';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,7 +56,7 @@ const SignUp = () => {
   // 회원가입 성공
   useEffect(() => {
     if (data && !error) {
-      alert(MESSAGE_SIGNUP_SUCCESS);
+      alert(MESSAGE_SUCCESS_SIGNUP);
       history.push('/signin');
     }
   }, [data]);
@@ -64,7 +64,7 @@ const SignUp = () => {
   useEffect(() => {
     if (error) {
       if (error.message === 'EXIST_USER_EMAIL') {
-        alert(MESSAGE_SIGNUP_FAIL_EXIST_EMAIL);
+        alert(MESSAGE_ERROR_SIGNUP_EXIST_EMAIL);
       } else {
         alert(MESSAGE_ERROR);
       }

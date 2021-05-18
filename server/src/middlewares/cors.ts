@@ -1,6 +1,6 @@
 import cors from 'cors';
 import colors from 'colors';
-import { environmentError } from 'src/error/ErrorObject';
+import { corsError, environmentError } from 'src/error/ErrorObject';
 
 const allowedOrigins: string[] = [];
 
@@ -14,7 +14,7 @@ const corsMiddleware = () =>
           callback(null, true);
         } else {
           console.error('origin:', colors.blue.bold(origin ?? ''));
-          callback(new Error('CORS violation: Not allowed request origin'));
+          callback(corsError);
           // ⛔ 배포 테스트 너무 불편해서 항상 cros에러 안나도록 설정하고 싶은 경우
           // callback(null, true);
         }

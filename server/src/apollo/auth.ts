@@ -1,8 +1,7 @@
 import { generateJWT, decodeJWT, parseCookie } from 'src/lib/common';
 import { gql } from 'apollo-server-express';
 import colors from 'colors';
-import { environmentError } from 'src/error/ErrorObject';
-
+import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
 const decodeCookieToken = (cookieString: any) => {
   let decoded: any;
   let errorFields: string[] = [];
@@ -45,7 +44,9 @@ export const auth = (req: any, res: any) => {
     console.info(`## query: ${colors.blue.bold(queryName)}`);
   }
 
-  const queryWhiteList = ['createUser'];
+  const queryWhiteList = ['createUser', 'signIn', 'signInWithKakao', 'signOut'];
+  // Test
+  queryWhiteList.push('getChatList');
   if (queryWhiteList.includes(queryName)) {
     return {};
   }
@@ -57,9 +58,9 @@ export const auth = (req: any, res: any) => {
   // If unauthorized request, then throw error
   if (!decoded?.my) {
     if (process.env.NODE_ENV === 'production') {
-      throw new Error('Not Authorized');
+      throw notAuthorizedError;
     } else if (process.env.NODE_ENV === 'development') {
-      // throw new Error('Not Authorized');
+      throw notAuthorizedError;
     } else {
       throw environmentError;
     }
@@ -78,6 +79,27 @@ export const auth = (req: any, res: any) => {
   //     const accessToken = generateJWT({ my: decoded.my });
   //     res.cookie('accessToken', accessToken, { httpOnly: true });
   //   }
+
+  return decoded.my;
+};
+
+export const authSocket = (headers: any) => {
+  // TODO
+  // auth랑 같은 기능 할 수 있도록 짜기
+  // 합쳐도됨
+  const { decoded } = decodeCookieToken(headers.cookie);
+
+  // If unauthorized request, then throw error
+  if (!decoded?.my) {
+    if (process.env.NODE_ENV === 'production') {
+      throw notAuthorizedError;
+    } else if (process.env.NODE_ENV === 'development') {
+      throw notAuthorizedError;
+    } else {
+      throw environmentError;
+    }
+    return {};
+  }
 
   return decoded.my;
 };

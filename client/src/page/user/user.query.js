@@ -15,6 +15,9 @@ export const UPDATE_USER = gql`
   mutation updateUser($updateUserInput: UpdateUserInput!) {
     updateUser(updateUserInput: $updateUserInput) {
       _id
+      nickname
+      profileImageURL
+      profileThumbnailImageURL
     }
   }
 `;

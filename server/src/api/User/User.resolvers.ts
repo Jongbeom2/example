@@ -8,11 +8,13 @@ import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
 import { DEFAULT_PROFILE_URL } from 'src/lib/const';
 import ChatModel from 'src/models/Chat.model';
-const invalidUserIdError = new ApolloError('INVALID_USER_ID', 'INVALID_USER_ID');
-const invalidUserEmailError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
-const invalidUserPasswordError = new ApolloError('INVALID_USER_INFO', 'INVALID_USER_INFO');
-const existUserEmailError = new ApolloError('EXIST_USER_EMAIL', 'EXIST_USER_EMAIL');
-const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID');
+import {
+  invalidUserEmailError,
+  invalidUserIdError,
+  invalidUserPasswordError,
+  existUserEmailError,
+  invalidRoomIdError,
+} from 'src/error/ErrorObject';
 
 const resolvers: Resolvers = {
   Query: {
@@ -60,14 +62,6 @@ const resolvers: Resolvers = {
         maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
-      ctx.res.cookie('nickname', user.nickname, {
-        maxAge: 1000 * 60 * 10,
-        httpOnly: false,
-      });
-      ctx.res.cookie('profileThumbnailImageURL', user.profileThumbnailImageURL, {
-        maxAge: 1000 * 60 * 10,
-        httpOnly: false,
-      });
       return user;
     },
     signInWithKakao: async (_, args, ctx) => {
@@ -101,21 +95,12 @@ const resolvers: Resolvers = {
         maxAge: 1000 * 60 * 10,
         httpOnly: false,
       });
-      ctx.res.cookie('nickname', user.nickname, {
-        maxAge: 1000 * 60 * 10,
-        httpOnly: false,
-      });
-      ctx.res.cookie('profileThumbnailImageURL', user.profileThumbnailImageURL, {
-        maxAge: 1000 * 60 * 10,
-        httpOnly: false,
-      });
       return user;
     },
     signOut: async (_, args, ctx) => {
       ctx.res.clearCookie('accessToken');
-      ctx.res.clearCookie('nickname');
-      ctx.res.clearCookie('profileThumbnailImageURL');
-      return null;
+      ctx.res.clearCookie('_id');
+      return true;
     },
     createUser: async (_, args, ctx) => {
       const { nickname, email, password } = args.createUserInput;

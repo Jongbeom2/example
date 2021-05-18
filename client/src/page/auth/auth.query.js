@@ -12,6 +12,9 @@ export const SINGIN = gql`
   mutation signIn($signInInput: SignInInput!) {
     signIn(signInInput: $signInInput) {
       _id
+      nickname
+      profileImageURL
+      profileThumbnailImageURL
     }
   }
 `;
@@ -20,14 +23,15 @@ export const SIGNIN_WITH_KAKAO = gql`
   mutation signInWithKakao($signInWithKakaoInput: SignInWithKakaoInput!) {
     signInWithKakao(signInWithKakaoInput: $signInWithKakaoInput) {
       _id
+      nickname
+      profileImageURL
+      profileThumbnailImageURL
     }
   }
 `;
 
 export const SIGNOUT = gql`
   mutation signOut {
-    signOut {
-      _id
-    }
+    signOut
   }
 `;

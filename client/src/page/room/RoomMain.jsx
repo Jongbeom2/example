@@ -6,10 +6,12 @@ import { GET_MY_ROOM_LIST } from './room.query';
 import Loading from 'src/components/Loading';
 import RoomCard from './RoomCard';
 import Cookie from 'js-cookie';
-import { MESSAGE_ERROR } from 'src/res/message';
+import { MESSAGE_ERROR_AUTH, MESSAGE_ERROR } from 'src/res/message';
 import { Button, Typography } from '@material-ui/core';
 import RoomCreateDialog from './RoomCreateDialog';
 import RoomSearchDialog from './RoomSearchDialog';
+import { isNotAuthorizedError } from 'src/lib/error';
+import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
@@ -30,11 +32,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 const RoomMain = () => {
   const classes = useStyles();
+  const history = useHistory();
   const userId = Cookie.get('_id');
   const [isOpenRoomCreateDialog, setIsOpenRoomCreateDialog] = useState(false);
   const [isOpenRoomSearchDialog, setIsOpenRoomSearchDialog] = useState(false);
   // 대화방 리스트
-  const { data, loading, error } = useQuery(GET_MY_ROOM_LIST, {
+  const { data, loading, error, refetch } = useQuery(GET_MY_ROOM_LIST, {
     variables: {
       userId,
     },
@@ -48,7 +51,10 @@ const RoomMain = () => {
   }, [data]);
   // 대화방 리스트 로드 실패
   useEffect(() => {
-    if (error) {
+    if (isNotAuthorizedError(error)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
       alert(MESSAGE_ERROR);
     }
   }, [error]);
@@ -90,12 +96,14 @@ const RoomMain = () => {
       <RoomCreateDialog
         isOpened={isOpenRoomCreateDialog}
         onClose={() => {
+          refetch();
           setIsOpenRoomCreateDialog(false);
         }}
       />
       <RoomSearchDialog
         isOpened={isOpenRoomSearchDialog}
         onClose={() => {
+          refetch();
           setIsOpenRoomSearchDialog(false);
         }}
       />
