@@ -76,7 +76,6 @@ const useStyles = makeStyles((theme) => ({
   },
   inputBottomFile: {
     cursor: 'pointer',
-    border: '1px solid',
     borderColor: theme.palette.primary.main,
     borderRadius: '0.5rem',
     '&:hover': {
@@ -211,12 +210,14 @@ const RoomDetail = () => {
           const result = await axios.put(presignedURL, file);
           const url = result.config.url.split('?')[0];
           const type = file.type.split('/')[0];
+          const name = file.name;
           if (type === 'image') {
             createChat({
               variables: {
                 createChatInput: {
                   roomId,
                   userId,
+                  content: '사진',
                   imageURL: url,
                   thumbnailImageURL: url.replace(
                     'example-jb',
@@ -231,7 +232,9 @@ const RoomDetail = () => {
                 createChatInput: {
                   roomId,
                   userId,
+                  content: '파일',
                   fileURL: url,
+                  fileName: name,
                 },
               },
             });

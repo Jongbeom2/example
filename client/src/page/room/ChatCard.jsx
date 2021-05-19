@@ -1,9 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Avatar, Typography } from '@material-ui/core';
+import { Avatar, Button, Typography } from '@material-ui/core';
 import moment from 'moment';
 import 'moment/locale/ko';
-import { Img } from 'react-image';
 import ChatCardImage from './ChatCardImage';
 const useStyles = makeStyles((theme) => ({
   systemChatRoot: {
@@ -27,23 +26,28 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   myChatContent: {
+    maxWidth: '50%',
     width: 'fit-content',
+    wordBreak: 'break-word',
     marginLeft: theme.spacing(1),
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     background: theme.palette.custom.yellow,
-    height: '2rem',
-    lineHeight: '2rem',
     borderRadius: '0.5rem',
   },
   myChatCreatedAt: {
     height: '2rem',
     lineHeight: '2rem',
   },
-  myChatImg: {
-    width: '15rem',
-    borderRadius: '0.5rem',
-    marginLeft: theme.spacing(1),
+  myChatFile: {
+    textDecoration: 'none',
+    '& button': {
+      width: '10rem',
+      height: '3rem',
+      marginLeft: theme.spacing(1),
+    },
   },
   chatRoot: {
     display: 'flex',
@@ -55,27 +59,33 @@ const useStyles = makeStyles((theme) => ({
   },
   chatContent: {
     width: 'fit-content',
+    wordBreak: 'break-word',
     marginRight: theme.spacing(1),
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     background: theme.palette.custom.white,
-    height: '2rem',
-    lineHeight: '2rem',
     borderRadius: '0.5rem',
   },
   chatCreatedAt: {
+    minWidth: '50%',
     marginRight: theme.spacing(1),
     height: '2rem',
     lineHeight: '2rem',
   },
-  chatImg: {
-    width: '15rem',
-    borderRadius: '0.5rem',
-    marginRight: theme.spacing(1),
+  chatFile: {
+    textDecoration: 'none',
+    '& button': {
+      width: '10rem',
+      height: '3rem',
+      marginRight: theme.spacing(1),
+    },
   },
 }));
 const ChatCard = ({ chat, userId }) => {
   const classes = useStyles();
+  const onClickFile = () => {};
   if (chat.isSystem) {
     return (
       <div className={classes.systemChatRoot}>
@@ -87,6 +97,7 @@ const ChatCard = ({ chat, userId }) => {
     );
   }
   if (chat.user._id === userId) {
+    // 내 채팅
     return (
       <div className={classes.myChatRoot}>
         <Typography
@@ -97,11 +108,20 @@ const ChatCard = ({ chat, userId }) => {
           {moment(new Date(chat.createdAt)).fromNow()}
         </Typography>
         {chat.imageURL ? (
+          // 이미지
           <ChatCardImage
-            className={classes.myChatImg}
-            srcList={[chat.thumbnailImageURL, chat.imageURL]}
+            thumbnailImageURL={chat.thumbnailImageURL}
+            imageURL={chat.imageURL}
           />
+        ) : chat.fileURL ? (
+          // 파일
+          <a className={classes.myChatFile} href={chat.fileURL}>
+            <Button variant='contained' onClick={onClickFile}>
+              {chat.fileName}
+            </Button>
+          </a>
         ) : (
+          // 텍스트
           <Typography className={classes.myChatContent}>
             {chat.content}
           </Typography>
@@ -109,6 +129,7 @@ const ChatCard = ({ chat, userId }) => {
       </div>
     );
   }
+  // 상대 채팅
   return (
     <div className={classes.chatRoot}>
       <Avatar
@@ -118,11 +139,20 @@ const ChatCard = ({ chat, userId }) => {
       <div>
         <Typography>{chat.user.nickname}</Typography>
         {chat.imageURL ? (
+          // 이미지
           <ChatCardImage
-            className={classes.chatImg}
-            srcList={[chat.thumbnailImageURL, chat.imageURL]}
+            thumbnailImageURL={chat.thumbnailImageURL}
+            imageURL={chat.imageURL}
           />
+        ) : chat.fileURL ? (
+          // 파일
+          <a className={classes.chatFile} href={chat.fileURL}>
+            <Button variant='contained' onClick={onClickFile}>
+              {chat.fileName}
+            </Button>
+          </a>
         ) : (
+          // 텍스트
           <Typography className={classes.chatContent}>
             {chat.content}
           </Typography>

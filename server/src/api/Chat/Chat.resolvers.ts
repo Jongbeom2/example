@@ -36,6 +36,7 @@ const resolvers: Resolvers = {
         imageURL,
         thumbnailImageURL,
         fileURL,
+        fileName,
       } = args.createChatInput;
       // room 수정
       await RoomModel.findByIdAndUpdate(roomId, { recentMessageContent: content || undefined });
@@ -48,6 +49,7 @@ const resolvers: Resolvers = {
         imageURL,
         thumbnailImageURL,
         fileURL,
+        fileName,
       }).save();
       // publish
       pubsub.publish('CHAT_CREATED', {

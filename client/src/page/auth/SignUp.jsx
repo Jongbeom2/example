@@ -28,21 +28,6 @@ const useStyles = makeStyles((theme) => ({
   btn: {
     marginBottom: theme.spacing(1),
   },
-  socialSignUpText: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  socialSignUpBtnWrapper: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    '& div': {
-      background: 'red',
-      width: '3rem',
-      height: '3rem',
-      borderRadius: '3rem',
-    },
-    cursor: 'pointer',
-  },
 }));
 const SignUp = () => {
   const classes = useStyles();
@@ -159,19 +144,6 @@ const SignUp = () => {
         >
           이미 회원이신가요?
         </Button>
-        <Typography
-          className={classes.socialSignUpText}
-          align='center'
-          variant='body1'
-          color='textSecondary'
-        >
-          SNS 계정으로 간편 로그인
-        </Typography>
-        <div className={classes.socialSignUpBtnWrapper}>
-          <div>카카오톡</div>
-          <div>네이버</div>
-          <div>구글</div>
-        </div>
       </div>
     </div>
   );

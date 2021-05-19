@@ -5,15 +5,26 @@ import { useQuery } from '@apollo/client';
 import { GET_USER } from './user.query';
 import Loading from 'src/components/Loading';
 import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
-import { Avatar, Button, Typography } from '@material-ui/core';
+import { Avatar, Button, Fab, Typography } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router';
 import Cookie from 'js-cookie';
 import { isNotAuthorizedError } from 'src/lib/error';
-
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'relative',
     height: '100%',
+  },
+  btnWrapper: {
+    width: '100%',
+    top: 0,
+    position: 'absolute',
+    display: 'flex',
+    zIndex: theme.zIndex.fixedBtn,
+    justifyContent: 'space-between',
+    '& button': {
+      margin: theme.spacing(2),
+    },
   },
   content: {
     display: 'flex',
@@ -58,10 +69,18 @@ const UserMain = () => {
   const onClickEditBtn = () => {
     history.push(`/user/${userId}/edit`);
   };
+  const onClickBackBtn = () => {
+    history.goBack();
+  };
   return (
     <MainWrapper>
       <div className={classes.root}>
         {loading && <Loading />}
+        <div className={classes.btnWrapper}>
+          <Fab color='primary' size='small' onClick={onClickBackBtn}>
+            <ArrowBackIcon fontSize='small' />
+          </Fab>
+        </div>
         <div className={classes.content}>
           <Avatar alt='Avatar' src={user?.profileImageURL || ''} />
           <div className={classes.contentText}>

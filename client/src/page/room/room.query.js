@@ -63,6 +63,7 @@ export const GET_CHAT_LIST = gql`
       imageURL
       thumbnailImageURL
       fileURL
+      fileName
       createdAt
     }
   }
@@ -90,6 +91,7 @@ export const CHAT_CREATED = gql`
       imageURL
       thumbnailImageURL
       fileURL
+      fileName
       createdAt
     }
   }

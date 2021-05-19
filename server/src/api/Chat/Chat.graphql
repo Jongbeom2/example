@@ -10,6 +10,7 @@ type Chat {
   imageURL: String
   thumbnailImageURL: String
   fileURL: String
+  fileName: String
   createdAt: DateTime!
 }
 
@@ -24,6 +25,7 @@ input CreateChatInput {
   imageURL: String
   thumbnailImageURL: String
   fileURL: String
+  fileName: String
 }
 
 type Subscription {

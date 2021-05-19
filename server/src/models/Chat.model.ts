@@ -27,6 +27,9 @@ export const ChatSchema = new mongoose.Schema(
     fileURL: {
       type: String,
     },
+    fileName: {
+      type: String,
+    },
   },
   { timestamps: true },
 );
@@ -38,8 +41,10 @@ interface Chat {
   userId: string;
   isSystem: boolean;
   content?: string;
-  fileType?: string;
+  imageURL?: string;
+  thumbnailImageURL?: string;
   fileURL?: string;
+  fileName?: string;
 }
 
 export interface ChatDoc extends Chat, Document {}
