@@ -60,7 +60,8 @@ export const GET_CHAT_LIST = gql`
       }
       isSystem
       content
-      fileType
+      imageURL
+      thumbnailImageURL
       fileURL
       createdAt
     }
@@ -76,8 +77,8 @@ export const CREATE_CHAT = gql`
 `;
 
 export const CHAT_CREATED = gql`
-  subscription {
-    chatCreated {
+  subscription($roomId: ID!) {
+    chatCreated(roomId: $roomId) {
       _id
       user {
         _id
@@ -86,7 +87,8 @@ export const CHAT_CREATED = gql`
       }
       isSystem
       content
-      fileType
+      imageURL
+      thumbnailImageURL
       fileURL
       createdAt
     }

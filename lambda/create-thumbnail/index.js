@@ -43,8 +43,8 @@ exports.handler = async (event) => {
     const promArray = Records.map((record) => {
       const bucket = record.s3.bucket.name;
       const file = record.s3.object.key;
-      const width = 30;
-      const height = 30;
+      const width = 200;
+      const height = 200;
       return resizeImage({ bucket, file, width, height });
     });
 

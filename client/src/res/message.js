@@ -21,3 +21,7 @@ export const MESSAGE_SUCCESS_UPDATE_USER_ADD_ROOM =
 export const MESSAGE_SUCCESS_UPDATE_USER_REMOVE_ROOM =
   '대화방 나가기에 성공했습니다.';
 export const MESSAGE_SUCCESS_CREATE_ROOM = '대화방 생성에 성공했습니다.';
+// File
+export const MESSAGE_ERROR_UPLOAD = '업로드에 실패했습니다.';
+// User
+export const MESSAGE_SUCCESS_UPDATE_USER = '유저 정보 수정에 성공했습니다.';

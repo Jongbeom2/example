@@ -18,7 +18,10 @@ export const ChatSchema = new mongoose.Schema(
     content: {
       type: String,
     },
-    fileType: {
+    imageURL: {
+      type: String,
+    },
+    thumbnailImageURL: {
       type: String,
     },
     fileURL: {

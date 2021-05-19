@@ -37,7 +37,6 @@ export const auth = (req: any, res: any) => {
   `;
   const queryObj: any = gqlObject.definitions[0];
   const queryName: string = queryObj.selectionSet.selections[0].name.value;
-  // console.info('## graphql query object', queryObj);
 
   // To ignore playground introspection polling
   if (queryName !== '__schema') {
@@ -83,11 +82,24 @@ export const auth = (req: any, res: any) => {
   return decoded.my;
 };
 
-export const authSocket = (headers: any) => {
-  // TODO
-  // auth랑 같은 기능 할 수 있도록 짜기
-  // 합쳐도됨
-  const { decoded } = decodeCookieToken(headers.cookie);
+export const authSocket = (headers: any, query: any) => {
+  const gqlObject = gql`
+    ${query}
+  `;
+  const queryObj: any = gqlObject.definitions[0];
+  const queryName: string = queryObj.selectionSet.selections[0].name.value;
+
+  // To ignore playground introspection polling
+  if (queryName !== '__schema') {
+    console.info(`## query: ${colors.blue.bold(queryName)}`);
+  }
+
+  const queryWhiteList = [''];
+  if (queryWhiteList.includes(queryName)) {
+    return {};
+  }
+
+  const { decoded, errorFields } = decodeCookieToken(headers.cookie);
 
   // If unauthorized request, then throw error
   if (!decoded?.my) {

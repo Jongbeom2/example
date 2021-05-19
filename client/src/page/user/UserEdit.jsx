@@ -3,7 +3,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { GET_USER, UPDATE_USER } from './user.query';
 import { useHistory, useParams } from 'react-router';
-import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_ERROR_AUTH,
+  MESSAGE_ERROR_UPLOAD,
+  MESSAGE_SUCCESS_UPDATE_USER,
+} from 'src/res/message';
 import Loading from 'src/components/Loading';
 import MainWrapper from 'src/components/MainWrapper';
 import { Avatar, Button, Grid, TextField, Typography } from '@material-ui/core';
@@ -108,7 +113,7 @@ const UserEdit = () => {
             ),
           });
         } catch (error) {
-          alert('사진 업로드 실패');
+          alert(MESSAGE_ERROR_UPLOAD);
         }
         setIsLoading(false);
       })();
@@ -131,7 +136,7 @@ const UserEdit = () => {
   // 유저 정보 수정 성공
   useEffect(() => {
     if (mutationData && !mutationError) {
-      alert('유저 정보 수정');
+      alert(MESSAGE_SUCCESS_UPDATE_USER);
       history.push(`/user/${userId}`);
     }
   }, [mutationData]);
@@ -184,9 +189,10 @@ const UserEdit = () => {
     let file = event.target.files[0];
     setImageFile(file);
     // Presigned put url을 가져옴.
+    const fileExtension = file.name.split('.').pop();
     getPresignedPutURL({
       variables: {
-        key: `profile/${userId}/${new Date().getTime()}.png`,
+        key: `profile/${userId}/${new Date().getTime()}.${fileExtension}`,
       },
     });
   };
@@ -242,7 +248,7 @@ const UserEdit = () => {
                   <input
                     id='image-upload-input-tag'
                     type='file'
-                    accept='image/jpg,image/png,image/jpeg,image/gif'
+                    accept='image/*'
                     onChange={onChangeFileChange}
                   />
                 </label>

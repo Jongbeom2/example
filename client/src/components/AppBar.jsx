@@ -164,7 +164,11 @@ const CustomAppBar = () => {
               <Typography color='textPrimary' variant='body2'>
                 {user.nickname}
               </Typography>
-              <Avatar alt='Avatar' src={user.profileThumbnailImageURL} />
+              {/* profileThumbnailImageURL 존재하면 보여주고,
+               유효하지 않으면 profileImageURL 보여줌 */}
+              <Avatar src={user.profileThumbnailImageURL}>
+                <Avatar alt='avatar' src={user.profileImageURL} />
+              </Avatar>
               <IconButton
                 aria-label='delete'
                 className={classes.margin}

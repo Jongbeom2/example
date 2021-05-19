@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Avatar, Typography } from '@material-ui/core';
 import moment from 'moment';
 import 'moment/locale/ko';
+import { Img } from 'react-image';
+import ChatCardImage from './ChatCardImage';
 const useStyles = makeStyles((theme) => ({
   systemChatRoot: {
     display: 'flex',
@@ -38,6 +40,11 @@ const useStyles = makeStyles((theme) => ({
     height: '2rem',
     lineHeight: '2rem',
   },
+  myChatImg: {
+    width: '15rem',
+    borderRadius: '0.5rem',
+    marginLeft: theme.spacing(1),
+  },
   chatRoot: {
     display: 'flex',
     justifyContent: 'flex-start',
@@ -60,6 +67,11 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     height: '2rem',
     lineHeight: '2rem',
+  },
+  chatImg: {
+    width: '15rem',
+    borderRadius: '0.5rem',
+    marginRight: theme.spacing(1),
   },
 }));
 const ChatCard = ({ chat, userId }) => {
@@ -84,9 +96,16 @@ const ChatCard = ({ chat, userId }) => {
         >
           {moment(new Date(chat.createdAt)).fromNow()}
         </Typography>
-        <Typography className={classes.myChatContent}>
-          {chat.content}
-        </Typography>
+        {chat.imageURL ? (
+          <ChatCardImage
+            className={classes.myChatImg}
+            srcList={[chat.thumbnailImageURL, chat.imageURL]}
+          />
+        ) : (
+          <Typography className={classes.myChatContent}>
+            {chat.content}
+          </Typography>
+        )}
       </div>
     );
   }
@@ -98,7 +117,16 @@ const ChatCard = ({ chat, userId }) => {
       />
       <div>
         <Typography>{chat.user.nickname}</Typography>
-        <Typography className={classes.chatContent}>{chat.content}</Typography>
+        {chat.imageURL ? (
+          <ChatCardImage
+            className={classes.chatImg}
+            srcList={[chat.thumbnailImageURL, chat.imageURL]}
+          />
+        ) : (
+          <Typography className={classes.chatContent}>
+            {chat.content}
+          </Typography>
+        )}
       </div>
       <Typography
         className={classes.chatCreatedAt}

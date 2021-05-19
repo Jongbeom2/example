@@ -6,8 +6,9 @@ type Chat {
   _id: ID!
   user: User!
   isSystem: Boolean!
-  content: String!
-  fileType: String
+  content: String
+  imageURL: String
+  thumbnailImageURL: String
   fileURL: String
   createdAt: DateTime!
 }
@@ -20,10 +21,11 @@ input CreateChatInput {
   roomId: ID!
   userId: ID
   content: String
-  fileType: String
+  imageURL: String
+  thumbnailImageURL: String
   fileURL: String
 }
 
 type Subscription {
-  chatCreated: Chat!
+  chatCreated(roomId: ID!): Chat!
 }

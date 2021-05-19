@@ -1,4 +1,4 @@
-import { ApolloError } from 'apollo-server';
+import { withFilter } from 'apollo-server';
 import ChatModel from 'src/models/Chat.model';
 import UserModel from 'src/models/User.model';
 import { Resolvers } from 'src/types/graphql';
@@ -29,7 +29,14 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     createChat: async (_, args, ctx) => {
-      const { roomId, userId, content, fileType, fileURL } = args.createChatInput;
+      const {
+        roomId,
+        userId,
+        content,
+        imageURL,
+        thumbnailImageURL,
+        fileURL,
+      } = args.createChatInput;
       // room 수정
       await RoomModel.findByIdAndUpdate(roomId, { recentMessageContent: content || undefined });
       // chat 생성
@@ -38,7 +45,8 @@ const resolvers: Resolvers = {
         userId,
         isSystem: false,
         content,
-        fileType,
+        imageURL,
+        thumbnailImageURL,
         fileURL,
       }).save();
       // publish
@@ -50,7 +58,14 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     chatCreated: {
-      subscribe: () => pubsub.asyncIterator('CHAT_CREATED'),
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('CHAT_CREATED'),
+        (payload, variable) => {
+          const payloadRoomId = payload.chatCreated.roomId;
+          const subscriptionRoomId = variable.roomId;
+          return payloadRoomId === subscriptionRoomId;
+        },
+      ),
     },
   },
 };
