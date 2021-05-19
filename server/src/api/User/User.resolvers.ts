@@ -1,9 +1,7 @@
 import bcrypt from 'bcrypt';
-import { ApolloError } from 'apollo-server';
 import { Resolvers } from 'src/types/graphql';
 import UserModel from 'src/models/User.model';
 import RoomModel from 'src/models/Room.model';
-
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
 import { DEFAULT_PROFILE_URL } from 'src/lib/const';
@@ -15,6 +13,7 @@ import {
   existUserEmailError,
   invalidRoomIdError,
 } from 'src/error/ErrorObject';
+import { processLoadMany } from 'src/apollo/dataLoader';
 
 const resolvers: Resolvers = {
   Query: {
@@ -32,6 +31,12 @@ const resolvers: Resolvers = {
         (user) => user._id.toString() !== args._id.toString(),
       );
       return filteredUserList;
+    },
+  },
+  User: {
+    roomList: async (parent, args, ctx) => {
+      const roomList = processLoadMany(await ctx.loaders.room.byId.loadMany(parent.roomIdList));
+      return roomList;
     },
   },
   Mutation: {

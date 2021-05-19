@@ -4,7 +4,7 @@ import UserModel from 'src/models/User.model';
 import { Resolvers } from 'src/types/graphql';
 import { pubsub } from 'src/apollo/pubsub';
 import RoomModel from 'src/models/Room.model';
-import { invalidUserIdError } from 'src/error/ErrorObject';
+import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 
 const resolvers: Resolvers = {
   Query: {
@@ -19,12 +19,20 @@ const resolvers: Resolvers = {
   },
   Chat: {
     user: async (parent, args, ctx) => {
-      const user = await UserModel.findById(parent.userId);
+      const user = await ctx.loaders.user.byId.load(parent.userId);
       // 존재하지 않는 user _id임.
       if (user === null) {
         throw invalidUserIdError;
       }
       return user;
+    },
+    room: async (parent, args, ctx) => {
+      const room = await ctx.loaders.room.byId.load(parent.roomId);
+      // 존재하지 않는 room _id임.
+      if (room === null) {
+        throw invalidRoomIdError;
+      }
+      return room;
     },
   },
   Mutation: {

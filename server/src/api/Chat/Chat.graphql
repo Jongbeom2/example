@@ -5,6 +5,7 @@ type Query {
 type Chat {
   _id: ID!
   user: User!
+  room: Room!
   isSystem: Boolean!
   content: String
   imageURL: String
