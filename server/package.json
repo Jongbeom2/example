@@ -10,7 +10,7 @@
     "prebuild": "yarn cache clean && rimraf ./build && graphql-codegen --config codegen.yml",
     "build": "tsc && tscpaths --project tsconfig.json --src ./src --out ./build",
     "postbuild": "copyfiles -u 1 \"./src/api/**/*.graphql\" ./build",
-    "start": "./build/index.js",
+    "start": "node --trace-warnings ./build/index.js",
     "clean": "yarn cache clean && rimraf ./logs && rimraf ./build ./src/schema.graphql ./src/types/graphql.d.ts",
     "pretty": "prettier --list-different --ignore-unknown --write ./*.json \"./{src,__tests__,__mocks__}/**/*.{js,jsx,ts,tsx,graphql,gql}\""
   },
