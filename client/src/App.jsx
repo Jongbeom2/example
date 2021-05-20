@@ -22,7 +22,9 @@ const myTheme = createMuiTheme({
    */
   props: {
     MuiTypography: {
-      variantMapping: {},
+      variantMapping: {
+        body2: 'pre',
+      },
     },
   },
   typography: {

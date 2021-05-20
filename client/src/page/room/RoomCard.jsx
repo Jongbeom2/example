@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
   },
   userNum: {
+    minWidth: '3rem',
     marginRight: theme.spacing(2),
   },
 }));

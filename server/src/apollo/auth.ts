@@ -45,7 +45,7 @@ export const auth = (req: any, res: any) => {
 
   const queryWhiteList = ['createUser', 'signIn', 'signInWithKakao', 'signOut'];
   // Test
-  queryWhiteList.push('getChatList');
+  // queryWhiteList.push('getChatList');
   if (queryWhiteList.includes(queryName)) {
     return {};
   }
@@ -59,7 +59,7 @@ export const auth = (req: any, res: any) => {
     if (process.env.NODE_ENV === 'production') {
       throw notAuthorizedError;
     } else if (process.env.NODE_ENV === 'development') {
-      throw notAuthorizedError;
+      // throw notAuthorizedError;
     } else {
       throw environmentError;
     }
@@ -106,7 +106,7 @@ export const authSocket = (headers: any, query: any) => {
     if (process.env.NODE_ENV === 'production') {
       throw notAuthorizedError;
     } else if (process.env.NODE_ENV === 'development') {
-      throw notAuthorizedError;
+      // throw notAuthorizedError;
     } else {
       throw environmentError;
     }

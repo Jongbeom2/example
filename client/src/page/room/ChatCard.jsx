@@ -122,7 +122,7 @@ const ChatCard = ({ chat, userId }) => {
           </a>
         ) : (
           // 텍스트
-          <Typography className={classes.myChatContent}>
+          <Typography variant='body2' className={classes.myChatContent}>
             {chat.content}
           </Typography>
         )}
@@ -153,7 +153,7 @@ const ChatCard = ({ chat, userId }) => {
           </a>
         ) : (
           // 텍스트
-          <Typography className={classes.chatContent}>
+          <Typography variant='body2' className={classes.chatContent}>
             {chat.content}
           </Typography>
         )}

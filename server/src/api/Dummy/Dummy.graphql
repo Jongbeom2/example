@@ -1,0 +1,8 @@
+type Mutation {
+  createDummyUserList: Boolean!
+  createDummyRoomList: Boolean!
+  createDummyChatList: Boolean!
+  deleteUserList: Boolean!
+  deleteRoomList: Boolean!
+  deleteChatList: Boolean!
+}

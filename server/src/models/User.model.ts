@@ -5,6 +5,7 @@ export const UserSchema = new mongoose.Schema(
   {
     email: {
       type: String,
+      unique: true,
     },
     password: {
       type: String,
@@ -32,7 +33,8 @@ export const UserSchema = new mongoose.Schema(
     },
     roomIdList: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Room',
         required: true,
       },
     ],

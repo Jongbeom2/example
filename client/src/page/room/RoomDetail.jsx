@@ -239,6 +239,9 @@ const RoomDetail = () => {
               },
             });
           }
+          const scroll =
+            contentRef.current.scrollHeight - contentRef.current.clientHeight;
+          contentRef.current.scrollTo(0, scroll);
         } catch (error) {
           alert(MESSAGE_ERROR_UPLOAD);
         }
@@ -262,9 +265,6 @@ const RoomDetail = () => {
     if (!content) {
       return;
     }
-    const scroll =
-      contentRef.current.scrollHeight - contentRef.current.clientHeight;
-    contentRef.current.scrollTo(0, scroll);
     setContent('');
     createChat({
       variables: {
@@ -275,6 +275,9 @@ const RoomDetail = () => {
         },
       },
     });
+    const scroll =
+      contentRef.current.scrollHeight - contentRef.current.clientHeight;
+    contentRef.current.scrollTo(0, scroll);
   };
   const onClickBackBtn = () => {
     history.goBack();
@@ -310,12 +313,14 @@ const RoomDetail = () => {
     let file = event.target.files[0];
     setFile(file);
     // Presigned put url을 가져옴.
-    const fileExtension = file.name.split('.').pop();
-    getPresignedPutURL({
-      variables: {
-        key: `chat/${roomId}/${new Date().getTime()}.${fileExtension}`,
-      },
-    });
+    if (file) {
+      const fileExtension = file.name.split('.').pop();
+      getPresignedPutURL({
+        variables: {
+          key: `chat/${roomId}/${new Date().getTime()}.${fileExtension}`,
+        },
+      });
+    }
   };
   return (
     <MainWrapper className={classes.root}>

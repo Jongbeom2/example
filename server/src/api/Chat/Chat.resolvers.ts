@@ -73,7 +73,7 @@ const resolvers: Resolvers = {
         (payload, variable) => {
           const payloadRoomId = payload.chatCreated.roomId;
           const subscriptionRoomId = variable.roomId;
-          return payloadRoomId === subscriptionRoomId;
+          return payloadRoomId.toString() === subscriptionRoomId.toString();
         },
       ),
     },

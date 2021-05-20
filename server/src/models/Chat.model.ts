@@ -3,11 +3,13 @@ import mongoose, { Document, Schema } from 'mongoose';
 export const ChatSchema = new mongoose.Schema(
   {
     roomId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Room',
       required: true,
     },
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     isSystem: {
