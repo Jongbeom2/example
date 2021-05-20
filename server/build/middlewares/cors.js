@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const colors_1 = __importDefault(require("colors"));
 const ErrorObject_1 = require("../error/ErrorObject");
-const allowedOrigins = [];
+const allowedOrigins = ['54.221.241.235'];
 const corsMiddleware = () => cors_1.default({
     origin: (origin, callback) => {
         if (process.env.NODE_ENV === 'development') {

@@ -2,7 +2,7 @@ import cors from 'cors';
 import colors from 'colors';
 import { corsError, environmentError } from 'src/error/ErrorObject';
 
-const allowedOrigins: string[] = [];
+const allowedOrigins: string[] = ['54.221.241.235'];
 
 const corsMiddleware = () =>
   cors({
