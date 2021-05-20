@@ -2,13 +2,10 @@
 // If your application only needs to send conventional HTTP-based requests to a GraphQL server, you probably don't need to use the Apollo Link API
 
 import { from, split, ApolloLink } from '@apollo/client';
-import { RetryLink } from '@apollo/client/link/retry';
-import { setContext } from '@apollo/client/link/context';
 import { createUploadLink } from 'apollo-upload-client';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { onError } from '@apollo/client/link/error';
-import { restLink } from 'src/apollo/restLink';
 
 const ENABLE_SUBSCRIPTION = true;
 const headersForAllRequests = { 'X-IDC-Header': 'IDC' };
@@ -87,7 +84,7 @@ const activityLink = new ApolloLink((operation, forward) => {
 
 // 💥 Do not use "new HttpLink()" to upload file on graphql
 const terminatingLink = createUploadLink({
-  uri: 'http://localhost:4200/graphql',
+  uri: process.env.REACT_APP_GRAPHQL_API_URL,
   credentials: 'include',
   // 1. credentials option
   // same-origin(default): If api caller and callee have same url (same origin), then User Credentials will send (cookies, basic http auth etc)
@@ -111,7 +108,7 @@ const composedHttpLink = from([
 ]);
 
 const websocketLink = new WebSocketLink({
-  uri: 'ws://localhost:4200/graphql',
+  uri: process.env.REACT_APP_GRAPHQL_WEBSOCKET_URL,
   options: {
     // https://github.com/apollographql/subscriptions-transport-ws#constructorurl-options-websocketimpl
     reconnect: true,

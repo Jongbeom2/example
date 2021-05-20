@@ -86,12 +86,7 @@
   },
   "scripts": {
     "start": "http-server ./build",
-    "prebuild": "rm -rf ../firebase/client/build",
-    "build": "set REACT_APP_MODE=production&& set NODE_OPTIONS=--max_old_space_size=4096 && react-scripts build",
-    "postbuild": "copyfiles ./build/** ../firebase/client",
-    "prebuild-test": "rm -rf ../firebase/client_test/build",
-    "build-test": "set REACT_APP_MODE=production-test&& set NODE_OPTIONS=--max_old_space_size=4096 && react-scripts build",
-    "postbuild-test": "copyfiles ./build/** ../firebase/client_test",
+    "build": "react-scripts build",
     "dev": "set REACT_APP_MODE=development&& yarn && yarn kill-port 3200 && set PORT=3200 && react-scripts start",
     "dev2": "set REACT_APP_MODE=development&& yarn && yarn kill-port 3200 && set PORT=3200 && yarn react-app-rewired start"
   },

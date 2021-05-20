@@ -11,7 +11,7 @@ const client = new ApolloClient({
   link,
   // Provide some optional constructor fields
   name: 'react-web-client',
-  version: process.env.VERSION || '0.0.1',
+  version: process.env.VERSION,
   typeDefs,
   queryDeduplication: false,
   defaultOptions: {

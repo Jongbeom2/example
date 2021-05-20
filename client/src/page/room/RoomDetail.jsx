@@ -319,7 +319,7 @@ const RoomDetail = () => {
   };
   return (
     <MainWrapper className={classes.root}>
-      {(lazyQueryLoading || mutationLoading2) && <Loading />}
+      {mutationLoading2 && <Loading />}
       <div className={classes.btnWrapper}>
         <Fab color='primary' size='small' onClick={onClickBackBtn}>
           <ArrowBackIcon fontSize='small' />

@@ -6,10 +6,10 @@ import { RestLink } from 'apollo-link-rest';
 // `yarn add apollo-link-rest apollo-link graphql graphql-anywhere qs`
 
 export const restLink = new RestLink({
-  uri: 'http://localhost:4200', // default one
+  uri: process.env.REACT_APP_REST_API_BASE_URL, // default one
   endpoints: {
-    v1: 'http://localhost:4200',
-    v2: 'http://localhost:4200',
-    v3: 'http://localhost:4200',
+    v1: process.env.REACT_APP_REST_API_BASE_URL,
+    v2: process.env.REACT_APP_REST_API_BASE_URL,
+    v3: process.env.REACT_APP_REST_API_BASE_URL,
   },
 });

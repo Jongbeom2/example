@@ -42,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
       width: '3rem',
       height: '3rem',
       borderRadius: '3rem',
+      lineHeight: '3rem',
+      textAlign: 'center',
+      fontWeight: 'bold',
     },
     cursor: 'pointer',
   },
@@ -96,7 +99,7 @@ const Signin = () => {
   const onClickKakaoSignInBtn = async () => {
     // 로그인 성공하면 code값과 함께 redirectUri로 redirect함.
     await window.Kakao.Auth.authorize({
-      redirectUri: 'http://localhost:3200/signinkakao',
+      redirectUri: `${process.env.REACT_APP_DOMAIN}/signinkakao`,
     });
   };
   return (
@@ -153,8 +156,22 @@ const Signin = () => {
           >
             K
           </div>
-          <div style={{ background: '#04cf5c' }}>N</div>
-          <div style={{ background: '#4f8df5' }}>G</div>
+          <div
+            style={{ background: '#04cf5c' }}
+            onClick={() => {
+              alert('준비중입니다.');
+            }}
+          >
+            N
+          </div>
+          <div
+            style={{ background: '#4f8df5' }}
+            onClick={() => {
+              alert('준비중입니다.');
+            }}
+          >
+            G
+          </div>
         </div>
       </div>
     </div>

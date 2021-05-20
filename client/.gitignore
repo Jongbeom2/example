@@ -31,3 +31,8 @@ firebase-debug.log
 .firebaserc
 firebase.json
 .firebase/
+
+# Env
+.env.development
+.env.production
+.env

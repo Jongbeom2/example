@@ -46,7 +46,7 @@ const SignInKakao = () => {
           // code값을 이용하여 accesstoken 받음.
           const formData = {
             grant_type: 'authorization_code',
-            client_id: '142e7c33d8214ee72b5622f947c4cc1a',
+            client_id: process.env.REACT_APP_KAKAO_JS_KEY,
             code,
           };
           const result = await axios.post(
