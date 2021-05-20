@@ -24,6 +24,7 @@ const corsMiddleware = () => cors_1.default({
             }
         }
         else {
+            console.error('origin:', colors_1.default.blue.bold(origin !== null && origin !== void 0 ? origin : ''));
             throw ErrorObject_1.environmentError;
         }
     },

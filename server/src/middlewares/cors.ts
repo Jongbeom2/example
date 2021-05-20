@@ -19,6 +19,7 @@ const corsMiddleware = () =>
           // callback(null, true);
         }
       } else {
+        console.error('origin:', colors.blue.bold(origin ?? ''));
         throw environmentError;
       }
     },
