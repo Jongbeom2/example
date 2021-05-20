@@ -2,13 +2,11 @@ import cors from 'cors';
 import colors from 'colors';
 import { corsError, environmentError } from 'src/error/ErrorObject';
 
-const allowedOrigins: string[] = ['example-api.jongbeom.com'];
+const allowedOrigins: string[] = ['example.jongbeom.com'];
 
 const corsMiddleware = () =>
   cors({
     origin: (origin, callback) => {
-      console.log('#####', process.env.NODE_ENV);
-      console.log('#####', origin);
       if (process.env.NODE_ENV === 'development') {
         callback(null, true);
       } else if (process.env.NODE_ENV === 'production') {
