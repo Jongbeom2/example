@@ -1,0 +1,58 @@
+type Query {
+  getUser(_id: ID!): User!
+  getUserList(_id: ID!): [User!]!
+}
+
+type User {
+  _id: ID!
+  email: String
+  password: String
+  nickname: String!
+  profileImageURL: String
+  profileThumbnailImageURL: String
+  loginType: String!
+  kakaoId: String
+  roomList: [Room!]!
+}
+
+type Mutation {
+  signIn(signInInput: SignInInput!): User!
+  signInWithKakao(signInWithKakaoInput: SignInWithKakaoInput!): User!
+  signOut: Boolean!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  updateUserAddRoom(updateUserAddRoomInput: UpdateUserAddRoomInput!): User!
+  updateUserRemoveRoom(updateUserRemoveRoomInput: UpdateUserRemoveRoomInput!): User!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input SignInWithKakaoInput {
+  accessToken: String!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  nickname: String!
+}
+
+input UpdateUserInput {
+  _id: ID!
+  nickname: String!
+  profileImageURL: String
+  profileThumbnailImageURL: String
+}
+
+input UpdateUserAddRoomInput {
+  userId: ID!
+  roomId: ID!
+}
+
+input UpdateUserRemoveRoomInput {
+  userId: ID!
+  roomId: ID!
+}

@@ -1,0 +1,34 @@
+type Query {
+  getChatList(roomId: ID!, skip: Int!, size: Int!): [Chat!]!
+}
+
+type Chat {
+  _id: ID!
+  user: User!
+  room: Room!
+  isSystem: Boolean!
+  content: String
+  imageURL: String
+  thumbnailImageURL: String
+  fileURL: String
+  fileName: String
+  createdAt: DateTime!
+}
+
+type Mutation {
+  createChat(createChatInput: CreateChatInput!): Chat!
+}
+
+input CreateChatInput {
+  roomId: ID!
+  userId: ID
+  content: String
+  imageURL: String
+  thumbnailImageURL: String
+  fileURL: String
+  fileName: String
+}
+
+type Subscription {
+  chatCreated(roomId: ID!): Chat!
+}
