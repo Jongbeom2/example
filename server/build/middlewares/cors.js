@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const colors_1 = __importDefault(require("colors"));
 const ErrorObject_1 = require("../error/ErrorObject");
-const allowedOrigins = ['54.221.241.235'];
+const allowedOrigins = ['example-api.jongbeom.com'];
 const corsMiddleware = () => cors_1.default({
     origin: (origin, callback) => {
         if (process.env.NODE_ENV === 'development') {
@@ -24,7 +24,6 @@ const corsMiddleware = () => cors_1.default({
             }
         }
         else {
-            console.error('origin:', colors_1.default.blue.bold(origin !== null && origin !== void 0 ? origin : ''));
             throw ErrorObject_1.environmentError;
         }
     },

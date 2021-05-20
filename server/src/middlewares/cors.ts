@@ -2,7 +2,7 @@ import cors from 'cors';
 import colors from 'colors';
 import { corsError, environmentError } from 'src/error/ErrorObject';
 
-const allowedOrigins: string[] = ['54.221.241.235'];
+const allowedOrigins: string[] = ['example-api.jongbeom.com'];
 
 const corsMiddleware = () =>
   cors({
@@ -19,7 +19,6 @@ const corsMiddleware = () =>
           // callback(null, true);
         }
       } else {
-        console.error('origin:', colors.blue.bold(origin ?? ''));
         throw environmentError;
       }
     },
