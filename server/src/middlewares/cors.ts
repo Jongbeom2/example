@@ -7,6 +7,8 @@ const allowedOrigins: string[] = ['example-api.jongbeom.com'];
 const corsMiddleware = () =>
   cors({
     origin: (origin, callback) => {
+      console.log('#####', process.env.NODE_ENV);
+      console.log('#####', origin);
       if (process.env.NODE_ENV === 'development') {
         callback(null, true);
       } else if (process.env.NODE_ENV === 'production') {

@@ -9,6 +9,8 @@ const ErrorObject_1 = require("../error/ErrorObject");
 const allowedOrigins = ['example-api.jongbeom.com'];
 const corsMiddleware = () => cors_1.default({
     origin: (origin, callback) => {
+        console.log('#####', process.env.NODE_ENV);
+        console.log('#####', origin);
         if (process.env.NODE_ENV === 'development') {
             callback(null, true);
         }
