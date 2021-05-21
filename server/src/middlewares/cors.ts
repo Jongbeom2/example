@@ -2,7 +2,7 @@ import cors from 'cors';
 import colors from 'colors';
 import { corsError, environmentError } from 'src/error/ErrorObject';
 
-const allowedOrigins: string[] = ['https://example.jongbeom.com'];
+const allowedOrigins: string[] = ['http://example.jongbeom.com', 'https://example.jongbeom.com'];
 
 const corsMiddleware = () =>
   cors({
