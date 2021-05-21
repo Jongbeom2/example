@@ -161,7 +161,7 @@ const CustomAppBar = () => {
           </Typography>
           {user ? (
             <div className={classes.userWrapper}>
-              <Typography color='textPrimary' variant='body2'>
+              <Typography color='textPrimary' variant='body1'>
                 {user.nickname}
               </Typography>
               {/* profileThumbnailImageURL 존재하면 보여주고,

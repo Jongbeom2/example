@@ -9,15 +9,10 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  TextField,
 } from '@material-ui/core';
 import { useMutation, useQuery } from '@apollo/client';
 import Cookie from 'js-cookie';
-import {
-  GET_MY_ROOM_LIST,
-  GET_ROOM_LIST,
-  UPDATE_USER_ADD_ROOM,
-} from './room.query';
+import { GET_ROOM_LIST, UPDATE_USER_ADD_ROOM } from './room.query';
 import Loading from 'src/components/Loading';
 import {
   MESSAGE_ERROR,
