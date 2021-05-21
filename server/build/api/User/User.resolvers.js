@@ -57,10 +57,12 @@ const resolvers = {
             ctx.res.cookie('accessToken', accessToken, {
                 maxAge: 1000 * 60 * 10,
                 httpOnly: true,
+                domain: '.jongbeom.com',
             });
             ctx.res.cookie('_id', user._id.toString(), {
                 maxAge: 1000 * 60 * 10,
                 httpOnly: false,
+                domain: '.jongbeom.com',
             });
             return user;
         },
@@ -90,10 +92,12 @@ const resolvers = {
             ctx.res.cookie('accessToken', accessToken, {
                 maxAge: 1000 * 60 * 10,
                 httpOnly: true,
+                domain: '.jongbeom.com',
             });
             ctx.res.cookie('_id', user._id.toString(), {
                 maxAge: 1000 * 60 * 10,
                 httpOnly: false,
+                domain: '.jongbeom.com',
             });
             return user;
         },
@@ -132,14 +136,7 @@ const resolvers = {
             ctx.res.cookie('_id', user._id.toString(), {
                 maxAge: 1000 * 60 * 10,
                 httpOnly: false,
-            });
-            ctx.res.cookie('nickname', user.nickname, {
-                maxAge: 1000 * 60 * 10,
-                httpOnly: false,
-            });
-            ctx.res.cookie('profileThumbnailImageURL', user.profileThumbnailImageURL, {
-                maxAge: 1000 * 60 * 10,
-                httpOnly: false,
+                domain: '.jongbeom.com',
             });
             return user;
         },
