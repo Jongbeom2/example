@@ -8,7 +8,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { onError } from '@apollo/client/link/error';
 
 const ENABLE_SUBSCRIPTION = true;
-const headersForAllRequests = { 'X-IDC-Header': 'IDC' };
+const headersForAllRequests = { 'X-EXAMPLE-Header': 'EXAMPLE' };
 
 const errorLink = onError((context) => {
   // https://www.apollographql.com/docs/react/api/link/apollo-link-error/
@@ -74,7 +74,7 @@ const activityLink = new ApolloLink((operation, forward) => {
     return {
       headers: {
         ...headers,
-        'X-IDC-RECENT-ACTIVITY': recentActivity,
+        'X-EXAMPLE-RECENT-ACTIVITY': recentActivity,
       },
     };
   });
