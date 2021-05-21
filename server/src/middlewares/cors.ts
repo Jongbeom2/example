@@ -10,7 +10,7 @@ const corsMiddleware = () =>
       if (process.env.NODE_ENV === 'development') {
         callback(null, true);
       } else if (process.env.NODE_ENV === 'production') {
-        if (origin && allowedOrigins.includes(origin)) {
+        if (!origin || (origin && allowedOrigins.includes(origin))) {
           callback(null, true);
         } else {
           console.error('origin:', colors.blue.bold(origin ?? ''));

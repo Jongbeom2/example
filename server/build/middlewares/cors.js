@@ -13,7 +13,7 @@ const corsMiddleware = () => cors_1.default({
             callback(null, true);
         }
         else if (process.env.NODE_ENV === 'production') {
-            if (origin && allowedOrigins.includes(origin)) {
+            if (!origin || (origin && allowedOrigins.includes(origin))) {
                 callback(null, true);
             }
             else {
