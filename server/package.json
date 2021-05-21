@@ -1,5 +1,5 @@
 {
-  "name": "blessyou-server",
+  "name": "example-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -15,7 +15,7 @@
     "pretty": "prettier --list-different --ignore-unknown --write ./*.json \"./{src,__tests__,__mocks__}/**/*.{js,jsx,ts,tsx,graphql,gql}\""
   },
   "repository": "git+https://github.com/Jongbeom2/example.git",
-  "author": "blessyou",
+  "author": "example",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Jongbeom2/example/issues"
