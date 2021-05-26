@@ -2,12 +2,12 @@ import {from, split} from '@apollo/client';
 import {createUploadLink} from 'apollo-upload-client';
 import {WebSocketLink} from '@apollo/client/link/ws';
 import {getMainDefinition} from '@apollo/client/utilities';
-
+import {REACT_APP_GRAPHQL_API_URL, REACT_APP_GRAPHQL_WEBSOCKET_URL} from '@env';
+// console.log(REACT_APP_GRAPHQL_API_URL);
 const ENABLE_SUBSCRIPTION = true;
 const headersForAllRequests = {'X-EXAMPLE-Header': 'EXAMPLE'};
-
 const terminatingLink = createUploadLink({
-  uri: process.env.REACT_APP_GRAPHQL_API_URL,
+  uri: REACT_APP_GRAPHQL_API_URL,
   credentials: 'include',
   headers: headersForAllRequests,
 });
@@ -15,7 +15,7 @@ const terminatingLink = createUploadLink({
 const composedHttpLink = from([terminatingLink]);
 
 const websocketLink = new WebSocketLink({
-  uri: process.env.REACT_APP_GRAPHQL_WEBSOCKET_URL,
+  uri: REACT_APP_GRAPHQL_WEBSOCKET_URL,
   options: {
     reconnect: true,
     lazy: true,

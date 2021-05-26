@@ -8,6 +8,9 @@ import {
 import UserMain from '../page/user/UserMain';
 import MainTab from './MainTab';
 import {AuthContext} from '../../App';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Alert} from 'react-native';
+import {MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNOUT} from '../res/message';
 const Drawer = createDrawerNavigator();
 
 const MainDrawer = () => {
@@ -27,16 +30,16 @@ const MainDrawer = () => {
   );
 };
 const DrawerContent = ({...rest}) => {
-  const {signOut} = useContext(AuthContext);
+  const {dispatch} = useContext(AuthContext);
+  const onPressSignOutBtn = async () => {
+    await AsyncStorage.removeItem('userId');
+    dispatch({type: 'SIGN_OUT'});
+    Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNOUT);
+  };
   return (
     <DrawerContentScrollView {...rest}>
       <DrawerItemList {...rest} />
-      <DrawerItem
-        label="로그아웃"
-        onPress={() => {
-          signOut();
-        }}
-      />
+      <DrawerItem label="로그아웃" onPress={onPressSignOutBtn} />
     </DrawerContentScrollView>
   );
 };

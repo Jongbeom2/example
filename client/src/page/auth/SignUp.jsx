@@ -7,6 +7,7 @@ import { CREATE_USER } from 'src/page/auth/auth.query';
 import Loading from 'src/components/Loading';
 import {
   MESSAGE_ERROR,
+  MESSAGE_ERROR_INPUT_ALL_REQUIRED,
   MESSAGE_ERROR_SIGNUP_EXIST_EMAIL,
   MESSAGE_SUCCESS_SIGNUP,
 } from 'src/res/message';
@@ -77,7 +78,7 @@ const SignUp = () => {
       password2 === '' ||
       nickname === ''
     ) {
-      alert('모두필수');
+      alert(MESSAGE_ERROR_INPUT_ALL_REQUIRED);
       return;
     }
     createUser({

@@ -1,7 +1,19 @@
-import React, {useState, useContext} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
 import {AuthContext} from '../../../App';
-import {TextInput, Button} from 'react-native-paper';
+import {TextInput, Button, useTheme} from 'react-native-paper';
+import {Text} from 'react-native-paper';
+import {withTheme} from 'react-native-paper';
+import {useMutation} from '@apollo/client';
+import {SINGIN} from './auth.query';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_ERROR_INPUT_ALL_REQUIRED,
+  MESSAGE_ERROR_SIGNIN_INVALID_USER,
+  MESSAGE_SUCCESS_SIGNIN,
+  MESSAGE_TITLE,
+} from '../../res/message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -9,12 +21,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  textInputEmail: {
-    marginBottom: 20,
-    width: 300,
-    height: 50,
-  },
-  textInputPassword: {
+  textInput: {
     marginBottom: 20,
     width: 300,
     height: 50,
@@ -27,39 +34,132 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: 300,
   },
+  text: {
+    marginBottom: 20,
+  },
+  btnWrapper: {
+    width: 300,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  socialSignInBtn: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
 });
-const SignIn = () => {
-  const {signIn} = useContext(AuthContext);
+const SignIn = ({navigation}) => {
+  const {colors} = useTheme();
+  const {dispatch} = useContext(AuthContext);
   const [email, setEmail] = useState('');
-  const [passowrd, setPassword] = useState('');
+  const [password, setPassword] = useState('');
+  // 로그인
+  const [mutationSignIn, {data, loading, error}] = useMutation(SINGIN);
+  // 로그인 성공
+  useEffect(() => {
+    if (data && !error) {
+      (async () => {
+        await AsyncStorage.setItem('userId', data.signIn._id);
+      })();
+      dispatch({type: 'SIGN_IN', userId: data.signIn._id});
+      Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
+    }
+  }, [data, error, dispatch]);
+  // 로그인 실패
+  useEffect(() => {
+    if (error) {
+      if (error.message === 'INVALID_USER_INFO') {
+        Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_SIGNIN_INVALID_USER);
+      } else {
+        Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
+      }
+    }
+  }, [error]);
   const onChangeEmail = text => {
     setEmail(text);
   };
   const onChangePassword = text => {
     setPassword(text);
   };
+  const onClickSignInBtn = () => {
+    if (email === '' || password === '') {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_INPUT_ALL_REQUIRED);
+      return;
+    }
+    mutationSignIn({
+      variables: {
+        signInInput: {
+          email,
+          password,
+        },
+      },
+    });
+  };
   return (
     <SafeAreaView style={styles.root}>
       <TextInput
-        style={styles.textInputEmail}
+        style={styles.textInput}
         placeholder="이메일"
         onChangeText={onChangeEmail}
       />
       <TextInput
-        style={styles.textInputPassword}
+        style={styles.textInput}
         placeholder="비밀번호"
         onChangeText={onChangePassword}
+        secureTextEntry={true}
       />
       <Button
         style={styles.signInBtn}
-        onPress={() => signIn(email, passowrd)}
+        onPress={onClickSignInBtn}
         mode="contained">
         로그인
       </Button>
-      <Button style={styles.signUpBtn} onPress={() => {}}>
+      <Button
+        style={styles.signUpBtn}
+        onPress={() => {
+          navigation.navigate('signup');
+        }}>
         회원가입
       </Button>
+      <Text style={[styles.text, {color: colors.custom.textSecondary}]}>
+        SNS 계정으로 간편 로그인
+      </Text>
+      <View style={styles.btnWrapper}>
+        <Button
+          color={colors.custom.textPrimary}
+          contentStyle={[
+            styles.socialSignInBtn,
+            {
+              backgroundColor: colors.custom.kakao,
+            },
+          ]}
+          onPress={() => {}}>
+          K
+        </Button>
+        <Button
+          color={colors.custom.textPrimary}
+          contentStyle={[
+            styles.socialSignInBtn,
+            {
+              backgroundColor: colors.custom.naver,
+            },
+          ]}
+          onPress={() => {}}>
+          N
+        </Button>
+        <Button
+          color={colors.custom.textPrimary}
+          contentStyle={[
+            styles.socialSignInBtn,
+            {
+              backgroundColor: colors.custom.google,
+            },
+          ]}
+          onPress={() => {}}>
+          G
+        </Button>
+      </View>
     </SafeAreaView>
   );
 };
-export default SignIn;
+export default withTheme(SignIn);

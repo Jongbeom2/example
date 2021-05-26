@@ -6,17 +6,19 @@ import FeedMain from '../page/feed/FeedMain';
 // https://oblador.github.io/react-native-vector-icons/
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const Tab = createBottomTabNavigator();
-const MainTab = () => {
+import {withTheme} from 'react-native-paper';
+const MainTab = props => {
+  const {colors} = props.theme;
   return (
     <Tab.Navigator
       initialRouteName="home"
       tabBarOptions={{
-        activeTintColor: 'blue',
-        inactiveTintColor: 'grey',
+        activeTintColor: colors.primary,
+        inactiveTintColor: colors.custom.grey,
       }}
       screenOptions={({route}) => ({
         tabBarLabel: route.name,
-        tabBarIcon: ({focused}) => TabBarIcon(focused, route?.name),
+        tabBarIcon: ({focused}) => TabBarIcon(focused, route?.name, colors),
       })}>
       <Tab.Screen
         name="home"
@@ -36,7 +38,7 @@ const MainTab = () => {
     </Tab.Navigator>
   );
 };
-const TabBarIcon = (focused, name) => {
+const TabBarIcon = (focused, name, colors) => {
   let iconName = 'home';
   if (name === 'home') {
     iconName = 'home';
@@ -50,9 +52,9 @@ const TabBarIcon = (focused, name) => {
     <Ionicons
       name={iconName}
       size={iconSize}
-      color={focused ? 'blue' : 'grey'}
+      color={focused ? colors.primary : colors.custom.grey}
     />
   );
 };
 
-export default MainTab;
+export default withTheme(MainTab);
