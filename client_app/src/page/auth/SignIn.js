@@ -3,7 +3,6 @@ import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
 import {AuthContext} from '../../../App';
 import {TextInput, Button, useTheme} from 'react-native-paper';
 import {Text} from 'react-native-paper';
-import {withTheme} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
 import {SINGIN} from './auth.query';
 import {
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
 });
 const SignIn = ({navigation}) => {
   const {colors} = useTheme();
-  const {dispatch} = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   // 로그인
@@ -61,10 +60,10 @@ const SignIn = ({navigation}) => {
       (async () => {
         await AsyncStorage.setItem('userId', data.signIn._id);
       })();
-      dispatch({type: 'SIGN_IN', userId: data.signIn._id});
+      authContext.signIn(data.signIn._id);
       Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
     }
-  }, [data, error, dispatch]);
+  }, [data, error, authContext]);
   // 로그인 실패
   useEffect(() => {
     if (error) {
@@ -162,4 +161,4 @@ const SignIn = ({navigation}) => {
     </SafeAreaView>
   );
 };
-export default withTheme(SignIn);
+export default SignIn;

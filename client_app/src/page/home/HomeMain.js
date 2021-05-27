@@ -10,16 +10,16 @@ import {
 } from '../../res/message';
 import {AuthContext} from '../../../App';
 import UserCard from './UserCard';
-const HomeMain = () => {
-  const {state, dispatch} = useContext(AuthContext);
-  const userId = state.userId;
-  const {data, loading, error} = useQuery(GET_USER_LIST, {
-    variables: {
-      _id: userId,
-    },
-  });
+const HomeMain = ({navigation, route}) => {
+  const authContext = useContext(AuthContext);
   const [userList, setUserList] = useState([]);
   // 유저 리스트 로드
+  const {data, loading, error} = useQuery(GET_USER_LIST, {
+    variables: {
+      _id: route.params?.userId,
+    },
+  });
+  // 유저 리스트 로드 성공
   useEffect(() => {
     if (data && !error) {
       setUserList(data.getUserList);
@@ -28,16 +28,16 @@ const HomeMain = () => {
   // 유저 리스트 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
-      dispatch({type: 'SIGN_OUT'});
     } else if (error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
-  }, [error, dispatch]);
+  }, [error, authContext]);
   return (
     <ScrollView>
       {userList.map(user => (
-        <UserCard key={user._id} user={user} />
+        <UserCard key={user._id} user={user} navigation={navigation} />
       ))}
     </ScrollView>
   );

@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 import {useContext} from 'react';
 import {useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
-import {Avatar, Text, Title} from 'react-native-paper';
+import {Avatar, Button, Text, Title} from 'react-native-paper';
 import {AuthContext} from '../../../App';
 import {isNotAuthorizedError} from '../../lib/error';
 import {MESSAGE_ERROR, MESSAGE_ERROR_AUTH} from '../../res/message';
@@ -25,12 +25,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-const UserMain = () => {
-  const {state, dispatch} = useContext(AuthContext);
+const UserMain = ({navigation, route}) => {
+  const authContext = useContext(AuthContext);
   const [user, setUser] = useState(null);
   // 유저 정보 로드
   const {data, loading, error} = useQuery(GET_USER, {
-    variables: {_id: state.userId},
+    variables: {_id: route.params?.userId},
     fetchPolicy: 'cache-first',
   });
   // 유저 정보 로드 성공
@@ -42,16 +42,21 @@ const UserMain = () => {
   // 유저 정보 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_ERROR_AUTH);
-      dispatch({type: 'SIGN_OUT'});
     } else if (error) {
       Alert.alert(MESSAGE_ERROR);
     }
-  }, [error, dispatch]);
+  }, [error, authContext]);
+  const onPressEditBtn = () => {
+    navigation.navigate('useredit', {
+      userId: route.params?.userId,
+    });
+  };
   return (
     <View style={styles.root}>
       <Avatar.Image
-        size={50}
+        size={100}
         style={styles.avatar}
         label="A"
         source={{uri: user?.profileImageURL}}
@@ -59,6 +64,11 @@ const UserMain = () => {
       <Title style={styles.nickname}>{user?.nickname || ''}</Title>
       <Text style={styles.text}>게시물 0</Text>
       <Text style={styles.text}>참여중인 대화방 0 </Text>
+      {route.name === 'my' && (
+        <Button mode="contained" onPress={onPressEditBtn}>
+          편집
+        </Button>
+      )}
     </View>
   );
 };

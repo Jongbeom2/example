@@ -41,6 +41,7 @@ const RoomMain = () => {
     variables: {
       userId,
     },
+    fetchPolicy: 'no-cache',
   });
   const [roomList, setRoomList] = useState([]);
   // 대화방 리스트 로드
@@ -100,13 +101,15 @@ const RoomMain = () => {
           setIsOpenRoomCreateDialog(false);
         }}
       />
-      <RoomSearchDialog
-        isOpened={isOpenRoomSearchDialog}
-        onClose={() => {
-          refetch();
-          setIsOpenRoomSearchDialog(false);
-        }}
-      />
+      {isOpenRoomSearchDialog && (
+        <RoomSearchDialog
+          isOpened={isOpenRoomSearchDialog}
+          refetch={refetch}
+          onClose={() => {
+            setIsOpenRoomSearchDialog(false);
+          }}
+        />
+      )}
     </MainWrapper>
   );
 };

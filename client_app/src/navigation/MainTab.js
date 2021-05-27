@@ -5,35 +5,39 @@ import RoomMain from '../page/room/RoomMain';
 import FeedMain from '../page/feed/FeedMain';
 // https://oblador.github.io/react-native-vector-icons/
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useTheme} from 'react-native-paper';
 const Tab = createBottomTabNavigator();
-import {withTheme} from 'react-native-paper';
-const MainTab = props => {
-  const {colors} = props.theme;
+const MainTab = ({route: parentRoute}) => {
+  const theme = useTheme();
   return (
     <Tab.Navigator
       initialRouteName="home"
       tabBarOptions={{
-        activeTintColor: colors.primary,
-        inactiveTintColor: colors.custom.grey,
+        activeTintColor: theme.colors.primary,
+        inactiveTintColor: theme.colors.custom.grey,
       }}
       screenOptions={({route}) => ({
         tabBarLabel: route.name,
-        tabBarIcon: ({focused}) => TabBarIcon(focused, route?.name, colors),
+        tabBarIcon: ({focused}) =>
+          TabBarIcon(focused, route?.name, theme.colors),
       })}>
       <Tab.Screen
         name="home"
         options={{tabBarLabel: '홈'}}
         component={HomeMain}
+        initialParams={{userId: parentRoute?.params?.userId}}
       />
       <Tab.Screen
         name="room"
         options={{tabBarLabel: '대화방'}}
         component={RoomMain}
+        initialParams={{userId: parentRoute?.params?.userId}}
       />
       <Tab.Screen
         name="feed"
         options={{tabBarLabel: '피드'}}
         component={FeedMain}
+        initialParams={{userId: parentRoute?.params?.userId}}
       />
     </Tab.Navigator>
   );
@@ -57,4 +61,4 @@ const TabBarIcon = (focused, name, colors) => {
   );
 };
 
-export default withTheme(MainTab);
+export default MainTab;

@@ -3,7 +3,6 @@ import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
 import {AuthContext} from '../../../App';
 import {TextInput, Button, useTheme} from 'react-native-paper';
 import {Text} from 'react-native-paper';
-import {withTheme} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
 import {CREATE_USER} from './auth.query';
 import {
@@ -144,4 +143,4 @@ const SignUp = ({navigation}) => {
     </SafeAreaView>
   );
 };
-export default withTheme(SignUp);
+export default SignUp;

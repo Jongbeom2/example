@@ -22,20 +22,10 @@ import {
 } from 'react-native-paper';
 import SignUp from './src/page/auth/SignUp.js';
 import Loading from './src/page/loading/Loading.js';
-const Stack = createStackNavigator();
-const HeaderRight = () => {
-  const navigation = useNavigation();
-  return (
-    <View>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(DrawerActions.openDrawer());
-        }}>
-        <Ionicons name="menu" size={20} style={styles.iconMenu} />
-      </TouchableOpacity>
-    </View>
-  );
-};
+import SplashScreen from 'react-native-splash-screen';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import UserMain from './src/page/user/UserMain.js';
+import UserEdit from './src/page/user/UserEdit.js';
 const theme = {
   ...DefaultTheme,
   roundness: 2,
@@ -53,6 +43,7 @@ const theme = {
     },
   },
 };
+const Stack = createStackNavigator();
 export const AuthContext = createContext();
 const App = () => {
   const [state, dispatch] = useReducer(
@@ -96,11 +87,38 @@ const App = () => {
       } else {
         dispatch({type: 'SIGN_OUT'});
       }
+      SplashScreen.hide();
     })();
   }, []);
+  const authContext = React.useMemo(
+    () => ({
+      signIn: async userId => {
+        await AsyncStorage.setItem('userId', userId);
+        dispatch({type: 'SIGN_IN', userId});
+      },
+      signOut: async () => {
+        await AsyncStorage.removeItem('userId');
+        dispatch({type: 'SIGN_OUT'});
+      },
+    }),
+    [],
+  );
+  /*
+    Navigation 구조
+    - Stack.Navigator
+      - Drawer.Navigator
+        - Tab.Navigator
+          - Tab.Screen(home)
+          - Tab.Screen(room)
+          - Tab.Screen(feed)
+        - Drawer.Screen(my)
+      - Stack.Screen(user)
+      - Stack.Screen(useredit)
+      - Stack.Screen(chat)
+  */
   return (
     <ApolloProvider client={client}>
-      <AuthContext.Provider value={{state, dispatch}}>
+      <AuthContext.Provider value={authContext}>
         <PaperProvider theme={theme}>
           <NavigationContainer>
             <Stack.Navigator>
@@ -125,14 +143,27 @@ const App = () => {
                   />
                 </>
               ) : (
-                <Stack.Screen
-                  name="drawer"
-                  component={MainDrawer}
-                  options={{
-                    title: '예제',
-                    headerRight: HeaderRight,
-                  }}
-                />
+                <>
+                  <Stack.Screen
+                    name="drawer"
+                    component={MainDrawer}
+                    options={({route}) => ({
+                      headerTitle: getHeaderTitle(route),
+                      headerRight: HeaderRight,
+                    })}
+                    initialParams={{userId: state.userId}}
+                  />
+                  <Stack.Screen
+                    name="user"
+                    component={UserMain}
+                    options={{title: '유저'}}
+                  />
+                  <Stack.Screen
+                    name="useredit"
+                    component={UserEdit}
+                    options={{title: '내정보'}}
+                  />
+                </>
               )}
             </Stack.Navigator>
           </NavigationContainer>
@@ -147,5 +178,34 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
+
+const HeaderRight = () => {
+  const navigation = useNavigation();
+  return (
+    <View>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.dispatch(DrawerActions.openDrawer());
+        }}>
+        <Ionicons name="menu" size={20} style={styles.iconMenu} />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+function getHeaderTitle(route) {
+  // If the focused route is not found, we need to assume it's the initial screen
+  // This can happen during if there hasn't been any navigation inside the screen
+  // In our case, it's "Feed" as that's the first screen inside the navigator
+  const routeName = getFocusedRouteNameFromRoute(route);
+  switch (routeName) {
+    case 'user':
+      return '내정보';
+    case 'tab':
+      return '메인';
+    default:
+      return '메인';
+  }
+}
 
 export default App;

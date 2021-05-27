@@ -33,7 +33,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-const RoomSearchDialog = ({ isOpened = false, onClose = () => {} }) => {
+const RoomSearchDialog = ({
+  isOpened = false,
+  refetch,
+  onClose = () => {},
+}) => {
   const classes = useStyles();
   const history = useHistory();
   const userId = Cookie.get('_id');
@@ -67,19 +71,20 @@ const RoomSearchDialog = ({ isOpened = false, onClose = () => {} }) => {
   ] = useMutation(UPDATE_USER_ADD_ROOM);
   // 대화방 참여 성공
   useEffect(() => {
-    if (data && !error) {
+    if (mutationData && !mutationError) {
       alert(MESSAGE_SUCCESS_UPDATE_USER_ADD_ROOM);
-      onCloseDialog();
+      refetch();
+      closeDialog();
     }
   }, [mutationData]);
   // 대화방 참여 실패
   useEffect(() => {
-    if (error) {
+    if (mutationError) {
       alert(MESSAGE_ERROR);
     }
   }, [mutationError]);
   const onClickCancelBtn = () => {
-    onCloseDialog();
+    closeDialog();
   };
   const onClickEnterBtn = () => {
     if (!value) {
@@ -97,12 +102,12 @@ const RoomSearchDialog = ({ isOpened = false, onClose = () => {} }) => {
   const onChangeValue = (event) => {
     setValue(event.target.value);
   };
-  const onCloseDialog = () => {
+  const closeDialog = () => {
     onClose();
     setValue(null);
   };
   return (
-    <Dialog className={classes.root} onClose={onCloseDialog} open={isOpened}>
+    <Dialog className={classes.root} onClose={closeDialog} open={isOpened}>
       {loading && <Loading />}
       <DialogTitle>대화방 검색</DialogTitle>
       <DialogContent dividers>

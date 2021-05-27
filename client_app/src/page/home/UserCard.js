@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Avatar} from 'react-native-paper';
 const styles = StyleSheet.create({
   root: {
@@ -13,16 +14,21 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
 });
-const UserCard = ({user}) => {
+const UserCard = ({navigation, user}) => {
+  const onPress = () => {
+    navigation.navigate('user', {
+      userId: user._id,
+    });
+  };
   return (
-    <View style={styles.root}>
+    <TouchableOpacity style={styles.root} onPress={onPress}>
       <Avatar.Image
         size={40}
         label="A"
         source={{uri: user?.profileThumbnailImageURL}}
       />
       <Text style={styles.nickname}>{user?.nickname}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 export default UserCard;
