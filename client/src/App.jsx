@@ -70,6 +70,7 @@ const myTheme = createMuiTheme({
       grey: '#666666',
       red: '#e74c3c',
       kakao: '#f9e000',
+      yellow: '#f9e000',
       naver: '#04cf5c',
       google: '#4f8df5',
       teal: '#00B8D9',

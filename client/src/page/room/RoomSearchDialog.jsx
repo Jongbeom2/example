@@ -79,7 +79,10 @@ const RoomSearchDialog = ({
   }, [mutationData]);
   // 대화방 참여 실패
   useEffect(() => {
-    if (mutationError) {
+    if (isNotAuthorizedError(mutationError)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
       alert(MESSAGE_ERROR);
     }
   }, [mutationError]);

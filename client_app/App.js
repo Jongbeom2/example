@@ -26,20 +26,27 @@ import SplashScreen from 'react-native-splash-screen';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import UserMain from './src/page/user/UserMain.js';
 import UserEdit from './src/page/user/UserEdit.js';
+import RoomDetail from './src/page/room/RoomDetail.js';
 const theme = {
   ...DefaultTheme,
   roundness: 2,
   colors: {
     ...DefaultTheme.colors,
     primary: '#3379fe',
-    accent: '#324e9b',
+    primaryDrak: '#2354b1',
+    primaryLight: '#deebff',
     custom: {
       textPrimary: '#222222',
       textSecondary: '#666666',
       kakao: '#f9e000',
       naver: '#04cf5c',
       google: '#4f8df5',
+      white: '#ffffff',
+      red: '#eb4d4b',
+      orange: '#f0932b',
       grey: '#666666',
+      green: '#6ab04c',
+      yellow: '#f9e000',
     },
   },
 };
@@ -163,6 +170,11 @@ const App = () => {
                     component={UserEdit}
                     options={{title: '내정보'}}
                   />
+                  <Stack.Screen
+                    name="roomdetail"
+                    component={RoomDetail}
+                    options={{title: '대화방'}}
+                  />
                 </>
               )}
             </Stack.Navigator>
@@ -199,7 +211,7 @@ function getHeaderTitle(route) {
   // In our case, it's "Feed" as that's the first screen inside the navigator
   const routeName = getFocusedRouteNameFromRoute(route);
   switch (routeName) {
-    case 'user':
+    case 'my':
       return '내정보';
     case 'tab':
       return '메인';

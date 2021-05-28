@@ -28,9 +28,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  icon: {
+  iconCamera: {
     right: -20,
     top: -20,
+    position: 'absolute',
+  },
+  iconImage: {
+    right: -20,
+    bottom: 0,
     position: 'absolute',
   },
   avatar: {
@@ -155,6 +160,9 @@ const UserEdit = ({route, navigation}) => {
   };
   const onClickCameraBtn = () => {
     launchCamera({}, async response => {
+      if (response.didCancel) {
+        return;
+      }
       setImageFile(response);
       // Presigned put url을 가져옴.
       const fileExtension = response.uri.split('.').pop();
@@ -165,6 +173,7 @@ const UserEdit = ({route, navigation}) => {
       });
     });
   };
+  const onClickImageBtn = () => {};
   return (
     <View style={styles.root}>
       <View>
@@ -179,7 +188,7 @@ const UserEdit = ({route, navigation}) => {
               }}
             />
             <IconButton
-              style={styles.icon}
+              style={styles.iconCamera}
               icon="close-circle-outline"
               color={theme.colors.custom.grey}
               size={30}
@@ -190,11 +199,18 @@ const UserEdit = ({route, navigation}) => {
           <>
             <Avatar.Image size={100} style={styles.avatar} label="A" />
             <IconButton
-              style={styles.icon}
+              style={styles.iconCamera}
               icon="camera"
               color={theme.colors.custom.grey}
               size={30}
               onPress={onClickCameraBtn}
+            />
+            <IconButton
+              style={styles.iconImage}
+              icon="image"
+              color={theme.colors.custom.grey}
+              size={30}
+              onPress={onClickImageBtn}
             />
           </>
         )}

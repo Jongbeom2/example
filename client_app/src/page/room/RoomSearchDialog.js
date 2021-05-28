@@ -1,14 +1,7 @@
 import {useMutation, useQuery} from '@apollo/client';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Alert, ScrollView, StyleSheet, View} from 'react-native';
-import {
-  Button,
-  Text,
-  Dialog,
-  RadioButton,
-  Divider,
-  Portal,
-} from 'react-native-paper';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Alert, ScrollView, StyleSheet} from 'react-native';
+import {Button, Dialog, RadioButton, Portal} from 'react-native-paper';
 import {isNotAuthorizedError} from '../../lib/error';
 import {
   MESSAGE_ERROR,
@@ -64,8 +57,10 @@ const RoomSearchDialog = ({visible, onDismiss, route, refetch}) => {
   }, [mutationData, mutationError, closeDialog, refetch]);
   // 대화방 참여 실패
   useEffect(() => {
-    if (mutationError) {
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
+    if (isNotAuthorizedError(mutationError)) {
+      Alert.alert(MESSAGE_ERROR_AUTH);
+    } else if (mutationError) {
+      Alert.alert(MESSAGE_ERROR);
     }
   }, [mutationError]);
   const onChangeValue = v => {

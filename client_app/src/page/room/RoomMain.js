@@ -9,6 +9,8 @@ import RoomCard from './RoomCard';
 import {useTheme} from 'react-native-paper';
 import {FAB} from 'react-native-paper';
 import RoomSearchDialog from './RoomSearchDialog';
+import RoomCreateDialog from './RoomCreateDialog';
+
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -57,12 +59,19 @@ const RoomMain = ({navigation, route}) => {
   const onPressSearchBtn = () => {
     setIsOpenRoomSearchDialog(true);
   };
-  const onPressCreateBtn = () => {};
+  const onPressCreateBtn = () => {
+    setIsOpenRoomCreateDialog(true);
+  };
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView>
         {roomList.map(room => (
-          <RoomCard key={room._id} room={room} navigation={navigation} />
+          <RoomCard
+            key={room._id}
+            room={room}
+            navigation={navigation}
+            userId={route.params?.userId}
+          />
         ))}
       </ScrollView>
       <FAB
@@ -77,6 +86,16 @@ const RoomMain = ({navigation, route}) => {
         icon="plus"
         onPress={onPressCreateBtn}
       />
+      {isOpenRoomCreateDialog && (
+        <RoomCreateDialog
+          route={route}
+          visible={true}
+          refetch={refetch}
+          onDismiss={() => {
+            setIsOpenRoomCreateDialog(false);
+          }}
+        />
+      )}
       {isOpenRoomSearchDialog && (
         <RoomSearchDialog
           route={route}
