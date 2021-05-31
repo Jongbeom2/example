@@ -1,7 +1,8 @@
 import {useMutation, useQuery} from '@apollo/client';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, ScrollView, StyleSheet} from 'react-native';
 import {Button, Dialog, RadioButton, Portal} from 'react-native-paper';
+import {AuthContext} from '../../../App';
 import {isNotAuthorizedError} from '../../lib/error';
 import {
   MESSAGE_ERROR,
@@ -20,6 +21,7 @@ const styles = StyleSheet.create({
   },
 });
 const RoomSearchDialog = ({visible, onDismiss, route, refetch}) => {
+  const authContext = useContext(AuthContext);
   const [roomList, setRoomList] = useState([]);
   const [value, setValue] = useState(null);
   // 대화방 로드
@@ -37,6 +39,7 @@ const RoomSearchDialog = ({visible, onDismiss, route, refetch}) => {
   // 대화방 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_ERROR_AUTH);
     } else if (error) {
       Alert.alert(MESSAGE_ERROR);

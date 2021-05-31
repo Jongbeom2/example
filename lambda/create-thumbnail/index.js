@@ -64,7 +64,7 @@ const resizeImage = async ({ bucket, file, width, height }) => {
   const mime = jimpImage.getMIME();
 
   const resizedImageBuffer = await jimpImage
-    .scaleToFit(width, height)
+    .resize(width, jimp.AUTO)
     .getBufferAsync(mime);
   const newFileName = file;
   await S3.write(resizedImageBuffer, newFileName, bucket, undefined, mime);

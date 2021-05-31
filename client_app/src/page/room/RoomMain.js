@@ -86,26 +86,22 @@ const RoomMain = ({navigation, route}) => {
         icon="plus"
         onPress={onPressCreateBtn}
       />
-      {isOpenRoomCreateDialog && (
-        <RoomCreateDialog
-          route={route}
-          visible={true}
-          refetch={refetch}
-          onDismiss={() => {
-            setIsOpenRoomCreateDialog(false);
-          }}
-        />
-      )}
-      {isOpenRoomSearchDialog && (
-        <RoomSearchDialog
-          route={route}
-          visible={true}
-          refetch={refetch}
-          onDismiss={() => {
-            setIsOpenRoomSearchDialog(false);
-          }}
-        />
-      )}
+      <RoomCreateDialog
+        route={route}
+        visible={isOpenRoomCreateDialog}
+        refetch={refetch}
+        onDismiss={() => {
+          setIsOpenRoomCreateDialog(false);
+        }}
+      />
+      <RoomSearchDialog
+        route={route}
+        visible={isOpenRoomSearchDialog}
+        refetch={refetch}
+        onDismiss={() => {
+          setIsOpenRoomSearchDialog(false);
+        }}
+      />
     </SafeAreaView>
   );
 };

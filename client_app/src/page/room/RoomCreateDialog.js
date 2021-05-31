@@ -1,7 +1,8 @@
 import {useMutation} from '@apollo/client';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, StyleSheet} from 'react-native';
 import {Button, Dialog, TextInput, Portal} from 'react-native-paper';
+import {AuthContext} from '../../../App';
 import {isNotAuthorizedError} from '../../lib/error';
 import {
   MESSAGE_ERROR,
@@ -20,21 +21,30 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-const RoomCreateDialog = ({visible, onDismiss, route, refetch}) => {
+const RoomCreateDialog = ({
+  visible,
+  onDismiss,
+  route,
+  refetch: parentRefetch,
+}) => {
+  const authContext = useContext(AuthContext);
   const [roomName, setRoomName] = useState('');
   // 대화방 생성
-  const [createRoom, {data, loading, error}] = useMutation(CREATE_ROOM);
+  const [createRoom, {data, loading, error, refetch}] =
+    useMutation(CREATE_ROOM);
   // 대화방 생성 성공
   useEffect(() => {
     if (data && !error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_CREATE_ROOM);
       refetch();
+      parentRefetch();
       closeDialog();
     }
-  }, [data, error, closeDialog, refetch]);
+  }, [data, error, closeDialog, refetch, parentRefetch]);
   // 대화방 생성 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);

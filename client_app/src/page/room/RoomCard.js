@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Avatar, useTheme} from 'react-native-paper';
+import {getShortStr} from '../../lib/common';
 const styles = StyleSheet.create({
   root: {
     marginLeft: 20,
@@ -36,10 +37,10 @@ const RoomCard = ({room, navigation, userId}) => {
     <TouchableOpacity style={styles.root} onPress={onPress}>
       <Avatar.Image size={40} label="A" />
       <View style={styles.nameWrapper}>
-        <Text style={styles.name}>{getShortStr(room?.name)}</Text>
+        <Text style={styles.name}>{getShortStr(room?.name, 20)}</Text>
         <Text
           style={[{color: colors.custom.textSecondary}, styles.recentMessage]}>
-          {getShortStr(room?.recentMessageContent)}
+          {getShortStr(room?.recentMessageContent, 20)}
         </Text>
       </View>
       <Text style={[{color: colors.custom.textSecondary}, styles.userNum]}>
@@ -48,13 +49,5 @@ const RoomCard = ({room, navigation, userId}) => {
     </TouchableOpacity>
   );
 };
-const getShortStr = str => {
-  if (!str) {
-    return '';
-  } else if (str.length > 20) {
-    return str.slice(0, 20) + '...';
-  } else {
-    return str;
-  }
-};
+
 export default RoomCard;

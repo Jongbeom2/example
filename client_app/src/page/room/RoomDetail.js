@@ -1,5 +1,5 @@
 import {useLazyQuery, useMutation, useSubscription} from '@apollo/client';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,10 +10,7 @@ import {
 } from 'react-native';
 import {IconButton, useTheme} from 'react-native-paper';
 import {CHAT_CREATED, CREATE_CHAT, GET_CHAT_LIST} from './room.query';
-import {
-  isNotAuthorizedError,
-  isNotAuthorizedErrorSubscription,
-} from '../../lib/error';
+import {isNotAuthorizedError} from '../../lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
@@ -24,6 +21,7 @@ import ChatCard from './ChatCard';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {GET_PRESIGNED_PUT_URL} from '../../lib/file.query';
 import DocumentPicker from 'react-native-document-picker';
+import {AuthContext} from '../../../App';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -59,6 +57,7 @@ const RoomDetail = ({route}) => {
   const userId = route?.params?.userId;
   const roomId = route?.params.roomId;
   const {colors} = useTheme();
+  const authContext = useContext(AuthContext);
   const [content, setContent] = useState('');
   const [chatList, setChatList] = useState([]);
   const [chatFile, setChatFile] = useState(null);
@@ -81,15 +80,17 @@ const RoomDetail = ({route}) => {
         ...preChatList,
       ]);
     }
+    return () => {};
   }, [subscriptionData, subscriptionError]);
   // 대화 구독 실패
   useEffect(() => {
-    if (isNotAuthorizedErrorSubscription(subscriptionError)) {
+    if (isNotAuthorizedError(subscriptionError)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (subscriptionError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
-  }, [subscriptionError]);
+  }, [subscriptionError, authContext]);
   // 2. 대화 로드
   const [
     getChatList,
@@ -116,11 +117,12 @@ const RoomDetail = ({route}) => {
   // 대화 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (lazyQueryError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
-  }, [lazyQueryError]);
+  }, [lazyQueryError, authContext]);
   // 3. 대화 생성
   const [
     createChat,
@@ -129,11 +131,12 @@ const RoomDetail = ({route}) => {
   // 대화 생성 실패
   useEffect(() => {
     if (isNotAuthorizedError(mutationError)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (mutationError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
-  }, [mutationError]);
+  }, [mutationError, authContext]);
   // 5. 파일 업로드
   // presigned url 로드
   const [
@@ -200,11 +203,12 @@ const RoomDetail = ({route}) => {
   // presigned url 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError2)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (lazyQueryError2) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
-  }, [lazyQueryError2]);
+  }, [lazyQueryError2, authContext]);
   const onChangeContent = text => {
     setContent(text);
   };

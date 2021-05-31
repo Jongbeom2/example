@@ -115,11 +115,12 @@ const UserEdit = ({route, navigation}) => {
   // presigned url 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (lazyQueryError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
-  }, [lazyQueryError]);
+  }, [lazyQueryError, authContext]);
   // 유저 정보 업데이트
   const [
     updateUser,
@@ -135,11 +136,12 @@ const UserEdit = ({route, navigation}) => {
   // 유저 정보 수정 실패
   useEffect(() => {
     if (isNotAuthorizedError(mutationError)) {
+      authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (mutationError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
-  }, [mutationError]);
+  }, [mutationError, authContext]);
   const onPressEditBtn = () => {
     updateUser({
       variables: {

@@ -34,15 +34,13 @@ const ChatCardImage = ({sourceList = [], imageWidth = 200, ...rest}) => {
           {...rest}
         />
       </TouchableOpacity>
-      {open && (
-        <PopupImage
-          sourceList={sourceList.slice(1)}
-          visible={true}
-          onDismiss={() => {
-            setOpen(false);
-          }}
-        />
-      )}
+      <PopupImage
+        sourceList={sourceList.slice(1)}
+        visible={open}
+        onDismiss={() => {
+          setOpen(false);
+        }}
+      />
     </>
   );
 };

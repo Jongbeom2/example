@@ -4,6 +4,7 @@ import { Avatar, Button, Typography } from '@material-ui/core';
 import moment from 'moment';
 import 'moment/locale/ko';
 import ChatCardImage from './ChatCardImage';
+import { getShortStr } from 'src/lib/common';
 const useStyles = makeStyles((theme) => ({
   systemChatRoot: {
     display: 'flex',
@@ -117,7 +118,7 @@ const ChatCard = ({ chat, userId }) => {
           // 파일
           <a className={classes.myChatFile} href={chat.fileURL}>
             <Button variant='contained' onClick={onClickFile}>
-              {chat.fileName}
+              {getShortStr(chat.fileName, 10)}
             </Button>
           </a>
         ) : (
@@ -148,7 +149,7 @@ const ChatCard = ({ chat, userId }) => {
           // 파일
           <a className={classes.chatFile} href={chat.fileURL}>
             <Button variant='contained' onClick={onClickFile}>
-              {chat.fileName}
+              {getShortStr(chat.fileName, 10)}
             </Button>
           </a>
         ) : (
