@@ -72,9 +72,9 @@ const UserEdit = ({route, navigation}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_ERROR_AUTH);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
-      Alert.alert(MESSAGE_ERROR);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
   const onChangeNickname = text => {
@@ -107,7 +107,7 @@ const UserEdit = ({route, navigation}) => {
           }));
         } catch (e) {
           console.log(e);
-          Alert.alert(MESSAGE_ERROR_UPLOAD);
+          Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
         }
       })();
     }
@@ -115,9 +115,9 @@ const UserEdit = ({route, navigation}) => {
   // presigned url 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError)) {
-      Alert.alert(MESSAGE_ERROR_AUTH);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (lazyQueryError) {
-      Alert.alert(MESSAGE_ERROR);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [lazyQueryError]);
   // 유저 정보 업데이트
@@ -155,11 +155,11 @@ const UserEdit = ({route, navigation}) => {
   const onPressCancelBtn = () => {
     navigation.goBack();
   };
-  const onClickDeleteBtn = () => {
+  const onPressDeleteBtn = () => {
     setUser({...user, profileImageURL: '', profileThumbnailImageURL: ''});
   };
-  const onClickCameraBtn = () => {
-    launchCamera({}, async response => {
+  const onPressCameraBtn = () => {
+    launchCamera({}, response => {
       if (response.didCancel) {
         return;
       }
@@ -173,7 +173,21 @@ const UserEdit = ({route, navigation}) => {
       });
     });
   };
-  const onClickImageBtn = () => {};
+  const onPressImageBtn = () => {
+    launchImageLibrary({}, response => {
+      if (response.didCancel) {
+        return;
+      }
+      setImageFile(response);
+      // Presigned put url을 가져옴.
+      const fileExtension = response.uri.split('.').pop();
+      getPresignedPutURL({
+        variables: {
+          key: `profile/${userId}/${new Date().getTime()}.${fileExtension}`,
+        },
+      });
+    });
+  };
   return (
     <View style={styles.root}>
       <View>
@@ -192,7 +206,7 @@ const UserEdit = ({route, navigation}) => {
               icon="close-circle-outline"
               color={theme.colors.custom.grey}
               size={30}
-              onPress={onClickDeleteBtn}
+              onPress={onPressDeleteBtn}
             />
           </>
         ) : (
@@ -203,14 +217,14 @@ const UserEdit = ({route, navigation}) => {
               icon="camera"
               color={theme.colors.custom.grey}
               size={30}
-              onPress={onClickCameraBtn}
+              onPress={onPressCameraBtn}
             />
             <IconButton
               style={styles.iconImage}
               icon="image"
               color={theme.colors.custom.grey}
               size={30}
-              onPress={onClickImageBtn}
+              onPress={onPressImageBtn}
             />
           </>
         )}

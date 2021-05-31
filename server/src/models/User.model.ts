@@ -16,13 +16,9 @@ export const UserSchema = new mongoose.Schema(
     },
     profileImageURL: {
       type: String,
-      default: DEFAULT_PROFILE_URL,
-      required: true,
     },
     profileThumbnailImageURL: {
       type: String,
-      default: DEFAULT_PROFILE_URL,
-      required: true,
     },
     loginType: {
       type: String,

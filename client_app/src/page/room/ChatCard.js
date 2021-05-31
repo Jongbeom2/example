@@ -1,6 +1,9 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import {Avatar, Text, useTheme} from 'react-native-paper';
+import {StyleSheet, View, Image} from 'react-native';
+import {Avatar, Button, Text, useTheme} from 'react-native-paper';
+import ChatCardImage from './ChatCardImage';
+import invalidImage from '../../res/img/invalid_image.png';
+import RNFetchBlob from 'rn-fetch-blob';
 const styles = StyleSheet.create({
   systemChatRoot: {
     marginVertical: 5,
@@ -19,6 +22,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   myChatText: {
+    maxWidth: '50%',
+    marginRight: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+  },
+  myChatFile: {
     maxWidth: '50%',
     marginRight: 5,
     paddingHorizontal: 10,
@@ -44,9 +54,36 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 5,
   },
+  chatFile: {
+    marginTop: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+  },
 });
 const ChatCard = ({chat, userId}) => {
   const {colors} = useTheme();
+  const onPressFile = () => {
+    RNFetchBlob.config({
+      // add this option that makes response data to be stored as a file,
+      // this is much more performant.
+      fileCache: true,
+      addAndroidDownloads: {
+        // Related to the Android only
+        useDownloadManager: true,
+        notification: true,
+        path: `${RNFetchBlob.fs.dirs.DownloadDir}/${chat.fileName}`,
+        description: 'File',
+      },
+    })
+      .fetch('GET', chat.fileURL, {
+        //some headers ..
+      })
+      .then(res => {
+        // the temp file path
+        console.log('The file saved to ', res.path());
+      });
+  };
   if (chat.isSystem) {
     return (
       <View style={styles.systemChatRoot}>
@@ -64,10 +101,31 @@ const ChatCard = ({chat, userId}) => {
   if (chat.user._id === userId) {
     return (
       <View style={styles.myChatRoot}>
-        <Text
-          style={[{backgroundColor: colors.custom.yellow}, styles.myChatText]}>
-          {chat.content}
-        </Text>
+        {chat.imageURL ? (
+          <ChatCardImage
+            sourceList={[
+              chat.thumbnailImageURL,
+              chat.imageURL,
+              Image.resolveAssetSource(invalidImage).uri,
+            ]}
+          />
+        ) : chat.fileURL ? (
+          <Button
+            style={styles.myChatFile}
+            color={colors.primaryDrak}
+            mode="contained"
+            onPress={onPressFile}>
+            {chat.fileName}
+          </Button>
+        ) : (
+          <Text
+            style={[
+              {backgroundColor: colors.custom.yellow},
+              styles.myChatText,
+            ]}>
+            {chat.content}
+          </Text>
+        )}
       </View>
     );
   }
@@ -82,9 +140,28 @@ const ChatCard = ({chat, userId}) => {
       />
       <View style={styles.chatUserWrapper}>
         <Text style={styles.chatNickname}>{chat.user?.nickname}</Text>
-        <Text style={[{backgroundColor: colors.custom.white}, styles.chatText]}>
-          {chat.content}
-        </Text>
+        {chat.imageURL ? (
+          <ChatCardImage
+            sourceList={[
+              chat.thumbnailImageURL,
+              chat.imageURL,
+              Image.resolveAssetSource(invalidImage).uri,
+            ]}
+          />
+        ) : chat.fileURL ? (
+          <Button
+            style={styles.chatFile}
+            color={colors.primaryDrak}
+            mode="contained"
+            onPress={onPressFile}>
+            {chat.fileName}
+          </Button>
+        ) : (
+          <Text
+            style={[{backgroundColor: colors.custom.white}, styles.chatText]}>
+            {chat.content}
+          </Text>
+        )}
       </View>
     </View>
   );

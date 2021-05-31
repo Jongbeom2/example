@@ -166,20 +166,6 @@ const resolvers: Resolvers = {
       if (user === null) {
         throw invalidUserIdError;
       }
-      // 유저 정보 쿠키에 저장함.
-      const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
-      if (isNodeEnvDevelopment) {
-        ctx.res.cookie('_id', user._id.toString(), {
-          maxAge: 1000 * 60 * 10,
-          httpOnly: false,
-        });
-      } else {
-        ctx.res.cookie('_id', user._id.toString(), {
-          maxAge: 1000 * 60 * 10,
-          httpOnly: false,
-          domain: '.jongbeom.com',
-        });
-      }
       return user;
     },
     updateUserAddRoom: async (_, args, ctx) => {

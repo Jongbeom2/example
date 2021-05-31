@@ -94,7 +94,6 @@ const RoomDetail = () => {
   const classes = useStyles();
   const history = useHistory();
   const { roomId } = useParams();
-  const [page, setPage] = useState(0);
   const [content, setContent] = useState('');
   const [chatList, setChatList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -143,7 +142,6 @@ const RoomDetail = () => {
   useEffect(() => {
     if (lazyQueryData && !lazyQueryError) {
       setChatList([...chatList, ...lazyQueryData.getChatList]);
-      setPage(page + 1);
     }
   }, [lazyQueryData]);
   // 대화 로드 실패

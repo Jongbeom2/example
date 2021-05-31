@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
   },
   btnWrapper: {
-    width: '100%',
+    width: 'fit-content',
     top: 0,
     position: 'absolute',
     display: 'flex',

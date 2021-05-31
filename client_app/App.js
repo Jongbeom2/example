@@ -1,7 +1,12 @@
 import 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {createContext, useEffect, useMemo, useReducer} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  PermissionsAndroid,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   NavigationContainer,
   DrawerActions,
@@ -27,6 +32,7 @@ import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import UserMain from './src/page/user/UserMain.js';
 import UserEdit from './src/page/user/UserEdit.js';
 import RoomDetail from './src/page/room/RoomDetail.js';
+import {MESSAGE_TITLE} from './src/res/message.js';
 const theme = {
   ...DefaultTheme,
   roundness: 2,
@@ -79,6 +85,30 @@ const App = () => {
     },
   );
   useEffect(() => {
+    // permission
+    (async () => {
+      const granted = await PermissionsAndroid.requestMultiple(
+        [
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        ],
+        {
+          title: MESSAGE_TITLE,
+          message: '다음의 권한을 허용하시겠습니까',
+          buttonNeutral: '다음에 묻기',
+          buttonNegative: '취소',
+          buttonPositive: '확인',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('권한 허용');
+      } else {
+        console.log('권한 허용 실패');
+      }
+    })();
+    // userId
     (async () => {
       let userId;
       try {

@@ -2,12 +2,10 @@ import {useLazyQuery, useMutation, useSubscription} from '@apollo/client';
 import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   TextInput,
   SafeAreaView,
   Alert,
-  ScrollView,
   FlatList,
 } from 'react-native';
 import {IconButton, useTheme} from 'react-native-paper';
@@ -16,9 +14,16 @@ import {
   isNotAuthorizedError,
   isNotAuthorizedErrorSubscription,
 } from '../../lib/error';
-import {MESSAGE_ERROR, MESSAGE_ERROR_AUTH} from '../../res/message';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_ERROR_AUTH,
+  MESSAGE_ERROR_UPLOAD,
+  MESSAGE_TITLE,
+} from '../../res/message';
 import ChatCard from './ChatCard';
-
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {GET_PRESIGNED_PUT_URL} from '../../lib/file.query';
+import DocumentPicker from 'react-native-document-picker';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -56,7 +61,7 @@ const RoomDetail = ({route}) => {
   const {colors} = useTheme();
   const [content, setContent] = useState('');
   const [chatList, setChatList] = useState([]);
-  const [page, setPage] = useState(0);
+  const [chatFile, setChatFile] = useState(null);
   const [isPlusBtnPressed, setIsPlusBtnPressed] = useState(false);
   // 1. 대화 구독
   const {
@@ -80,9 +85,9 @@ const RoomDetail = ({route}) => {
   // 대화 구독 실패
   useEffect(() => {
     if (isNotAuthorizedErrorSubscription(subscriptionError)) {
-      alert(MESSAGE_ERROR_AUTH);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (subscriptionError) {
-      alert(MESSAGE_ERROR);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [subscriptionError]);
   // 2. 대화 로드
@@ -106,15 +111,14 @@ const RoomDetail = ({route}) => {
         ...preChatList,
         ...lazyQueryData.getChatList,
       ]);
-      setPage(prevPage => prevPage + 1);
     }
-  }, [lazyQueryData, lazyQueryError, setChatList, setPage]);
+  }, [lazyQueryData, lazyQueryError, setChatList]);
   // 대화 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError)) {
-      Alert.alert(MESSAGE_ERROR_AUTH);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (lazyQueryError) {
-      Alert.alert(MESSAGE_ERROR);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [lazyQueryError]);
   // 3. 대화 생성
@@ -125,15 +129,89 @@ const RoomDetail = ({route}) => {
   // 대화 생성 실패
   useEffect(() => {
     if (isNotAuthorizedError(mutationError)) {
-      Alert.alert(MESSAGE_ERROR_AUTH);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (mutationError) {
-      Alert.alert(MESSAGE_ERROR);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [mutationError]);
+  // 5. 파일 업로드
+  // presigned url 로드
+  const [
+    getPresignedPutURL,
+    {data: lazyQueryData2, loading: lazyQueryLoading2, error: lazyQueryError2},
+  ] = useLazyQuery(GET_PRESIGNED_PUT_URL);
+  // presigned url 로드 성공
+  useEffect(() => {
+    if (lazyQueryData2 && !lazyQueryError2) {
+      const presignedURL = lazyQueryData2.getPresignedPutURL.presignedURL;
+      (async function () {
+        try {
+          // Presigned put url을 이용하여 업로드
+          const file = await getBlob(chatFile.uri);
+          const result = await fetch(presignedURL, {
+            method: 'PUT',
+            body: file,
+          });
+          const url = result.url.split('?')[0];
+          const type = file.data.type.split('/')[0];
+          const name = file.data.name;
+          if (type === 'image') {
+            createChat({
+              variables: {
+                createChatInput: {
+                  roomId,
+                  userId,
+                  content: '사진',
+                  imageURL: url,
+                  thumbnailImageURL: url.replace(
+                    'example-jb',
+                    'example-jb-thumbnail',
+                  ),
+                },
+              },
+            });
+          } else {
+            createChat({
+              variables: {
+                createChatInput: {
+                  roomId,
+                  userId,
+                  content: '파일',
+                  fileURL: url,
+                  fileName: name,
+                },
+              },
+            });
+          }
+        } catch (error) {
+          Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
+        }
+      })();
+    }
+  }, [
+    lazyQueryData2,
+    lazyQueryError2,
+    chatFile,
+    setChatFile,
+    createChat,
+    roomId,
+    userId,
+  ]);
+  // presigned url 로드 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(lazyQueryError2)) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
+    } else if (lazyQueryError2) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
+    }
+  }, [lazyQueryError2]);
   const onChangeContent = text => {
     setContent(text);
   };
   const onPressCreateChatBtn = () => {
+    if (!content) {
+      return;
+    }
     setContent('');
     createChat({
       variables: {
@@ -156,6 +234,59 @@ const RoomDetail = ({route}) => {
   };
   const onPressPlusBtn = () => {
     setIsPlusBtnPressed(prev => !prev);
+  };
+  const onPressCameraBtn = () => {
+    launchCamera({}, response => {
+      if (response.didCancel) {
+        return;
+      }
+      setChatFile(response);
+      // Presigned put url을 가져옴.
+      const fileExtension = response.uri.split('.').pop();
+      getPresignedPutURL({
+        variables: {
+          key: `chat/${roomId}/${new Date().getTime()}.${fileExtension}`,
+        },
+      });
+      setIsPlusBtnPressed(false);
+    });
+  };
+  const onPressImageBtn = () => {
+    launchImageLibrary({}, response => {
+      if (response.didCancel) {
+        return;
+      }
+      setChatFile(response);
+      // Presigned put url을 가져옴.
+      const fileExtension = response.uri.split('.').pop();
+      getPresignedPutURL({
+        variables: {
+          key: `chat/${roomId}/${new Date().getTime()}.${fileExtension}`,
+        },
+      });
+      setIsPlusBtnPressed(false);
+    });
+  };
+  const onPressFileBtn = async () => {
+    try {
+      const response = await DocumentPicker.pick();
+      setChatFile(response);
+      // Presigned put url을 가져옴.
+      const fileExtension = response.name.split('.').pop();
+      getPresignedPutURL({
+        variables: {
+          key: `chat/${roomId}/${new Date().getTime()}.${fileExtension}`,
+        },
+      });
+      setIsPlusBtnPressed(false);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+        return;
+      } else {
+        throw err;
+      }
+    }
   };
   return (
     <SafeAreaView style={styles.root}>
@@ -198,23 +329,30 @@ const RoomDetail = ({route}) => {
             icon="camera"
             color={colors.custom.red}
             size={30}
-            onPress={() => {}}
+            onPress={onPressCameraBtn}
           />
           <IconButton
             icon="image"
             color={colors.custom.orange}
             size={30}
-            onPress={() => {}}
+            onPress={onPressImageBtn}
           />
           <IconButton
             icon="attachment"
             color={colors.custom.green}
             size={30}
-            onPress={() => {}}
+            onPress={onPressFileBtn}
           />
         </View>
       )}
     </SafeAreaView>
   );
 };
+
+export const getBlob = async fileUri => {
+  const resp = await fetch(fileUri);
+  const imageBody = await resp.blob();
+  return imageBody;
+};
+
 export default RoomDetail;
