@@ -14,7 +14,7 @@ const terminatingLink = createUploadLink({
 
 const composedHttpLink = from([terminatingLink]);
 
-const websocketLink = new WebSocketLink({
+export const websocketLink = new WebSocketLink({
   uri: REACT_APP_GRAPHQL_WEBSOCKET_URL,
   options: {
     reconnect: true,

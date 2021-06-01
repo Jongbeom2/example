@@ -6,7 +6,11 @@ import {Alert, StyleSheet, View} from 'react-native';
 import {Avatar, Button, Text, Title} from 'react-native-paper';
 import {AuthContext} from '../../../App';
 import {isNotAuthorizedError} from '../../lib/error';
-import {MESSAGE_ERROR, MESSAGE_ERROR_AUTH} from '../../res/message';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_ERROR_AUTH,
+  MESSAGE_TITLE,
+} from '../../res/message';
 import {GET_USER} from './user.query';
 const styles = StyleSheet.create({
   root: {
@@ -43,9 +47,9 @@ const UserMain = ({navigation, route}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_ERROR_AUTH);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
-      Alert.alert(MESSAGE_ERROR);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
   const onPressEditBtn = () => {

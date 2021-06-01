@@ -8,6 +8,7 @@ const Chat_model_1 = __importDefault(require("../../models/Chat.model"));
 const pubsub_1 = require("../../apollo/pubsub");
 const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const ErrorObject_1 = require("../../error/ErrorObject");
+const colors_1 = __importDefault(require("colors"));
 const resolvers = {
     Query: {
         getChatList: async (_, args, ctx) => {
@@ -62,7 +63,11 @@ const resolvers = {
     },
     Subscription: {
         chatCreated: {
-            subscribe: apollo_server_1.withFilter(() => pubsub_1.pubsub.asyncIterator('CHAT_CREATED'), (payload, variable) => {
+            subscribe: apollo_server_1.withFilter(() => {
+                return withCancel(pubsub_1.pubsub.asyncIterator('CHAT_CREATED'), () => {
+                    console.info(`## subscription cancel: ${colors_1.default.blue.bold('chatCreated')}`);
+                });
+            }, (payload, variable) => {
                 const payloadRoomId = payload.chatCreated.roomId;
                 const subscriptionRoomId = variable.roomId;
                 return payloadRoomId.toString() === subscriptionRoomId.toString();
@@ -71,3 +76,15 @@ const resolvers = {
     },
 };
 exports.default = resolvers;
+// https://stackoverflow.com/questions/56886412/detect-an-unsubscribe-in-apollo-graphql-server
+// https://github.com/apollographql/graphql-subscriptions/issues/99
+const withCancel = (asyncIterator, onCancel) => {
+    const asyncReturn = asyncIterator.return;
+    asyncIterator.return = () => {
+        onCancel();
+        return asyncReturn
+            ? asyncReturn.call(asyncIterator)
+            : Promise.resolve({ value: undefined, done: true });
+    };
+    return asyncIterator;
+};

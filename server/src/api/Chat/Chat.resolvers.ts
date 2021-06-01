@@ -5,6 +5,7 @@ import { Resolvers } from 'src/types/graphql';
 import { pubsub } from 'src/apollo/pubsub';
 import RoomModel from 'src/models/Room.model';
 import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
+import colors from 'colors';
 
 const resolvers: Resolvers = {
   Query: {
@@ -69,7 +70,11 @@ const resolvers: Resolvers = {
   Subscription: {
     chatCreated: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator('CHAT_CREATED'),
+        () => {
+          return withCancel(pubsub.asyncIterator('CHAT_CREATED'), () => {
+            console.info(`## subscription cancel: ${colors.blue.bold('chatCreated')}`);
+          });
+        },
         (payload, variable) => {
           const payloadRoomId = payload.chatCreated.roomId;
           const subscriptionRoomId = variable.roomId;
@@ -80,3 +85,16 @@ const resolvers: Resolvers = {
   },
 };
 export default resolvers;
+
+// https://stackoverflow.com/questions/56886412/detect-an-unsubscribe-in-apollo-graphql-server
+// https://github.com/apollographql/graphql-subscriptions/issues/99
+const withCancel = (asyncIterator: any, onCancel: any) => {
+  const asyncReturn = asyncIterator.return;
+  asyncIterator.return = () => {
+    onCancel();
+    return asyncReturn
+      ? asyncReturn.call(asyncIterator)
+      : Promise.resolve({ value: undefined, done: true });
+  };
+  return asyncIterator;
+};

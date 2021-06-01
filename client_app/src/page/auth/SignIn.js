@@ -13,6 +13,7 @@ import {
   MESSAGE_TITLE,
 } from '../../res/message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {websocketLink} from '../../apollo/link';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -60,6 +61,12 @@ const SignIn = ({navigation}) => {
       (async () => {
         await AsyncStorage.setItem('userId', data.signIn._id);
       })();
+      // 참고자료 : https://github.com/apollographql/subscriptions-transport-ws/issues/171 (옛날 코드라 정확하지 않아 참고만함)
+      // cookie가 만료되더라도 subscription은 유지됨.
+      // 이를 대비하여 로그인할 때 subscription을 다시 연결함.
+      // websocketLink.subscriptionClient는 SubscriptionClient 객체임.
+      // https://github.com/apollographql/subscriptions-transport-ws
+      websocketLink.subscriptionClient.close(false, false);
       authContext.signIn(data.signIn._id);
       Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
     }

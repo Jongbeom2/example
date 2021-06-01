@@ -62,25 +62,25 @@ const resolvers: Resolvers = {
       const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
       if (isNodeEnvDevelopment) {
         ctx.res.cookie('accessToken', accessToken, {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: true,
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: false,
         });
       } else {
         ctx.res.cookie('accessToken', accessToken, {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: true,
           domain: '.jongbeom.com',
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: false,
           domain: '.jongbeom.com',
         });
@@ -113,25 +113,25 @@ const resolvers: Resolvers = {
       const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
       if (isNodeEnvDevelopment) {
         ctx.res.cookie('accessToken', accessToken, {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: true,
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: false,
         });
       } else {
         ctx.res.cookie('accessToken', accessToken, {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: true,
           domain: '.jongbeom.com',
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          // maxAge: 1000 * 60 * 10,
-          maxAge: 1000 * 60,
+          maxAge: 1000 * 60 * 10,
+          // maxAge: 1000 * 60,
           httpOnly: false,
           domain: '.jongbeom.com',
         });

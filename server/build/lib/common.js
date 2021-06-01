@@ -46,7 +46,7 @@ exports.extendToken = async (decoded) => {
 /**
  * JWT 토큰 생성
  * @param {object} payload JWT 표준을 따름
- * @param {number} duration milli-seconds 단위
+ * @param {number} duration seconds 단위
  * @returns {string} token
  * @description
  * JWT 토큰 생성

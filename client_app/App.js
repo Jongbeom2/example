@@ -127,7 +127,7 @@ const App = () => {
       SplashScreen.hide();
     })();
   }, []);
-  const authContext = React.useMemo(
+  const authContext = useMemo(
     () => ({
       signIn: async userId => {
         await AsyncStorage.setItem('userId', userId);

@@ -21,7 +21,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const const_1 = require("../lib/const");
 exports.UserSchema = new mongoose_1.default.Schema({
     email: {
         type: String,
@@ -36,13 +35,9 @@ exports.UserSchema = new mongoose_1.default.Schema({
     },
     profileImageURL: {
         type: String,
-        default: const_1.DEFAULT_PROFILE_URL,
-        required: true,
     },
     profileThumbnailImageURL: {
         type: String,
-        default: const_1.DEFAULT_PROFILE_URL,
-        required: true,
     },
     loginType: {
         type: String,

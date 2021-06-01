@@ -11,6 +11,7 @@ import {
   MESSAGE_ERROR,
 } from 'src/res/message';
 import Loading from 'src/components/Loading';
+import { websocketLink } from 'src/apollo/link';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,6 +60,12 @@ const Signin = () => {
   // 로그인 성공
   useEffect(() => {
     if (data && !error) {
+      // 참고자료 : https://github.com/apollographql/subscriptions-transport-ws/issues/171 (옛날 코드라 정확하지 않아 참고만함)
+      // cookie가 만료되더라도 subscription은 유지됨.
+      // 이를 대비하여 로그인할 때 subscription을 다시 연결함.
+      // websocketLink.subscriptionClient는 SubscriptionClient 객체임.
+      // https://github.com/apollographql/subscriptions-transport-ws
+      websocketLink.subscriptionClient.close(false, false);
       alert(MESSAGE_SUCCESS_SIGNIN);
       history.push('/home');
     }

@@ -10,7 +10,10 @@ import {
 } from 'react-native';
 import {IconButton, useTheme} from 'react-native-paper';
 import {CHAT_CREATED, CREATE_CHAT, GET_CHAT_LIST} from './room.query';
-import {isNotAuthorizedError} from '../../lib/error';
+import {
+  isNotAuthorizedError,
+  isNotAuthorizedErrorSubscription,
+} from '../../lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
@@ -84,7 +87,7 @@ const RoomDetail = ({route}) => {
   }, [subscriptionData, subscriptionError]);
   // 대화 구독 실패
   useEffect(() => {
-    if (isNotAuthorizedError(subscriptionError)) {
+    if (isNotAuthorizedErrorSubscription(subscriptionError)) {
       authContext.signOut();
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (subscriptionError) {

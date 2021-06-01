@@ -59,7 +59,7 @@ export const auth = (req: any, res: any) => {
     if (process.env.NODE_ENV === 'production') {
       throw notAuthorizedError;
     } else if (process.env.NODE_ENV === 'development') {
-      // throw notAuthorizedError;
+      throw notAuthorizedError;
     } else {
       throw environmentError;
     }
@@ -91,7 +91,7 @@ export const authSocket = (headers: any, query: any) => {
 
   // To ignore playground introspection polling
   if (queryName !== '__schema') {
-    console.info(`## query: ${colors.blue.bold(queryName)}`);
+    console.info(`## subscription: ${colors.blue.bold(queryName)}`);
   }
 
   const queryWhiteList = [''];

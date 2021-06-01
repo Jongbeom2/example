@@ -61,7 +61,7 @@ exports.auth = (req, res) => {
             throw ErrorObject_1.notAuthorizedError;
         }
         else if (process.env.NODE_ENV === 'development') {
-            // throw notAuthorizedError;
+            throw ErrorObject_1.notAuthorizedError;
         }
         else {
             throw ErrorObject_1.environmentError;
@@ -90,7 +90,7 @@ exports.authSocket = (headers, query) => {
     const queryName = queryObj.selectionSet.selections[0].name.value;
     // To ignore playground introspection polling
     if (queryName !== '__schema') {
-        console.info(`## query: ${colors_1.default.blue.bold(queryName)}`);
+        console.info(`## subscription: ${colors_1.default.blue.bold(queryName)}`);
     }
     const queryWhiteList = [''];
     if (queryWhiteList.includes(queryName)) {
@@ -103,7 +103,7 @@ exports.authSocket = (headers, query) => {
             throw ErrorObject_1.notAuthorizedError;
         }
         else if (process.env.NODE_ENV === 'development') {
-            // throw notAuthorizedError;
+            throw ErrorObject_1.notAuthorizedError;
         }
         else {
             throw ErrorObject_1.environmentError;

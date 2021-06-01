@@ -107,7 +107,7 @@ const composedHttpLink = from([
   terminatingLink, // 💥 Must be at the lastest because UploadLink is terminating link
 ]);
 
-const websocketLink = new WebSocketLink({
+export const websocketLink = new WebSocketLink({
   uri: process.env.REACT_APP_GRAPHQL_WEBSOCKET_URL,
   options: {
     // https://github.com/apollographql/subscriptions-transport-ws#constructorurl-options-websocketimpl

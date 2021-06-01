@@ -19,7 +19,7 @@ const apolloServer = new apollo_server_express_1.ApolloServer({
         // path: '/subscriptions',
         // https://github.com/apollographql/subscriptions-transport-ws#constructoroptions-socketoptions--socketserver
         onConnect: (connectionParams, websocket, connectionContext) => {
-            // console.info('## WebSocket Connected');
+            console.info('## WebSocket Connected');
             return { Headers: connectionContext.request.headers };
             // if (connectionParams.authToken) {
             //   return validateToken(connectionParams.authToken)

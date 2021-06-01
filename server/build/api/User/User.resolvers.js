@@ -54,16 +54,33 @@ const resolvers = {
                 },
             });
             // 유저 정보 쿠키에 저장함.
-            ctx.res.cookie('accessToken', accessToken, {
-                maxAge: 1000 * 60 * 10,
-                httpOnly: true,
-                domain: '.jongbeom.com',
-            });
-            ctx.res.cookie('_id', user._id.toString(), {
-                maxAge: 1000 * 60 * 10,
-                httpOnly: false,
-                domain: '.jongbeom.com',
-            });
+            const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
+            if (isNodeEnvDevelopment) {
+                ctx.res.cookie('accessToken', accessToken, {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: true,
+                });
+                ctx.res.cookie('_id', user._id.toString(), {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: false,
+                });
+            }
+            else {
+                ctx.res.cookie('accessToken', accessToken, {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: true,
+                    domain: '.jongbeom.com',
+                });
+                ctx.res.cookie('_id', user._id.toString(), {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: false,
+                    domain: '.jongbeom.com',
+                });
+            }
             return user;
         },
         signInWithKakao: async (_, args, ctx) => {
@@ -89,16 +106,33 @@ const resolvers = {
                 },
             });
             // 유저 정보 쿠키에 저장함.
-            ctx.res.cookie('accessToken', accessToken, {
-                maxAge: 1000 * 60 * 10,
-                httpOnly: true,
-                domain: '.jongbeom.com',
-            });
-            ctx.res.cookie('_id', user._id.toString(), {
-                maxAge: 1000 * 60 * 10,
-                httpOnly: false,
-                domain: '.jongbeom.com',
-            });
+            const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
+            if (isNodeEnvDevelopment) {
+                ctx.res.cookie('accessToken', accessToken, {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: true,
+                });
+                ctx.res.cookie('_id', user._id.toString(), {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: false,
+                });
+            }
+            else {
+                ctx.res.cookie('accessToken', accessToken, {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: true,
+                    domain: '.jongbeom.com',
+                });
+                ctx.res.cookie('_id', user._id.toString(), {
+                    maxAge: 1000 * 60 * 10,
+                    // maxAge: 1000 * 60,
+                    httpOnly: false,
+                    domain: '.jongbeom.com',
+                });
+            }
             return user;
         },
         signOut: async (_, args, ctx) => {
@@ -133,11 +167,6 @@ const resolvers = {
             if (user === null) {
                 throw ErrorObject_1.invalidUserIdError;
             }
-            ctx.res.cookie('_id', user._id.toString(), {
-                maxAge: 1000 * 60 * 10,
-                httpOnly: false,
-                domain: '.jongbeom.com',
-            });
             return user;
         },
         updateUserAddRoom: async (_, args, ctx) => {
