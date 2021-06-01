@@ -3,6 +3,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, ScrollView, StyleSheet} from 'react-native';
 import {Button, Dialog, RadioButton, Portal} from 'react-native-paper';
 import {AuthContext} from '../../../App';
+import Loading from '../../component/Loading';
 import {isNotAuthorizedError} from '../../lib/error';
 import {
   MESSAGE_ERROR,
@@ -44,7 +45,7 @@ const RoomSearchDialog = ({visible, onDismiss, route, refetch}) => {
     } else if (error) {
       Alert.alert(MESSAGE_ERROR);
     }
-  }, [error]);
+  }, [error, authContext]);
   // 대화방 참여
   const [
     updateUserAddRoom,
@@ -86,31 +87,43 @@ const RoomSearchDialog = ({visible, onDismiss, route, refetch}) => {
     onDismiss();
     setValue(null);
   }, [onDismiss]);
+
   return (
     <Portal style={styles.root}>
       <Dialog visible={visible} onDismiss={closeDialog}>
-        <Dialog.Title>{MESSAGE_TITLE}</Dialog.Title>
-        <Dialog.Content style={styles.content}>
-          <ScrollView>
-            <RadioButton.Group onValueChange={onChangeValue} value={value}>
-              {roomList.map(room => (
-                <RadioButton.Item
-                  key={room._id}
-                  label={room.name}
-                  value={room._id}
-                />
-              ))}
-            </RadioButton.Group>
-          </ScrollView>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button style={styles.btn} onPress={closeDialog}>
-            취소
-          </Button>
-          <Button style={styles.btn} onPress={onClickEnterBtn}>
-            확인
-          </Button>
-        </Dialog.Actions>
+        {loading || mutationLoading ? (
+          <>
+            <Dialog.Title>{MESSAGE_TITLE}</Dialog.Title>
+            <Dialog.Content style={styles.content}>
+              <Loading />
+            </Dialog.Content>
+          </>
+        ) : (
+          <>
+            <Dialog.Title>{MESSAGE_TITLE}</Dialog.Title>
+            <Dialog.Content style={styles.content}>
+              <ScrollView>
+                <RadioButton.Group onValueChange={onChangeValue} value={value}>
+                  {roomList.map(room => (
+                    <RadioButton.Item
+                      key={room._id}
+                      label={room.name}
+                      value={room._id}
+                    />
+                  ))}
+                </RadioButton.Group>
+              </ScrollView>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button style={styles.btn} onPress={closeDialog}>
+                취소
+              </Button>
+              <Button style={styles.btn} onPress={onClickEnterBtn}>
+                확인
+              </Button>
+            </Dialog.Actions>
+          </>
+        )}
       </Dialog>
     </Portal>
   );

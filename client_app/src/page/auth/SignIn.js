@@ -14,6 +14,7 @@ import {
 } from '../../res/message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {websocketLink} from '../../apollo/link';
+import Loading from '../../component/Loading';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -101,6 +102,9 @@ const SignIn = ({navigation}) => {
       },
     });
   };
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={styles.root}>
       <TextInput

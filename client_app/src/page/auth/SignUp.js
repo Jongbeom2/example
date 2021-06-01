@@ -12,6 +12,7 @@ import {
   MESSAGE_SUCCESS_SIGNUP,
   MESSAGE_TITLE,
 } from '../../res/message';
+import Loading from '../../component/Loading';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -102,6 +103,9 @@ const SignUp = ({navigation}) => {
       },
     });
   };
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={styles.root}>
       <TextInput

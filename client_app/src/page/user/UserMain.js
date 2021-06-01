@@ -5,6 +5,7 @@ import {useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {Avatar, Button, Text, Title} from 'react-native-paper';
 import {AuthContext} from '../../../App';
+import Loading from '../../component/Loading';
 import {isNotAuthorizedError} from '../../lib/error';
 import {
   MESSAGE_ERROR,
@@ -57,6 +58,9 @@ const UserMain = ({navigation, route}) => {
       userId: route.params?.userId,
     });
   };
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <View style={styles.root}>
       <Avatar.Image

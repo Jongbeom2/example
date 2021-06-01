@@ -10,6 +10,7 @@ import {
 } from '../../res/message';
 import {AuthContext} from '../../../App';
 import UserCard from './UserCard';
+import Loading from '../../component/Loading';
 const HomeMain = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const [userList, setUserList] = useState([]);
@@ -34,6 +35,9 @@ const HomeMain = ({navigation, route}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <ScrollView>
       {userList.map(user => (

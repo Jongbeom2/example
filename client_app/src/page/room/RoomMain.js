@@ -10,6 +10,7 @@ import {useTheme} from 'react-native-paper';
 import {FAB} from 'react-native-paper';
 import RoomSearchDialog from './RoomSearchDialog';
 import RoomCreateDialog from './RoomCreateDialog';
+import Loading from '../../component/Loading';
 
 const styles = StyleSheet.create({
   root: {
@@ -62,6 +63,9 @@ const RoomMain = ({navigation, route}) => {
   const onPressCreateBtn = () => {
     setIsOpenRoomCreateDialog(true);
   };
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView>

@@ -1,5 +1,5 @@
 import {useLazyQuery, useMutation, useSubscription} from '@apollo/client';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -61,6 +61,7 @@ const RoomDetail = ({route}) => {
   const roomId = route?.params.roomId;
   const {colors} = useTheme();
   const authContext = useContext(AuthContext);
+  let flatlistRef = useRef();
   const [content, setContent] = useState('');
   const [chatList, setChatList] = useState([]);
   const [chatFile, setChatFile] = useState(null);
@@ -219,6 +220,8 @@ const RoomDetail = ({route}) => {
     if (!content) {
       return;
     }
+    // scroll 제일 밑으로
+    flatlistRef.current.scrollToOffset({offset: 0, animated: false});
     setContent('');
     createChat({
       variables: {
@@ -247,6 +250,8 @@ const RoomDetail = ({route}) => {
       if (response.didCancel) {
         return;
       }
+      // scroll 제일 밑으로
+      flatlistRef.current.scrollToOffset({offset: 0, animated: false});
       setChatFile(response);
       // Presigned put url을 가져옴.
       const fileExtension = response.uri.split('.').pop();
@@ -263,6 +268,8 @@ const RoomDetail = ({route}) => {
       if (response.didCancel) {
         return;
       }
+      // scroll 제일 밑으로
+      flatlistRef.current.scrollToOffset({offset: 0, animated: false});
       setChatFile(response);
       // Presigned put url을 가져옴.
       const fileExtension = response.uri.split('.').pop();
@@ -298,6 +305,7 @@ const RoomDetail = ({route}) => {
   return (
     <SafeAreaView style={styles.root}>
       <FlatList
+        ref={flatlistRef}
         style={[{backgroundColor: colors.primaryLight}, styles.chatWrapper]}
         data={chatList}
         inverted

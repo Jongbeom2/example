@@ -20,6 +20,7 @@ import {
 import {GET_USER, UPDATE_USER} from './user.query';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {GET_PRESIGNED_PUT_URL} from '../../lib/file.query';
+import Loading from '../../component/Loading';
 
 const styles = StyleSheet.create({
   root: {
@@ -190,6 +191,9 @@ const UserEdit = ({route, navigation}) => {
       });
     });
   };
+  if (loading || mutaionLoading) {
+    return <Loading />;
+  }
   return (
     <View style={styles.root}>
       <View>

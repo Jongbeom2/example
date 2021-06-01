@@ -14,6 +14,7 @@ import {
   invalidRoomIdError,
 } from 'src/error/ErrorObject';
 import { processLoadMany } from 'src/apollo/dataLoader';
+import { pubsub } from 'src/apollo/pubsub';
 
 const resolvers: Resolvers = {
   Query: {
@@ -194,12 +195,16 @@ const resolvers: Resolvers = {
       }
       user.roomIdList.push(room._id);
       // chat 추가
-      await new ChatModel({
+      const chat = await new ChatModel({
         roomId,
         userId,
         isSystem: true,
         content: '님이 입장하셨습니다.',
       }).save();
+      // publish
+      pubsub.publish('CHAT_CREATED', {
+        chatCreated: chat,
+      });
       return await user.save();
     },
     updateUserRemoveRoom: async (_, args, ctx) => {
@@ -220,12 +225,16 @@ const resolvers: Resolvers = {
       }
       user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
       // chat 추가
-      await new ChatModel({
+      const chat = await new ChatModel({
         roomId,
         userId,
         isSystem: true,
         content: '님이 퇴장하셨습니다.',
       }).save();
+      // publish
+      pubsub.publish('CHAT_CREATED', {
+        chatCreated: chat,
+      });
       return await user.save();
     },
   },
