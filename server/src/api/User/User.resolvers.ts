@@ -177,66 +177,6 @@ const resolvers: Resolvers = {
       }
       return user;
     },
-    updateUserAddRoom: async (_, args, ctx) => {
-      const { userId, roomId } = args.updateUserAddRoomInput;
-      // room 수정
-      const room = await RoomModel.findById(roomId);
-      if (room === null) {
-        throw invalidRoomIdError;
-      }
-      room.userIdList.push(userId);
-      room.userNum++;
-      await room.save();
-      // user 수정
-      const user = await UserModel.findById(userId);
-      // _id에 해당하는 user 없음.
-      if (user === null) {
-        throw invalidUserIdError;
-      }
-      user.roomIdList.push(room._id);
-      // chat 추가
-      const chat = await new ChatModel({
-        roomId,
-        userId,
-        isSystem: true,
-        content: '님이 입장하셨습니다.',
-      }).save();
-      // publish
-      pubsub.publish('CHAT_CREATED', {
-        chatCreated: chat,
-      });
-      return await user.save();
-    },
-    updateUserRemoveRoom: async (_, args, ctx) => {
-      const { userId, roomId } = args.updateUserRemoveRoomInput;
-      // room 수정
-      const room = await RoomModel.findById(roomId);
-      if (room === null) {
-        throw invalidRoomIdError;
-      }
-      room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
-      room.userNum--;
-      await room.save();
-      // user 수정
-      const user = await UserModel.findById(userId);
-      // _id에 해당하는 user 없음.
-      if (user === null) {
-        throw invalidUserIdError;
-      }
-      user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
-      // chat 추가
-      const chat = await new ChatModel({
-        roomId,
-        userId,
-        isSystem: true,
-        content: '님이 퇴장하셨습니다.',
-      }).save();
-      // publish
-      pubsub.publish('CHAT_CREATED', {
-        chatCreated: chat,
-      });
-      return await user.save();
-    },
   },
 };
 

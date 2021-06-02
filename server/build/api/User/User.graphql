@@ -21,8 +21,6 @@ type Mutation {
   signOut: Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
-  updateUserAddRoom(updateUserAddRoomInput: UpdateUserAddRoomInput!): User!
-  updateUserRemoveRoom(updateUserRemoveRoomInput: UpdateUserRemoveRoomInput!): User!
 }
 
 input SignInInput {

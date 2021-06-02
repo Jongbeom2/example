@@ -2,16 +2,16 @@ import {useMutation} from '@apollo/client';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, StyleSheet} from 'react-native';
 import {Button, Dialog, TextInput, Portal} from 'react-native-paper';
-import {AuthContext} from '../../../App';
-import Loading from '../../component/Loading';
-import {isNotAuthorizedError} from '../../lib/error';
+import {AuthContext} from 'src/App';
+import Loading from 'src/component/Loading';
+import {isNotAuthorizedError} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
   MESSAGE_SUCCESS_CREATE_ROOM,
   MESSAGE_TITLE,
-} from '../../res/message';
-import {CREATE_ROOM} from './room.query';
+} from 'src/res/message';
+import {CREATE_ROOM, GET_MY_ROOM_LIST} from 'src/page/room/room.query';
 const styles = StyleSheet.create({
   root: {},
   content: {},
@@ -22,24 +22,40 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-const RoomCreateDialog = ({
-  visible,
-  onDismiss,
-  route,
-  refetch: parentRefetch,
-}) => {
+const RoomCreateDialog = ({visible, onDismiss, route}) => {
+  const userId = route.params?.userId;
   const authContext = useContext(AuthContext);
   const [roomName, setRoomName] = useState('');
   // 대화방 생성
-  const [createRoom, {data, loading, error}] = useMutation(CREATE_ROOM);
+  const [createRoom, {data, loading, error}] = useMutation(CREATE_ROOM, {
+    update(cache, {data: mutationDataResult}) {
+      const newRoom = mutationDataResult.createRoom;
+      const existingRoomList = cache.readQuery({
+        query: GET_MY_ROOM_LIST,
+        variables: {
+          userId,
+        },
+      }).getMyRoomList;
+      if (newRoom && existingRoomList) {
+        cache.writeQuery({
+          query: GET_MY_ROOM_LIST,
+          variables: {
+            userId,
+          },
+          data: {
+            getMyRoomList: [...existingRoomList, newRoom],
+          },
+        });
+      }
+    },
+  });
   // 대화방 생성 성공
   useEffect(() => {
     if (data && !error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_CREATE_ROOM);
-      parentRefetch();
       closeDialog();
     }
-  }, [data, error, closeDialog, parentRefetch]);
+  }, [data, error, closeDialog]);
   // 대화방 생성 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
@@ -53,7 +69,7 @@ const RoomCreateDialog = ({
     createRoom({
       variables: {
         createRoomInput: {
-          userId: route.params?.userId,
+          userId,
           name: roomName,
         },
       },
@@ -83,6 +99,7 @@ const RoomCreateDialog = ({
                 style={styles.textInput}
                 placeholder="이름"
                 onChangeText={onChangeRoomName}
+                autoFocus
               />
             </Dialog.Content>
             <Dialog.Actions>

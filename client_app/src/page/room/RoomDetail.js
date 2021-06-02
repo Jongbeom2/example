@@ -1,5 +1,11 @@
 import {useLazyQuery, useMutation, useSubscription} from '@apollo/client';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,24 +13,34 @@ import {
   SafeAreaView,
   Alert,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import {IconButton, useTheme} from 'react-native-paper';
-import {CHAT_CREATED, CREATE_CHAT, GET_CHAT_LIST} from './room.query';
+import {
+  CHAT_CREATED,
+  CREATE_CHAT,
+  GET_CHAT_LIST,
+  GET_MY_ROOM_LIST,
+  UPDATE_USER_REMOVE_ROOM,
+} from 'src/page/room/room.query';
 import {
   isNotAuthorizedError,
   isNotAuthorizedErrorSubscription,
-} from '../../lib/error';
+} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
   MESSAGE_ERROR_UPLOAD,
+  MESSAGE_SUCCESS_UPDATE_USER_REMOVE_ROOM,
   MESSAGE_TITLE,
-} from '../../res/message';
-import ChatCard from './ChatCard';
+} from 'src/res/message';
+import ChatCard from 'src/page/room/ChatCard';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {GET_PRESIGNED_PUT_URL} from '../../lib/file.query';
+import {GET_PRESIGNED_PUT_URL} from 'src/lib/file.query';
 import DocumentPicker from 'react-native-document-picker';
-import {AuthContext} from '../../../App';
+import {AuthContext} from 'src/App';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import produce from 'immer';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -54,8 +70,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 60,
   },
+  icon: {
+    marginRight: 10,
+  },
 });
-const RoomDetail = ({route}) => {
+const RoomDetail = ({route, navigation}) => {
   const PAGE_SIZE = 30;
   const userId = route?.params?.userId;
   const roomId = route?.params.roomId;
@@ -66,6 +85,25 @@ const RoomDetail = ({route}) => {
   const [chatList, setChatList] = useState([]);
   const [chatFile, setChatFile] = useState(null);
   const [isPlusBtnPressed, setIsPlusBtnPressed] = useState(false);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            updateUserRemoveRoom({
+              variables: {
+                updateUserRemoveRoomInput: {
+                  userId,
+                  roomId,
+                },
+              },
+            });
+          }}>
+          <Ionicons name="exit-outline" size={20} style={styles.icon} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, roomId, userId, updateUserRemoveRoom]);
   // 1. 대화 구독
   const {
     data: subscriptionData,
@@ -141,6 +179,50 @@ const RoomDetail = ({route}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [mutationError, authContext]);
+  // 4. 대화방 나가기
+  const [
+    updateUserRemoveRoom,
+    {data: mutationData2, loading: mutationLoading2, error: mutationError2},
+  ] = useMutation(UPDATE_USER_REMOVE_ROOM, {
+    update(cache, {data: mutationData2Result}) {
+      const removedRoom = mutationData2Result.updateUserRemoveRoom;
+      const existingRoomList = cache.readQuery({
+        query: GET_MY_ROOM_LIST,
+        variables: {
+          userId,
+        },
+      }).getMyRoomList;
+      if (removedRoom && existingRoomList) {
+        cache.writeQuery({
+          query: GET_MY_ROOM_LIST,
+          variables: {
+            userId,
+          },
+          data: {
+            getMyRoomList: produce(existingRoomList, draft => {
+              return draft.filter(room => room._id !== removedRoom._id);
+            }),
+          },
+        });
+      }
+    },
+  });
+  // 대화방 나가기 성공
+  useEffect(() => {
+    if (mutationData2 && !mutationError2) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_UPDATE_USER_REMOVE_ROOM);
+      navigation.goBack();
+    }
+  }, [mutationData2, mutationError2, navigation]);
+  // 대화방 나가기 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(mutationError2)) {
+      authContext.signOut();
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
+    } else if (mutationError2) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
+    }
+  }, [mutationError2, authContext]);
   // 5. 파일 업로드
   // presigned url 로드
   const [
@@ -328,6 +410,10 @@ const RoomDetail = ({route}) => {
           onChangeText={onChangeContent}
           multiline
           numberOfLines={2}
+          onFocus={() => {
+            // scroll 제일 밑으로
+            flatlistRef.current.scrollToOffset({offset: 0, animated: false});
+          }}
         />
         <IconButton
           style={styles.inputSendBtn}

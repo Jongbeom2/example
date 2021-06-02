@@ -5,11 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const User_model_1 = __importDefault(require("../../models/User.model"));
-const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const axios_1 = __importDefault(require("axios"));
 const common_1 = require("../../lib/common");
 const const_1 = require("../../lib/const");
-const Chat_model_1 = __importDefault(require("../../models/Chat.model"));
 const ErrorObject_1 = require("../../error/ErrorObject");
 const dataLoader_1 = require("../../apollo/dataLoader");
 const resolvers = {
@@ -168,58 +166,6 @@ const resolvers = {
                 throw ErrorObject_1.invalidUserIdError;
             }
             return user;
-        },
-        updateUserAddRoom: async (_, args, ctx) => {
-            const { userId, roomId } = args.updateUserAddRoomInput;
-            // room 수정
-            const room = await Room_model_1.default.findById(roomId);
-            if (room === null) {
-                throw ErrorObject_1.invalidRoomIdError;
-            }
-            room.userIdList.push(userId);
-            room.userNum++;
-            await room.save();
-            // user 수정
-            const user = await User_model_1.default.findById(userId);
-            // _id에 해당하는 user 없음.
-            if (user === null) {
-                throw ErrorObject_1.invalidUserIdError;
-            }
-            user.roomIdList.push(room._id);
-            // chat 추가
-            await new Chat_model_1.default({
-                roomId,
-                userId,
-                isSystem: true,
-                content: '님이 입장하셨습니다.',
-            }).save();
-            return await user.save();
-        },
-        updateUserRemoveRoom: async (_, args, ctx) => {
-            const { userId, roomId } = args.updateUserRemoveRoomInput;
-            // room 수정
-            const room = await Room_model_1.default.findById(roomId);
-            if (room === null) {
-                throw ErrorObject_1.invalidRoomIdError;
-            }
-            room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
-            room.userNum--;
-            await room.save();
-            // user 수정
-            const user = await User_model_1.default.findById(userId);
-            // _id에 해당하는 user 없음.
-            if (user === null) {
-                throw ErrorObject_1.invalidUserIdError;
-            }
-            user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
-            // chat 추가
-            await new Chat_model_1.default({
-                roomId,
-                userId,
-                isSystem: true,
-                content: '님이 퇴장하셨습니다.',
-            }).save();
-            return await user.save();
         },
     },
 };

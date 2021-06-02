@@ -1,11 +1,11 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import HomeMain from '../page/home/HomeMain';
-import RoomMain from '../page/room/RoomMain';
-import FeedMain from '../page/feed/FeedMain';
 // https://oblador.github.io/react-native-vector-icons/
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useTheme} from 'react-native-paper';
+import HomeMain from 'src/page/home/HomeMain';
+import RoomMain from 'src/page/room/RoomMain';
+import FeedMain from 'src/page/feed/FeedMain';
 const Tab = createBottomTabNavigator();
 const MainTab = ({route: parentRoute}) => {
   const theme = useTheme();

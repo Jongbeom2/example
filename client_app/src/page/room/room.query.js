@@ -17,6 +17,7 @@ export const GET_ROOM_LIST = gql`
       _id
       name
       userNum
+      recentMessageContent
     }
   }
 `;
@@ -25,6 +26,9 @@ export const CREATE_ROOM = gql`
   mutation createRoom($createRoomInput: CreateRoomInput!) {
     createRoom(createRoomInput: $createRoomInput) {
       _id
+      name
+      userNum
+      recentMessageContent
     }
   }
 `;
@@ -33,6 +37,9 @@ export const UPDATE_USER_ADD_ROOM = gql`
   mutation updateUserAddRoom($updateUserAddRoomInput: UpdateUserAddRoomInput!) {
     updateUserAddRoom(updateUserAddRoomInput: $updateUserAddRoomInput) {
       _id
+      name
+      userNum
+      recentMessageContent
     }
   }
 `;
@@ -45,6 +52,9 @@ export const UPDATE_USER_REMOVE_ROOM = gql`
       updateUserRemoveRoomInput: $updateUserRemoveRoomInput
     ) {
       _id
+      name
+      userNum
+      recentMessageContent
     }
   }
 `;

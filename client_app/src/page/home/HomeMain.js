@@ -1,16 +1,16 @@
 import {useQuery} from '@apollo/client';
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, ScrollView, Text, View} from 'react-native';
+import {Alert, ScrollView} from 'react-native';
 import {GET_USER_LIST} from './home.query';
-import {isNotAuthorizedError} from '../../lib/error';
+import {isNotAuthorizedError} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
   MESSAGE_TITLE,
-} from '../../res/message';
-import {AuthContext} from '../../../App';
-import UserCard from './UserCard';
-import Loading from '../../component/Loading';
+} from 'src/res/message';
+import {AuthContext} from 'src/App';
+import UserCard from 'src/page/home/UserCard';
+import Loading from 'src/component/Loading';
 const HomeMain = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const [userList, setUserList] = useState([]);

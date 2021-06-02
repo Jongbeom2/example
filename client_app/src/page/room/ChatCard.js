@@ -1,8 +1,8 @@
 import React from 'react';
 import {StyleSheet, View, Image} from 'react-native';
 import {Avatar, Button, Text, useTheme} from 'react-native-paper';
-import ChatCardImage from './ChatCardImage';
-import invalidImage from '../../res/img/invalid_image.png';
+import ChatCardImage from 'src/page/room/ChatCardImage';
+import invalidImage from 'src/res/img/invalid_image.png';
 import RNFetchBlob from 'rn-fetch-blob';
 const styles = StyleSheet.create({
   systemChatRoot: {
@@ -166,4 +166,4 @@ const ChatCard = ({chat, userId}) => {
     </View>
   );
 };
-export default ChatCard;
+export default React.memo(ChatCard);

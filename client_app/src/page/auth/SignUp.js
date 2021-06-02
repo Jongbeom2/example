@@ -1,6 +1,6 @@
 import React, {useState, useContext, useEffect} from 'react';
 import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
-import {AuthContext} from '../../../App';
+import {AuthContext} from '../../App';
 import {TextInput, Button, useTheme} from 'react-native-paper';
 import {Text} from 'react-native-paper';
 import {useMutation} from '@apollo/client';

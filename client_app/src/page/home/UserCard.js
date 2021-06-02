@@ -31,4 +31,4 @@ const UserCard = ({navigation, user}) => {
     </TouchableOpacity>
   );
 };
-export default UserCard;
+export default React.memo(UserCard);

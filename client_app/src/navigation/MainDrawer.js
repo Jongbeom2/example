@@ -5,9 +5,9 @@ import {
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import UserMain from '../page/user/UserMain';
-import MainTab from './MainTab';
-import {AuthContext} from '../../App';
+import UserMain from 'src/page/user/UserMain';
+import MainTab from 'src/navigation/MainTab';
+import {AuthContext} from 'src/App';
 import {Alert} from 'react-native';
 import {MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNOUT} from '../res/message';
 const Drawer = createDrawerNavigator();

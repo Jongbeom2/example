@@ -3,6 +3,8 @@ import { ApolloError } from 'apollo-server';
 import { Resolvers } from 'src/types/graphql';
 import UserModel from 'src/models/User.model';
 import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
+import ChatModel from 'src/models/Chat.model';
+import { pubsub } from 'src/apollo/pubsub';
 const resolvers: Resolvers = {
   Query: {
     getRoom: async (_, args, ctx) => {
@@ -57,6 +59,68 @@ const resolvers: Resolvers = {
       }
       user.roomIdList.push(room._id);
       await user.save();
+      return room;
+    },
+    updateUserAddRoom: async (_, args, ctx) => {
+      const { userId, roomId } = args.updateUserAddRoomInput;
+      // room 수정
+      const room = await RoomModel.findById(roomId);
+      if (room === null) {
+        throw invalidRoomIdError;
+      }
+      room.userIdList.push(userId);
+      room.userNum++;
+      await room.save();
+      // user 수정
+      const user = await UserModel.findById(userId);
+      // _id에 해당하는 user 없음.
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      user.roomIdList.push(room._id);
+      await user.save();
+      // chat 추가
+      const chat = await new ChatModel({
+        roomId,
+        userId,
+        isSystem: true,
+        content: '님이 입장하셨습니다.',
+      }).save();
+      // publish
+      pubsub.publish('CHAT_CREATED', {
+        chatCreated: chat,
+      });
+      return room;
+    },
+    updateUserRemoveRoom: async (_, args, ctx) => {
+      const { userId, roomId } = args.updateUserRemoveRoomInput;
+      // room 수정
+      const room = await RoomModel.findById(roomId);
+      if (room === null) {
+        throw invalidRoomIdError;
+      }
+      room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
+      room.userNum--;
+      await room.save();
+      // user 수정
+      const user = await UserModel.findById(userId);
+      // _id에 해당하는 user 없음.
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
+      await user.save();
+      // chat 추가
+      const chat = await new ChatModel({
+        roomId,
+        userId,
+        isSystem: true,
+        content: '님이 퇴장하셨습니다.',
+      }).save();
+      // publish
+      pubsub.publish('CHAT_CREATED', {
+        chatCreated: chat,
+      });
       return room;
     },
   },

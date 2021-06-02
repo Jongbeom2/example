@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, TouchableOpacity} from 'react-native';
-import PopupImage from '../../component/PopupImage';
+import PopupImage from 'src/component/PopupImage';
 const styles = StyleSheet.create({
   root: {
     marginRight: 5,
@@ -44,4 +44,4 @@ const ChatCardImage = ({sourceList = [], imageWidth = 200, ...rest}) => {
     </>
   );
 };
-export default ChatCardImage;
+export default React.memo(ChatCardImage);

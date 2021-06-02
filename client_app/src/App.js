@@ -15,24 +15,26 @@ import {
 import {createStackNavigator} from '@react-navigation/stack';
 // 아이콘 패키지 : https://oblador.github.io/react-native-vector-icons/
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import SignIn from './src/page/auth/SignIn.js';
-import MainDrawer from './src/navigation/MainDrawer.js';
+import SignIn from 'src/page/auth/SignIn.js';
+import MainDrawer from 'src/navigation/MainDrawer.js';
 import {ApolloProvider} from '@apollo/client';
-import client from './src/apollo/client';
+import client from 'src/apollo/client';
 // Material UI 패키지 : https://callstack.github.io/react-native-paper/index.html
 import {
   DefaultTheme,
   Provider as PaperProvider,
   Text,
 } from 'react-native-paper';
-import SignUp from './src/page/auth/SignUp.js';
-import Loading from './src/page/loading/Loading.js';
+import SignUp from 'src/page/auth/SignUp.js';
+import Loading from 'src/page/loading/Loading.js';
 import SplashScreen from 'react-native-splash-screen';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
-import UserMain from './src/page/user/UserMain.js';
-import UserEdit from './src/page/user/UserEdit.js';
-import RoomDetail from './src/page/room/RoomDetail.js';
-import {MESSAGE_TITLE} from './src/res/message.js';
+import UserMain from 'src/page/user/UserMain.js';
+import UserEdit from 'src/page/user/UserEdit.js';
+import RoomDetail from 'src/page/room/RoomDetail.js';
+import {MESSAGE_TITLE} from 'src/res/message';
+// import {MESSAGE_TITLE} from 'src/res/message';
+
 const theme = {
   ...DefaultTheme,
   roundness: 2,

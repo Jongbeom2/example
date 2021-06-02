@@ -1,6 +1,16 @@
 import {InMemoryCache} from '@apollo/client';
 const cache = new InMemoryCache({
-  typePolicies: {},
+  typePolicies: {
+    Query: {
+      fields: {
+        getMyRoomList: {
+          merge(existing, incoming) {
+            return incoming;
+          },
+        },
+      },
+    },
+  },
 });
 
 export default cache;

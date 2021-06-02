@@ -8,19 +8,19 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
-import {AuthContext} from '../../../App';
-import {isNotAuthorizedError} from '../../lib/error';
+import {AuthContext} from 'src/App';
+import {isNotAuthorizedError} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
   MESSAGE_ERROR_UPLOAD,
   MESSAGE_SUCCESS_UPDATE_USER,
   MESSAGE_TITLE,
-} from '../../res/message';
-import {GET_USER, UPDATE_USER} from './user.query';
+} from 'src/res/message';
+import {GET_USER, UPDATE_USER} from 'src/page/user/user.query';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {GET_PRESIGNED_PUT_URL} from '../../lib/file.query';
-import Loading from '../../component/Loading';
+import {GET_PRESIGNED_PUT_URL} from 'src/lib/file.query';
+import Loading from 'src/component/Loading';
 
 const styles = StyleSheet.create({
   root: {

@@ -1,7 +1,7 @@
 import {ApolloClient} from '@apollo/client';
-import cache from './cache';
-import {link} from './link';
-import typeDefs from './typeDefs';
+import cache from 'src/apollo/cache';
+import {link} from 'src/apollo/link';
+import typeDefs from 'src/apollo/typeDefs';
 
 const client = new ApolloClient({
   cache,

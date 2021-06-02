@@ -15,6 +15,8 @@ type Room {
 
 type Mutation {
   createRoom(createRoomInput: CreateRoomInput!): Room!
+  updateUserAddRoom(updateUserAddRoomInput: UpdateUserAddRoomInput!): Room!
+  updateUserRemoveRoom(updateUserRemoveRoomInput: UpdateUserRemoveRoomInput!): Room!
 }
 
 input CreateRoomInput {

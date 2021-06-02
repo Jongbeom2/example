@@ -1,20 +1,20 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
-import {AuthContext} from '../../../App';
+import {AuthContext} from 'src/App';
 import {TextInput, Button, useTheme} from 'react-native-paper';
 import {Text} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
-import {SINGIN} from './auth.query';
+import {SINGIN} from 'src/page/auth/auth.query';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_INPUT_ALL_REQUIRED,
   MESSAGE_ERROR_SIGNIN_INVALID_USER,
   MESSAGE_SUCCESS_SIGNIN,
   MESSAGE_TITLE,
-} from '../../res/message';
+} from 'src/res/message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {websocketLink} from '../../apollo/link';
-import Loading from '../../component/Loading';
+import {websocketLink} from 'src/apollo/link';
+import Loading from 'src/component/Loading';
 const styles = StyleSheet.create({
   root: {
     width: '100%',

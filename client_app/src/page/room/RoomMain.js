@@ -1,16 +1,20 @@
 import {useQuery} from '@apollo/client';
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert, SafeAreaView, ScrollView, StyleSheet} from 'react-native';
-import {GET_MY_ROOM_LIST} from './room.query';
-import {isNotAuthorizedError} from '../../lib/error';
-import {MESSAGE_ERROR, MESSAGE_ERROR_AUTH} from '../../res/message';
-import {AuthContext} from '../../../App';
-import RoomCard from './RoomCard';
+import {GET_MY_ROOM_LIST} from 'src/page/room/room.query';
+import {isNotAuthorizedError} from 'src/lib/error';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_ERROR_AUTH,
+  MESSAGE_TITLE,
+} from 'src/res/message';
+import {AuthContext} from 'src/App';
+import RoomCard from 'src/page/room/RoomCard';
 import {useTheme} from 'react-native-paper';
 import {FAB} from 'react-native-paper';
-import RoomSearchDialog from './RoomSearchDialog';
-import RoomCreateDialog from './RoomCreateDialog';
-import Loading from '../../component/Loading';
+import RoomSearchDialog from 'src/page/room/RoomSearchDialog';
+import RoomCreateDialog from 'src/page/room/RoomCreateDialog';
+import Loading from 'src/component/Loading';
 
 const styles = StyleSheet.create({
   root: {
@@ -36,10 +40,11 @@ const RoomMain = ({navigation, route}) => {
   const [isOpenRoomCreateDialog, setIsOpenRoomCreateDialog] = useState(false);
   const [isOpenRoomSearchDialog, setIsOpenRoomSearchDialog] = useState(false);
   // 대화방 리스트
-  const {data, loading, error, refetch} = useQuery(GET_MY_ROOM_LIST, {
+  const {data, loading, error} = useQuery(GET_MY_ROOM_LIST, {
     variables: {
       userId: route.params?.userId,
     },
+    fetchPolicy: 'cache-first',
   });
   const [roomList, setRoomList] = useState([]);
   // 대화방 리스트 로드
@@ -52,9 +57,9 @@ const RoomMain = ({navigation, route}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_ERROR_AUTH);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
-      Alert.alert(MESSAGE_ERROR);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
   const onPressSearchBtn = () => {
@@ -93,7 +98,6 @@ const RoomMain = ({navigation, route}) => {
       <RoomCreateDialog
         route={route}
         visible={isOpenRoomCreateDialog}
-        refetch={refetch}
         onDismiss={() => {
           setIsOpenRoomCreateDialog(false);
         }}
@@ -101,7 +105,6 @@ const RoomMain = ({navigation, route}) => {
       <RoomSearchDialog
         route={route}
         visible={isOpenRoomSearchDialog}
-        refetch={refetch}
         onDismiss={() => {
           setIsOpenRoomSearchDialog(false);
         }}

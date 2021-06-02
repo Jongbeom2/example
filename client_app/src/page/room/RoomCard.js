@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Avatar, useTheme} from 'react-native-paper';
-import {getShortStr} from '../../lib/common';
+import {getShortStr} from 'src/lib/common';
 const styles = StyleSheet.create({
   root: {
     marginLeft: 20,
@@ -50,4 +50,4 @@ const RoomCard = ({room, navigation, userId}) => {
   );
 };
 
-export default RoomCard;
+export default React.memo(RoomCard);

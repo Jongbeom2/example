@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const User_model_1 = __importDefault(require("../../models/User.model"));
 const ErrorObject_1 = require("../../error/ErrorObject");
+const Chat_model_1 = __importDefault(require("../../models/Chat.model"));
+const pubsub_1 = require("../../apollo/pubsub");
 const resolvers = {
     Query: {
         getRoom: async (_, args, ctx) => {
@@ -58,6 +60,68 @@ const resolvers = {
             }
             user.roomIdList.push(room._id);
             await user.save();
+            return room;
+        },
+        updateUserAddRoom: async (_, args, ctx) => {
+            const { userId, roomId } = args.updateUserAddRoomInput;
+            // room 수정
+            const room = await Room_model_1.default.findById(roomId);
+            if (room === null) {
+                throw ErrorObject_1.invalidRoomIdError;
+            }
+            room.userIdList.push(userId);
+            room.userNum++;
+            await room.save();
+            // user 수정
+            const user = await User_model_1.default.findById(userId);
+            // _id에 해당하는 user 없음.
+            if (user === null) {
+                throw ErrorObject_1.invalidUserIdError;
+            }
+            user.roomIdList.push(room._id);
+            await user.save();
+            // chat 추가
+            const chat = await new Chat_model_1.default({
+                roomId,
+                userId,
+                isSystem: true,
+                content: '님이 입장하셨습니다.',
+            }).save();
+            // publish
+            pubsub_1.pubsub.publish('CHAT_CREATED', {
+                chatCreated: chat,
+            });
+            return room;
+        },
+        updateUserRemoveRoom: async (_, args, ctx) => {
+            const { userId, roomId } = args.updateUserRemoveRoomInput;
+            // room 수정
+            const room = await Room_model_1.default.findById(roomId);
+            if (room === null) {
+                throw ErrorObject_1.invalidRoomIdError;
+            }
+            room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
+            room.userNum--;
+            await room.save();
+            // user 수정
+            const user = await User_model_1.default.findById(userId);
+            // _id에 해당하는 user 없음.
+            if (user === null) {
+                throw ErrorObject_1.invalidUserIdError;
+            }
+            user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
+            await user.save();
+            // chat 추가
+            const chat = await new Chat_model_1.default({
+                roomId,
+                userId,
+                isSystem: true,
+                content: '님이 퇴장하셨습니다.',
+            }).save();
+            // publish
+            pubsub_1.pubsub.publish('CHAT_CREATED', {
+                chatCreated: chat,
+            });
             return room;
         },
     },

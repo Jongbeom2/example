@@ -4,15 +4,15 @@ import {useContext} from 'react';
 import {useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {Avatar, Button, Text, Title} from 'react-native-paper';
-import {AuthContext} from '../../../App';
-import Loading from '../../component/Loading';
-import {isNotAuthorizedError} from '../../lib/error';
+import {AuthContext} from 'src/App';
+import Loading from 'src/component/Loading';
+import {isNotAuthorizedError} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
   MESSAGE_TITLE,
-} from '../../res/message';
-import {GET_USER} from './user.query';
+} from 'src/res/message';
+import {GET_USER} from 'src/page/user/user.query';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
