@@ -134,9 +134,15 @@ const resolvers = {
             return user;
         },
         signOut: async (_, args, ctx) => {
+            const { _id } = args.signOutInput;
             ctx.res.clearCookie('accessToken');
             ctx.res.clearCookie('_id');
-            return true;
+            const user = await User_model_1.default.findById(_id);
+            // _id에 해당하는 user 없음.
+            if (user === null) {
+                throw ErrorObject_1.invalidUserIdError;
+            }
+            return user;
         },
         createUser: async (_, args, ctx) => {
             const { nickname, email, password } = args.createUserInput;

@@ -9,6 +9,7 @@ const pubsub_1 = require("../../apollo/pubsub");
 const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const ErrorObject_1 = require("../../error/ErrorObject");
 const colors_1 = __importDefault(require("colors"));
+const axios_1 = __importDefault(require("axios"));
 const resolvers = {
     Query: {
         getChatList: async (_, args, ctx) => {
@@ -57,6 +58,26 @@ const resolvers = {
             // publish
             pubsub_1.pubsub.publish('CHAT_CREATED', {
                 chatCreated: chat,
+            });
+            // fcm publish
+            await axios_1.default({
+                method: 'post',
+                url: 'https://fcm.googleapis.com/fcm/send',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    Authorization: `key=${process.env.FCM_SERVER_KEY}`,
+                },
+                data: {
+                    to: `/topics/roomId-${roomId}`,
+                    data: {
+                        roomId: roomId,
+                        type: 'chat',
+                    },
+                    notification: {
+                        title: '예제입니다.',
+                        body: content,
+                    },
+                },
             });
             return chat;
         },
