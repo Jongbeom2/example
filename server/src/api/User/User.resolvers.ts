@@ -140,9 +140,15 @@ const resolvers: Resolvers = {
       return user;
     },
     signOut: async (_, args, ctx) => {
+      const { _id } = args.signOutInput;
       ctx.res.clearCookie('accessToken');
       ctx.res.clearCookie('_id');
-      return true;
+      const user = await UserModel.findById(_id);
+      // _id에 해당하는 user 없음.
+      if (user === null) {
+        throw invalidUserIdError;
+      }
+      return user;
     },
     createUser: async (_, args, ctx) => {
       const { nickname, email, password } = args.createUserInput;

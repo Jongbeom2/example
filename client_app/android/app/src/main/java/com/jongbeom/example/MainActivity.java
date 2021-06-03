@@ -1,4 +1,4 @@
-package com.client_app;
+package com.jongbeom.example;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen;

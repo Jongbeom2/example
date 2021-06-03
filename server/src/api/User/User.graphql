@@ -12,13 +12,14 @@ type User {
   profileThumbnailImageURL: String
   loginType: String!
   kakaoId: String
+  roomIdList: [ID!]!
   roomList: [Room!]!
 }
 
 type Mutation {
   signIn(signInInput: SignInInput!): User!
   signInWithKakao(signInWithKakaoInput: SignInWithKakaoInput!): User!
-  signOut: Boolean!
+  signOut(signOutInput: SignOutInput!): User!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
@@ -26,6 +27,10 @@ type Mutation {
 input SignInInput {
   email: String!
   password: String!
+}
+
+input SignOutInput {
+  _id: ID!
 }
 
 input SignInWithKakaoInput {

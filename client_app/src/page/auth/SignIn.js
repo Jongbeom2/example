@@ -4,17 +4,21 @@ import {AuthContext} from 'src/App';
 import {TextInput, Button, useTheme} from 'react-native-paper';
 import {Text} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
-import {SINGIN} from 'src/page/auth/auth.query';
+import {SIGNIN, SIGNIN_WITH_KAKAO} from 'src/page/auth/auth.query';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_INPUT_ALL_REQUIRED,
   MESSAGE_ERROR_SIGNIN_INVALID_USER,
+  MESSAGE_ERROR_SIGNIN_KAKAO,
   MESSAGE_SUCCESS_SIGNIN,
+  MESSAGE_SUCCESS_SIGNIN_KAKAO,
   MESSAGE_TITLE,
 } from 'src/res/message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {websocketLink} from 'src/apollo/link';
 import Loading from 'src/component/Loading';
+import {login} from '@react-native-seoul/kakao-login';
+import messaging from '@react-native-firebase/messaging';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -54,22 +58,28 @@ const SignIn = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // 로그인
-  const [mutationSignIn, {data, loading, error}] = useMutation(SINGIN);
+  // 1. 로그인
+  const [mutationSignIn, {data, loading, error}] = useMutation(SIGNIN);
   // 로그인 성공
   useEffect(() => {
     if (data && !error) {
       (async () => {
         await AsyncStorage.setItem('userId', data.signIn._id);
+        // 참고자료 : https://github.com/apollographql/subscriptions-transport-ws/issues/171 (옛날 코드라 정확하지 않아 참고만함)
+        // cookie가 만료되더라도 subscription은 유지됨.
+        // 이를 대비하여 로그인할 때 subscription을 다시 연결함.
+        // websocketLink.subscriptionClient는 SubscriptionClient 객체임.
+        // https://github.com/apollographql/subscriptions-transport-ws
+        websocketLink.subscriptionClient.close(false, false);
+        // message subscribe
+        const promiseList = [];
+        data.signIn.roomIdList.forEach(roomId => {
+          promiseList.push(messaging().subscribeToTopic(`roomId-${roomId}`));
+        });
+        await Promise.all(promiseList);
+        authContext.signIn(data.signIn._id);
+        Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
       })();
-      // 참고자료 : https://github.com/apollographql/subscriptions-transport-ws/issues/171 (옛날 코드라 정확하지 않아 참고만함)
-      // cookie가 만료되더라도 subscription은 유지됨.
-      // 이를 대비하여 로그인할 때 subscription을 다시 연결함.
-      // websocketLink.subscriptionClient는 SubscriptionClient 객체임.
-      // https://github.com/apollographql/subscriptions-transport-ws
-      websocketLink.subscriptionClient.close(false, false);
-      authContext.signIn(data.signIn._id);
-      Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
     }
   }, [data, error, authContext]);
   // 로그인 실패
@@ -82,6 +92,25 @@ const SignIn = ({navigation}) => {
       }
     }
   }, [error]);
+  // 2. 카카오 로그인
+  const [
+    signInWithKakao,
+    {data: mutationData, loading: mutationLoading, error: mutationError},
+  ] = useMutation(SIGNIN_WITH_KAKAO);
+  // 카카오 로그인 성공
+  useEffect(() => {
+    if (mutationData && !mutationError) {
+      websocketLink.subscriptionClient.close(false, false);
+      authContext.signIn(mutationData.signInWithKakao._id);
+      Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN_KAKAO);
+    }
+  }, [mutationData, mutationError, authContext]);
+  // 카카오 로그인 실패
+  useEffect(() => {
+    if (mutationError) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_SIGNIN_KAKAO);
+    }
+  }, [mutationError]);
   const onChangeEmail = text => {
     setEmail(text);
   };
@@ -102,7 +131,17 @@ const SignIn = ({navigation}) => {
       },
     });
   };
-  if (loading) {
+  const onClickKakoSignInBtn = async () => {
+    const token = await login();
+    signInWithKakao({
+      variables: {
+        signInWithKakaoInput: {
+          accessToken: token.accessToken,
+        },
+      },
+    });
+  };
+  if (loading || mutationLoading) {
     return <Loading />;
   }
   return (
@@ -143,7 +182,7 @@ const SignIn = ({navigation}) => {
               backgroundColor: colors.custom.kakao,
             },
           ]}
-          onPress={() => {}}>
+          onPress={onClickKakoSignInBtn}>
           K
         </Button>
         <Button

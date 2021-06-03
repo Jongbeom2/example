@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "696508884924",
+    "project_id": "example-df56a",
+    "storage_bucket": "example-df56a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696508884924:android:ad20eb5c9a1dc4af912db9",
+        "android_client_info": {
+          "package_name": "com.jongbeom.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "696508884924-ullfh56krgpbfc24s34r3bu0fiqe1msm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhSNFfoDHiSdWX5LIWkrgWoXRZhx1XCMM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "696508884924-ullfh56krgpbfc24s34r3bu0fiqe1msm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

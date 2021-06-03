@@ -136,7 +136,13 @@ const CustomAppBar = () => {
   };
   const onClickSignOutBtn = () => {
     setOpen(false);
-    signOut();
+    signOut({
+      variables: {
+        signOutInput: {
+          _id: userId,
+        },
+      },
+    });
   };
   return (
     <div className={classes.root}>

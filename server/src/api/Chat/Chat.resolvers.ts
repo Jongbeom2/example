@@ -6,6 +6,7 @@ import { pubsub } from 'src/apollo/pubsub';
 import RoomModel from 'src/models/Room.model';
 import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 import colors from 'colors';
+import Axios from 'axios';
 
 const resolvers: Resolvers = {
   Query: {
@@ -63,6 +64,26 @@ const resolvers: Resolvers = {
       // publish
       pubsub.publish('CHAT_CREATED', {
         chatCreated: chat,
+      });
+      // fcm publish
+      await Axios({
+        method: 'post',
+        url: 'https://fcm.googleapis.com/fcm/send',
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          Authorization: `key=${process.env.FCM_SERVER_KEY}`,
+        },
+        data: {
+          to: `/topics/roomId-${roomId}`,
+          data: {
+            roomId: roomId,
+            type: 'chat',
+          },
+          notification: {
+            title: '예제입니다.',
+            body: content,
+          },
+        },
       });
       return chat;
     },

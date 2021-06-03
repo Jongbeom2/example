@@ -20,11 +20,7 @@ import MainDrawer from 'src/navigation/MainDrawer.js';
 import {ApolloProvider} from '@apollo/client';
 import client from 'src/apollo/client';
 // Material UI 패키지 : https://callstack.github.io/react-native-paper/index.html
-import {
-  DefaultTheme,
-  Provider as PaperProvider,
-  Text,
-} from 'react-native-paper';
+import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import SignUp from 'src/page/auth/SignUp.js';
 import Loading from 'src/page/loading/Loading.js';
 import SplashScreen from 'react-native-splash-screen';
@@ -33,7 +29,6 @@ import UserMain from 'src/page/user/UserMain.js';
 import UserEdit from 'src/page/user/UserEdit.js';
 import RoomDetail from 'src/page/room/RoomDetail.js';
 import {MESSAGE_TITLE} from 'src/res/message';
-// import {MESSAGE_TITLE} from 'src/res/message';
 
 const theme = {
   ...DefaultTheme,
@@ -60,7 +55,9 @@ const theme = {
 };
 const Stack = createStackNavigator();
 export const AuthContext = createContext();
-const App = () => {
+const App = props => {
+  // const navigation = useNavigation();
+  const navigation = props.navigation;
   const [state, dispatch] = useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -128,7 +125,7 @@ const App = () => {
       }
       SplashScreen.hide();
     })();
-  }, []);
+  }, [navigation]);
   const authContext = useMemo(
     () => ({
       signIn: async userId => {

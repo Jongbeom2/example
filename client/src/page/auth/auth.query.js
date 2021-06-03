@@ -31,7 +31,12 @@ export const SIGNIN_WITH_KAKAO = gql`
 `;
 
 export const SIGNOUT = gql`
-  mutation signOut {
-    signOut
+  mutation signOut($signOutInput: SignOutInput!) {
+    signOut(signOutInput: $signOutInput) {
+      _id
+      nickname
+      profileImageURL
+      profileThumbnailImageURL
+    }
   }
 `;

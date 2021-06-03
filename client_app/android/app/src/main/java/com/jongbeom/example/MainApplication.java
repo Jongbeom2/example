@@ -1,4 +1,4 @@
-package com.client_app;
+package com.jongbeom.example;
 
 import android.app.Application;
 import android.content.Context;

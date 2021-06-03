@@ -11,13 +11,16 @@ import {
 import {AuthContext} from 'src/App';
 import UserCard from 'src/page/home/UserCard';
 import Loading from 'src/component/Loading';
+
 const HomeMain = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
+  const userId = route.params?.userId;
   const [userList, setUserList] = useState([]);
+
   // 유저 리스트 로드
   const {data, loading, error} = useQuery(GET_USER_LIST, {
     variables: {
-      _id: route.params?.userId,
+      _id: userId,
     },
   });
   // 유저 리스트 로드 성공

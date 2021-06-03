@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 // https://oblador.github.io/react-native-vector-icons/
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -6,9 +6,56 @@ import {useTheme} from 'react-native-paper';
 import HomeMain from 'src/page/home/HomeMain';
 import RoomMain from 'src/page/room/RoomMain';
 import FeedMain from 'src/page/feed/FeedMain';
+import messaging from '@react-native-firebase/messaging';
+
 const Tab = createBottomTabNavigator();
-const MainTab = ({route: parentRoute}) => {
+const MainTab = ({navigation, route: parentRoute}) => {
+  const userId = parentRoute.params?.userId;
   const theme = useTheme();
+  useEffect(() => {
+    // 앱 사용 상태일 때 메세지 도착
+    messaging().onMessage(remoteMessage => {});
+    // 앱 백그라운드 상태일 때 메세지 도착
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      if (remoteMessage) {
+        if ((remoteMessage.data.type = 'chat')) {
+          navigation.navigate('room', {
+            roomId: remoteMessage.data.roomId,
+            userId,
+          });
+          navigation.navigate('roomdetail', {
+            roomId: remoteMessage.data.roomId,
+            userId,
+          });
+        }
+        console.log(
+          'Notification caused app to open from background state:',
+          remoteMessage,
+        );
+      }
+    });
+    // 앱 끈 상태일 때 메세지 도착
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          if ((remoteMessage.data.type = 'chat')) {
+            navigation.navigate('room', {
+              roomId: remoteMessage.data.roomId,
+              userId,
+            });
+            navigation.navigate('roomdetail', {
+              roomId: remoteMessage.data.roomId,
+              userId,
+            });
+          }
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage,
+          );
+        }
+      });
+  }, [navigation, userId]);
   return (
     <Tab.Navigator
       initialRouteName="home"
