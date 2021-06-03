@@ -100,9 +100,17 @@ const SignIn = ({navigation}) => {
   // 카카오 로그인 성공
   useEffect(() => {
     if (mutationData && !mutationError) {
-      websocketLink.subscriptionClient.close(false, false);
-      authContext.signIn(mutationData.signInWithKakao._id);
-      Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN_KAKAO);
+      (async () => {
+        websocketLink.subscriptionClient.close(false, false);
+        // message subscribe
+        const promiseList = [];
+        mutationData.signInWithKakao.roomIdList.forEach(roomId => {
+          promiseList.push(messaging().subscribeToTopic(`roomId-${roomId}`));
+        });
+        await Promise.all(promiseList);
+        authContext.signIn(mutationData.signInWithKakao._id);
+        Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN_KAKAO);
+      })();
     }
   }, [mutationData, mutationError, authContext]);
   // 카카오 로그인 실패

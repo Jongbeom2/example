@@ -7,7 +7,7 @@ import RoomModel from 'src/models/Room.model';
 import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 import colors from 'colors';
 import Axios from 'axios';
-
+//
 const resolvers: Resolvers = {
   Query: {
     getChatList: async (_, args, ctx) => {
