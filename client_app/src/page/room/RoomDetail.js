@@ -145,6 +145,7 @@ const RoomDetail = ({route, navigation}) => {
         skip: 0,
         size: PAGE_SIZE,
       },
+      fetchPolicy: 'cache-and-network',
     });
   }, [getChatList, roomId]);
   // 대화 로드 성공

@@ -1,4 +1,6 @@
-import {InMemoryCache} from '@apollo/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {InMemoryCache} from '@apollo/client/core';
+import {persistCache, AsyncStorageWrapper} from 'apollo3-cache-persist';
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
@@ -12,5 +14,9 @@ const cache = new InMemoryCache({
     },
   },
 });
-
+// 비동기적으로 실행됨.
+persistCache({
+  cache,
+  storage: new AsyncStorageWrapper(AsyncStorage),
+});
 export default cache;

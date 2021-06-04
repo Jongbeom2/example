@@ -22,6 +22,7 @@ const HomeMain = ({navigation, route}) => {
     variables: {
       _id: userId,
     },
+    fetchPolicy: 'cache-and-network',
   });
   // 유저 리스트 로드 성공
   useEffect(() => {
@@ -38,9 +39,9 @@ const HomeMain = ({navigation, route}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
-  if (loading) {
-    return <Loading />;
-  }
+  // if (loading) {
+  //   return <Loading />;
+  // }
   return (
     <ScrollView>
       {userList.map(user => (

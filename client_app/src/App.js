@@ -56,7 +56,6 @@ const theme = {
 const Stack = createStackNavigator();
 export const AuthContext = createContext();
 const App = props => {
-  // const navigation = useNavigation();
   const navigation = props.navigation;
   const [state, dispatch] = useReducer(
     (prevState, action) => {
@@ -139,19 +138,6 @@ const App = props => {
     }),
     [],
   );
-  /*
-    Navigation 구조
-    - Stack.Navigator
-      - Drawer.Navigator
-        - Tab.Navigator
-          - Tab.Screen(home)
-          - Tab.Screen(room)
-          - Tab.Screen(feed)
-        - Drawer.Screen(my)
-      - Stack.Screen(user)
-      - Stack.Screen(useredit)
-      - Stack.Screen(chat)
-  */
   return (
     <ApolloProvider client={client}>
       <AuthContext.Provider value={authContext}>
@@ -213,7 +199,19 @@ const App = props => {
     </ApolloProvider>
   );
 };
-
+/*
+    Navigation 구조
+    - Stack.Navigator
+      - Drawer.Navigator
+        - Tab.Navigator
+          - Tab.Screen(home)
+          - Tab.Screen(room)
+          - Tab.Screen(feed)
+        - Drawer.Screen(my)
+      - Stack.Screen(user)
+      - Stack.Screen(useredit)
+      - Stack.Screen(chat)
+  */
 const styles = StyleSheet.create({
   iconMenu: {
     marginRight: 10,
@@ -234,10 +232,7 @@ const HeaderRight = () => {
   );
 };
 
-function getHeaderTitle(route) {
-  // If the focused route is not found, we need to assume it's the initial screen
-  // This can happen during if there hasn't been any navigation inside the screen
-  // In our case, it's "Feed" as that's the first screen inside the navigator
+const getHeaderTitle = route => {
   const routeName = getFocusedRouteNameFromRoute(route);
   switch (routeName) {
     case 'my':
@@ -247,6 +242,6 @@ function getHeaderTitle(route) {
     default:
       return '메인';
   }
-}
+};
 
 export default App;

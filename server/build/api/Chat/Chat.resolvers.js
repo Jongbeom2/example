@@ -75,7 +75,6 @@ const resolvers = {
                     notification: {
                         title: room.name,
                         body: content,
-                        tag: `roomId-${roomId}`,
                     },
                 }, {
                     // Required for background/quit data-only messages on iOS

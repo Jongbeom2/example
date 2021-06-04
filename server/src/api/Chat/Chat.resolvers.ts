@@ -82,7 +82,6 @@ const resolvers: Resolvers = {
             notification: {
               title: room.name,
               body: content,
-              tag: `roomId-${roomId}`,
             },
           },
           {

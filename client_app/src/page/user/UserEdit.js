@@ -61,7 +61,7 @@ const UserEdit = ({route, navigation}) => {
   // 유저 정보 로드
   const {data, loading, error} = useQuery(GET_USER, {
     variables: {_id: userId},
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-and-network',
   });
   // 유저 정보 로드 성공
   useEffect(() => {

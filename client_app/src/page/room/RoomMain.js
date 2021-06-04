@@ -44,7 +44,7 @@ const RoomMain = ({navigation, route}) => {
     variables: {
       userId: route.params?.userId,
     },
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-and-network',
   });
   const [roomList, setRoomList] = useState([]);
   // 대화방 리스트 로드
@@ -68,9 +68,9 @@ const RoomMain = ({navigation, route}) => {
   const onPressCreateBtn = () => {
     setIsOpenRoomCreateDialog(true);
   };
-  if (loading) {
-    return <Loading />;
-  }
+  // if (loading) {
+  //   return <Loading />;
+  // }
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView>
