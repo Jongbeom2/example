@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
 });
 const RoomDetail = ({route, navigation}) => {
-  const PAGE_SIZE = 30;
+  const PAGE_SIZE = 15;
   const userId = route?.params?.userId;
   const roomId = route?.params.roomId;
   const {colors} = useTheme();
@@ -145,7 +145,6 @@ const RoomDetail = ({route, navigation}) => {
         skip: 0,
         size: PAGE_SIZE,
       },
-      fetchPolicy: 'cache-and-network',
     });
   }, [getChatList, roomId]);
   // 대화 로드 성공

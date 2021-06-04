@@ -191,7 +191,10 @@ const UserEdit = ({route, navigation}) => {
       });
     });
   };
-  if (loading || mutaionLoading) {
+  if (mutaionLoading) {
+    return <Loading />;
+  }
+  if (!data && loading) {
     return <Loading />;
   }
   return (

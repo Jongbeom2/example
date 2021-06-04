@@ -58,7 +58,7 @@ const UserMain = ({navigation, route}) => {
       userId: route.params?.userId,
     });
   };
-  if (loading) {
+  if (!data && loading) {
     return <Loading />;
   }
   return (

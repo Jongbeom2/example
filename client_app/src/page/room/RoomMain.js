@@ -68,9 +68,9 @@ const RoomMain = ({navigation, route}) => {
   const onPressCreateBtn = () => {
     setIsOpenRoomCreateDialog(true);
   };
-  // if (loading) {
-  //   return <Loading />;
-  // }
+  if (!data && loading) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView>

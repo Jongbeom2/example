@@ -39,9 +39,9 @@ const HomeMain = ({navigation, route}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
-  // if (loading) {
-  //   return <Loading />;
-  // }
+  if (!data && loading) {
+    return <Loading />;
+  }
   return (
     <ScrollView>
       {userList.map(user => (
