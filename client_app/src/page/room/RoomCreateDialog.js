@@ -66,6 +66,9 @@ const RoomCreateDialog = ({visible, onDismiss, route}) => {
     }
   }, [error, authContext]);
   const onClickCreateBtn = () => {
+    if (!roomName) {
+      return;
+    }
     createRoom({
       variables: {
         createRoomInput: {
@@ -77,6 +80,7 @@ const RoomCreateDialog = ({visible, onDismiss, route}) => {
   };
   const closeDialog = useCallback(() => {
     onDismiss();
+    setRoomName('');
   }, [onDismiss]);
   const onChangeRoomName = text => {
     setRoomName(text);

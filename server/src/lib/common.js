@@ -2,6 +2,7 @@
 import * as jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt'; // 비밀번호 해싱용. hash generator.
+import { COOKIE_DURATION_MILLISECONDS } from './const';
 // import sha256 from 'crypto-js/sha256'; // 토큰생성용.
 // import rand from 'csprng'; // 토큰생성용.
 // Cryptographically secure pseudorandom number generator. bits, radix 인풋.
@@ -29,7 +30,7 @@ export const extendToken = async (decoded) => {
  * @description
  * JWT 토큰 생성
  */
-export const generateJWT = (payload, duration = 60 * 10) => {
+export const generateJWT = (payload, duration = COOKIE_DURATION_MILLISECONDS / 1000) => {
   // https://www.npmjs.com/package/jsonwebtoken#usage
   return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
     // , sub(제목), aud(대상자), exp(만료시간), nbf(토큰의 활성날짜), iat(발급된시간), jti()

@@ -7,7 +7,7 @@ type Chat {
   user: User!
   room: Room!
   isSystem: Boolean!
-  content: String
+  content: String!
   imageURL: String
   thumbnailImageURL: String
   fileURL: String
@@ -22,7 +22,7 @@ type Mutation {
 input CreateChatInput {
   roomId: ID!
   userId: ID
-  content: String
+  content: String!
   imageURL: String
   thumbnailImageURL: String
   fileURL: String

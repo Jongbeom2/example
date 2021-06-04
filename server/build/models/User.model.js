@@ -53,6 +53,11 @@ exports.UserSchema = new mongoose_1.default.Schema({
             required: true,
         },
     ],
+    fcmTokenList: [
+        {
+            type: String,
+        },
+    ],
 }, { timestamps: true });
 const UserModel = mongoose_1.default.model('User', exports.UserSchema);
 exports.default = UserModel;

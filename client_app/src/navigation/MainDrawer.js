@@ -54,13 +54,6 @@ const DrawerContent = ({userId, ...rest}) => {
   useEffect(() => {
     if (mutationData && !mutationError) {
       (async () => {
-        const promiseList = [];
-        mutationData.signOut.roomIdList.forEach(roomId => {
-          promiseList.push(
-            messaging().unsubscribeFromTopic(`roomId-${roomId}`),
-          );
-        });
-        await Promise.all(promiseList);
         authContext.signOut();
         Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNOUT);
       })();
@@ -74,10 +67,12 @@ const DrawerContent = ({userId, ...rest}) => {
   }, [mutationError]);
 
   const onPressSignOutBtn = async () => {
+    const fcmToken = await messaging().getToken();
     signOut({
       variables: {
         signOutInput: {
           _id: userId,
+          fcmToken,
         },
       },
     });

@@ -11,6 +11,7 @@ dotenv_1.default.config({ path: path_1.default.join(__dirname, '../.env') });
 const database_1 = require("./middlewares/database");
 const server_1 = require("./apollo/server");
 const ErrorObject_1 = require("./error/ErrorObject");
+const firebase_1 = require("./middlewares/firebase");
 process.stdout.write('\x1Bc');
 console.clear();
 console.info(`\n\n\n`);
@@ -20,11 +21,16 @@ console.info(`✔ Environment: ${chalk_1.default.blue.bold(process.env.NODE_ENV)
 // develoption mode에서는 동시에 데이터 베이스를 연결하고 서버를 실행함.
 // 원래는 production mode처럼 하는게 맞는데, 개발 시 리로드 시간을 줄이기 위함.
 if (process.env.NODE_ENV === 'production') {
-    database_1.connectDatabase().then(server_1.startServer);
+    (async () => {
+        await database_1.connectDatabase();
+        firebase_1.initFirebase();
+        server_1.startServer();
+    })();
 }
 else if (process.env.NODE_ENV === 'development') {
-    server_1.startServer();
     database_1.connectDatabase();
+    firebase_1.initFirebase();
+    server_1.startServer();
 }
 else {
     throw ErrorObject_1.environmentError;

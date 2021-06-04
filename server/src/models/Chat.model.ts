@@ -19,6 +19,7 @@ export const ChatSchema = new mongoose.Schema(
     },
     content: {
       type: String,
+      required: true,
     },
     imageURL: {
       type: String,
@@ -42,7 +43,7 @@ interface Chat {
   roomId: string;
   userId: string;
   isSystem: boolean;
-  content?: string;
+  content: string;
   imageURL?: string;
   thumbnailImageURL?: string;
   fileURL?: string;

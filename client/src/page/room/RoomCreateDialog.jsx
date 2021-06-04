@@ -58,6 +58,9 @@ const RoomCreateDialog = ({ isOpened = false, onClose = () => {} }) => {
     onCloseDialog();
   };
   const onClickCreateBtn = () => {
+    if (!roomName) {
+      return;
+    }
     createRoom({
       variables: {
         createRoomInput: {
@@ -68,6 +71,7 @@ const RoomCreateDialog = ({ isOpened = false, onClose = () => {} }) => {
     });
   };
   const onCloseDialog = () => {
+    setRoomName('');
     onClose();
   };
   return (

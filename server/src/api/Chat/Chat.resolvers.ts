@@ -1,13 +1,12 @@
 import { withFilter } from 'apollo-server';
 import ChatModel from 'src/models/Chat.model';
-import UserModel from 'src/models/User.model';
 import { Resolvers } from 'src/types/graphql';
 import { pubsub } from 'src/apollo/pubsub';
 import RoomModel from 'src/models/Room.model';
 import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 import colors from 'colors';
-import Axios from 'axios';
-//
+import admin from 'firebase-admin';
+
 const resolvers: Resolvers = {
   Query: {
     getChatList: async (_, args, ctx) => {
@@ -49,7 +48,13 @@ const resolvers: Resolvers = {
         fileName,
       } = args.createChatInput;
       // room 수정
-      await RoomModel.findByIdAndUpdate(roomId, { recentMessageContent: content || undefined });
+      const room = await RoomModel.findByIdAndUpdate(roomId, {
+        recentMessageContent: content || undefined,
+      });
+      // 존재하지 않는 room _id임.
+      if (room === null) {
+        throw invalidRoomIdError;
+      }
       // chat 생성
       const chat = await new ChatModel({
         roomId,
@@ -66,25 +71,28 @@ const resolvers: Resolvers = {
         chatCreated: chat,
       });
       // fcm publish
-      await Axios({
-        method: 'post',
-        url: 'https://fcm.googleapis.com/fcm/send',
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          Authorization: `key=${process.env.FCM_SERVER_KEY}`,
-        },
-        data: {
-          to: `/topics/roomId-${roomId}`,
-          data: {
-            roomId: roomId,
-            type: 'chat',
+      if (room.fcmTokenList.length !== 0) {
+        await admin.messaging().sendToDevice(
+          room.fcmTokenList,
+          {
+            data: {
+              roomId: roomId,
+              type: 'chat',
+            },
+            notification: {
+              title: room.name,
+              body: content,
+              tag: `roomId-${roomId}`,
+            },
           },
-          notification: {
-            title: '예제입니다.',
-            body: content,
+          {
+            // Required for background/quit data-only messages on iOS
+            contentAvailable: true,
+            // Required for background/quit data-only messages on Android
+            priority: 'high',
           },
-        },
-      });
+        );
+      }
       return chat;
     },
   },

@@ -23,6 +23,11 @@ export const RoomSchema = new mongoose.Schema(
     recentMessageCreatedAt: {
       type: String,
     },
+    fcmTokenList: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true },
 );
@@ -36,6 +41,7 @@ interface Room {
   userIdList: string[];
   recentMessageContent?: string;
   recentMessageCreatedAt?: string;
+  fcmTokenList: string[];
 }
 
 export interface RoomDoc extends Room, Document {}

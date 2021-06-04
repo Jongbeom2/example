@@ -34,6 +34,11 @@ export const UserSchema = new mongoose.Schema(
         required: true,
       },
     ],
+    fcmTokenList: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true },
 );
@@ -49,6 +54,7 @@ interface User {
   loginType?: string;
   kakaoId: string;
   roomIdList: string[];
+  fcmTokenList: string[];
 }
 
 export interface UserDoc extends User, Document {}

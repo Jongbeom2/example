@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   chatUserWrapper: {
     marginLeft: 5,
     maxWidth: '50%',
+    alignItems: 'baseline',
   },
   chatNickname: {},
   chatText: {

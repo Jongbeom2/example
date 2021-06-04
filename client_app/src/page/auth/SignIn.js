@@ -71,12 +71,6 @@ const SignIn = ({navigation}) => {
         // websocketLink.subscriptionClient는 SubscriptionClient 객체임.
         // https://github.com/apollographql/subscriptions-transport-ws
         websocketLink.subscriptionClient.close(false, false);
-        // message subscribe
-        const promiseList = [];
-        data.signIn.roomIdList.forEach(roomId => {
-          promiseList.push(messaging().subscribeToTopic(`roomId-${roomId}`));
-        });
-        await Promise.all(promiseList);
         authContext.signIn(data.signIn._id);
         Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
       })();
@@ -102,12 +96,6 @@ const SignIn = ({navigation}) => {
     if (mutationData && !mutationError) {
       (async () => {
         websocketLink.subscriptionClient.close(false, false);
-        // message subscribe
-        const promiseList = [];
-        mutationData.signInWithKakao.roomIdList.forEach(roomId => {
-          promiseList.push(messaging().subscribeToTopic(`roomId-${roomId}`));
-        });
-        await Promise.all(promiseList);
         authContext.signIn(mutationData.signInWithKakao._id);
         Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN_KAKAO);
       })();
@@ -125,26 +113,30 @@ const SignIn = ({navigation}) => {
   const onChangePassword = text => {
     setPassword(text);
   };
-  const onClickSignInBtn = () => {
+  const onClickSignInBtn = async () => {
     if (email === '' || password === '') {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_INPUT_ALL_REQUIRED);
       return;
     }
+    const fcmToken = await messaging().getToken();
     mutationSignIn({
       variables: {
         signInInput: {
           email,
           password,
+          fcmToken,
         },
       },
     });
   };
   const onClickKakoSignInBtn = async () => {
     const token = await login();
+    const fcmToken = await messaging().getToken();
     signInWithKakao({
       variables: {
         signInWithKakaoInput: {
           accessToken: token.accessToken,
+          fcmToken,
         },
       },
     });

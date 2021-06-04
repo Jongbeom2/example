@@ -9,7 +9,7 @@ const pubsub_1 = require("../../apollo/pubsub");
 const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const ErrorObject_1 = require("../../error/ErrorObject");
 const colors_1 = __importDefault(require("colors"));
-const axios_1 = __importDefault(require("axios"));
+const firebase_admin_1 = __importDefault(require("firebase-admin"));
 const resolvers = {
     Query: {
         getChatList: async (_, args, ctx) => {
@@ -43,7 +43,13 @@ const resolvers = {
         createChat: async (_, args, ctx) => {
             const { roomId, userId, content, imageURL, thumbnailImageURL, fileURL, fileName, } = args.createChatInput;
             // room 수정
-            await Room_model_1.default.findByIdAndUpdate(roomId, { recentMessageContent: content || undefined });
+            const room = await Room_model_1.default.findByIdAndUpdate(roomId, {
+                recentMessageContent: content || undefined,
+            });
+            // 존재하지 않는 room _id임.
+            if (room === null) {
+                throw ErrorObject_1.invalidRoomIdError;
+            }
             // chat 생성
             const chat = await new Chat_model_1.default({
                 roomId,
@@ -60,25 +66,24 @@ const resolvers = {
                 chatCreated: chat,
             });
             // fcm publish
-            await axios_1.default({
-                method: 'post',
-                url: 'https://fcm.googleapis.com/fcm/send',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    Authorization: `key=${process.env.FCM_SERVER_KEY}`,
-                },
-                data: {
-                    to: `/topics/roomId-${roomId}`,
+            if (room.fcmTokenList.length !== 0) {
+                await firebase_admin_1.default.messaging().sendToDevice(room.fcmTokenList, {
                     data: {
                         roomId: roomId,
                         type: 'chat',
                     },
                     notification: {
-                        title: '예제입니다.',
+                        title: room.name,
                         body: content,
+                        tag: `roomId-${roomId}`,
                     },
-                },
-            });
+                }, {
+                    // Required for background/quit data-only messages on iOS
+                    contentAvailable: true,
+                    // Required for background/quit data-only messages on Android
+                    priority: 'high',
+                });
+            }
             return chat;
         },
     },

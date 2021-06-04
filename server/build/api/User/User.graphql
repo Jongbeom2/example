@@ -27,14 +27,17 @@ type Mutation {
 input SignInInput {
   email: String!
   password: String!
+  fcmToken: String
 }
 
 input SignOutInput {
   _id: ID!
+  fcmToken: String
 }
 
 input SignInWithKakaoInput {
   accessToken: String!
+  fcmToken: String
 }
 
 input CreateUserInput {

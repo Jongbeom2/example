@@ -2,6 +2,7 @@ import { generateJWT, decodeJWT, parseCookie } from 'src/lib/common';
 import { gql } from 'apollo-server-express';
 import colors from 'colors';
 import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
+import { COOKIE_DURATION_MILLISECONDS, COOKIE_REFRESH_TIME_LIMIT } from 'src/lib/const';
 const decodeCookieToken = (cookieString: any) => {
   let decoded: any;
   let errorFields: string[] = [];
@@ -67,17 +68,23 @@ export const auth = (req: any, res: any) => {
   }
 
   //   // Re-issue token if token will be expired soon.
-  //   const now = Math.floor(Date.now() / 1000);
-  //   const REFRESH_TIME_LIMIT = 5 * 60;
-  //   const timeLeft = decoded.exp - now;
-  //   //   console.info(now);
-  //   //   console.info(decoded.exp);
-  //   //   console.info(decoded.iat);
-  //   //   console.info(timeLeft);
-  //   if (decoded?.exp && timeLeft < REFRESH_TIME_LIMIT) {
-  //     const accessToken = generateJWT({ my: decoded.my });
-  //     res.cookie('accessToken', accessToken, { httpOnly: true });
-  //   }
+  const now = Math.floor(Date.now() / 1000);
+  const timeLeft = decoded.exp - now;
+  //   console.info(now);
+  //   console.info(decoded.exp);
+  //   console.info(decoded.iat);
+  //   console.info(timeLeft);
+  if (decoded?.exp && timeLeft < COOKIE_REFRESH_TIME_LIMIT) {
+    const accessToken = generateJWT({ my: decoded.my });
+    res.cookie('accessToken', accessToken, {
+      maxAge: COOKIE_DURATION_MILLISECONDS,
+      httpOnly: true,
+    });
+    res.cookie('_id', decoded.my.userId, {
+      maxAge: COOKIE_DURATION_MILLISECONDS,
+      httpOnly: false,
+    });
+  }
 
   return decoded.my;
 };

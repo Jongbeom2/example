@@ -43,6 +43,11 @@ exports.RoomSchema = new mongoose_1.default.Schema({
     recentMessageCreatedAt: {
         type: String,
     },
+    fcmTokenList: [
+        {
+            type: String,
+        },
+    ],
 }, { timestamps: true });
 const RoomModel = mongoose_1.default.model('Room', exports.RoomSchema);
 exports.default = RoomModel;

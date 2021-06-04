@@ -1,21 +1,17 @@
 import bcrypt from 'bcrypt';
 import { Resolvers } from 'src/types/graphql';
 import UserModel from 'src/models/User.model';
-import RoomModel from 'src/models/Room.model';
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
-import { DEFAULT_PROFILE_URL } from 'src/lib/const';
-import ChatModel from 'src/models/Chat.model';
+import { COOKIE_DURATION_MILLISECONDS, DEFAULT_PROFILE_URL } from 'src/lib/const';
 import {
   invalidUserEmailError,
   invalidUserIdError,
   invalidUserPasswordError,
   existUserEmailError,
-  invalidRoomIdError,
 } from 'src/error/ErrorObject';
 import { processLoadMany } from 'src/apollo/dataLoader';
-import { pubsub } from 'src/apollo/pubsub';
-
+import RoomModel, { RoomDoc } from 'src/models/Room.model';
 const resolvers: Resolvers = {
   Query: {
     getUser: async (_, args, ctx) => {
@@ -42,7 +38,7 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     signIn: async (_, args, ctx) => {
-      const { email, password } = args.signInInput;
+      const { email, password, fcmToken } = args.signInInput;
       const user = await UserModel.findOne({ email: email });
       // 존재하지 않는 user email임.
       if (user === null) {
@@ -52,6 +48,24 @@ const resolvers: Resolvers = {
       if (!isValidPassword) {
         throw invalidUserPasswordError;
       }
+      // notification을 위해 fcmToken 저장함.
+      if (fcmToken) {
+        // user fcmToken
+        if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+          user.fcmTokenList.push(fcmToken);
+        }
+        // room fcmToken
+        const promiseList: Promise<RoomDoc>[] = [];
+        const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } });
+        roomList.forEach((room) => {
+          if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+            room.fcmTokenList.push(fcmToken);
+            promiseList.push(room.save());
+          }
+        });
+        await Promise.all(promiseList);
+      }
+      await user.save();
       // access token 생성함.
       const accessToken = generateJWT({
         access: true,
@@ -63,25 +77,21 @@ const resolvers: Resolvers = {
       const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
       if (isNodeEnvDevelopment) {
         ctx.res.cookie('accessToken', accessToken, {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: true,
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: false,
         });
       } else {
         ctx.res.cookie('accessToken', accessToken, {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: true,
           domain: '.jongbeom.com',
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: false,
           domain: '.jongbeom.com',
         });
@@ -89,9 +99,10 @@ const resolvers: Resolvers = {
       return user;
     },
     signInWithKakao: async (_, args, ctx) => {
+      const { accessToken: kakaoAccessToken, fcmToken } = args.signInWithKakaoInput;
       // accessToken으로 kakao user 정보 가져옴.
       const { data } = await Axios.get(`https://kapi.kakao.com/v2/user/me`, {
-        headers: { Authorization: `Bearer ${args.signInWithKakaoInput.accessToken}` },
+        headers: { Authorization: `Bearer ${kakaoAccessToken}` },
       });
       let user = await UserModel.findOne({ kakaoId: data.id });
       if (user === null) {
@@ -101,8 +112,26 @@ const resolvers: Resolvers = {
           profileImageURL: data.kakao_account.profile.profile_image_url,
           profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
           loginType: 'kakao',
-        }).save();
+        });
       }
+      // notification을 위해 fcmToken 저장함.
+      if (fcmToken) {
+        // user fcmToken
+        if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+          user.fcmTokenList.push(fcmToken);
+        }
+        // room fcmToken
+        const promiseList: Promise<RoomDoc>[] = [];
+        const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } });
+        roomList.forEach((room) => {
+          if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+            room.fcmTokenList.push(fcmToken);
+            promiseList.push(room.save());
+          }
+        });
+        await Promise.all(promiseList);
+      }
+      await user.save();
       // access token 생성함.
       const accessToken = generateJWT({
         access: true,
@@ -110,29 +139,26 @@ const resolvers: Resolvers = {
           userId: user._id,
         },
       });
+
       // 유저 정보 쿠키에 저장함.
       const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
       if (isNodeEnvDevelopment) {
         ctx.res.cookie('accessToken', accessToken, {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: true,
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: false,
         });
       } else {
         ctx.res.cookie('accessToken', accessToken, {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: true,
           domain: '.jongbeom.com',
         });
         ctx.res.cookie('_id', user._id.toString(), {
-          maxAge: 1000 * 60 * 10,
-          // maxAge: 1000 * 60,
+          maxAge: COOKIE_DURATION_MILLISECONDS,
           httpOnly: false,
           domain: '.jongbeom.com',
         });
@@ -140,7 +166,7 @@ const resolvers: Resolvers = {
       return user;
     },
     signOut: async (_, args, ctx) => {
-      const { _id } = args.signOutInput;
+      const { _id, fcmToken } = args.signOutInput;
       ctx.res.clearCookie('accessToken');
       ctx.res.clearCookie('_id');
       const user = await UserModel.findById(_id);
@@ -148,6 +174,20 @@ const resolvers: Resolvers = {
       if (user === null) {
         throw invalidUserIdError;
       }
+      // notification 끄기 위해 fcmToken 삭제함.
+      if (fcmToken) {
+        // user fcmToken
+        user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
+        // room fcmToken
+        const promiseList: Promise<RoomDoc>[] = [];
+        const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } });
+        roomList.forEach((room) => {
+          room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
+          promiseList.push(room.save());
+        });
+        await Promise.all(promiseList);
+      }
+      await user.save();
       return user;
     },
     createUser: async (_, args, ctx) => {

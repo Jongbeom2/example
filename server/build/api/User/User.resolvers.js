@@ -10,6 +10,7 @@ const common_1 = require("../../lib/common");
 const const_1 = require("../../lib/const");
 const ErrorObject_1 = require("../../error/ErrorObject");
 const dataLoader_1 = require("../../apollo/dataLoader");
+const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const resolvers = {
     Query: {
         getUser: async (_, args, ctx) => {
@@ -34,7 +35,7 @@ const resolvers = {
     },
     Mutation: {
         signIn: async (_, args, ctx) => {
-            const { email, password } = args.signInInput;
+            const { email, password, fcmToken } = args.signInInput;
             const user = await User_model_1.default.findOne({ email: email });
             // 존재하지 않는 user email임.
             if (user === null) {
@@ -44,6 +45,24 @@ const resolvers = {
             if (!isValidPassword) {
                 throw ErrorObject_1.invalidUserPasswordError;
             }
+            // notification을 위해 fcmToken 저장함.
+            if (fcmToken) {
+                // user fcmToken
+                if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+                    user.fcmTokenList.push(fcmToken);
+                }
+                // room fcmToken
+                const promiseList = [];
+                const roomList = await Room_model_1.default.find({ _id: { $in: user.roomIdList } });
+                roomList.forEach((room) => {
+                    if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+                        room.fcmTokenList.push(fcmToken);
+                        promiseList.push(room.save());
+                    }
+                });
+                await Promise.all(promiseList);
+            }
+            await user.save();
             // access token 생성함.
             const accessToken = common_1.generateJWT({
                 access: true,
@@ -55,26 +74,22 @@ const resolvers = {
             const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
             if (isNodeEnvDevelopment) {
                 ctx.res.cookie('accessToken', accessToken, {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: true,
                 });
                 ctx.res.cookie('_id', user._id.toString(), {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: false,
                 });
             }
             else {
                 ctx.res.cookie('accessToken', accessToken, {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: true,
                     domain: '.jongbeom.com',
                 });
                 ctx.res.cookie('_id', user._id.toString(), {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: false,
                     domain: '.jongbeom.com',
                 });
@@ -82,9 +97,10 @@ const resolvers = {
             return user;
         },
         signInWithKakao: async (_, args, ctx) => {
+            const { accessToken: kakaoAccessToken, fcmToken } = args.signInWithKakaoInput;
             // accessToken으로 kakao user 정보 가져옴.
             const { data } = await axios_1.default.get(`https://kapi.kakao.com/v2/user/me`, {
-                headers: { Authorization: `Bearer ${args.signInWithKakaoInput.accessToken}` },
+                headers: { Authorization: `Bearer ${kakaoAccessToken}` },
             });
             let user = await User_model_1.default.findOne({ kakaoId: data.id });
             if (user === null) {
@@ -94,8 +110,26 @@ const resolvers = {
                     profileImageURL: data.kakao_account.profile.profile_image_url,
                     profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
                     loginType: 'kakao',
-                }).save();
+                });
             }
+            // notification을 위해 fcmToken 저장함.
+            if (fcmToken) {
+                // user fcmToken
+                if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+                    user.fcmTokenList.push(fcmToken);
+                }
+                // room fcmToken
+                const promiseList = [];
+                const roomList = await Room_model_1.default.find({ _id: { $in: user.roomIdList } });
+                roomList.forEach((room) => {
+                    if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+                        room.fcmTokenList.push(fcmToken);
+                        promiseList.push(room.save());
+                    }
+                });
+                await Promise.all(promiseList);
+            }
+            await user.save();
             // access token 생성함.
             const accessToken = common_1.generateJWT({
                 access: true,
@@ -107,26 +141,22 @@ const resolvers = {
             const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
             if (isNodeEnvDevelopment) {
                 ctx.res.cookie('accessToken', accessToken, {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: true,
                 });
                 ctx.res.cookie('_id', user._id.toString(), {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: false,
                 });
             }
             else {
                 ctx.res.cookie('accessToken', accessToken, {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: true,
                     domain: '.jongbeom.com',
                 });
                 ctx.res.cookie('_id', user._id.toString(), {
-                    maxAge: 1000 * 60 * 10,
-                    // maxAge: 1000 * 60,
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
                     httpOnly: false,
                     domain: '.jongbeom.com',
                 });
@@ -134,7 +164,7 @@ const resolvers = {
             return user;
         },
         signOut: async (_, args, ctx) => {
-            const { _id } = args.signOutInput;
+            const { _id, fcmToken } = args.signOutInput;
             ctx.res.clearCookie('accessToken');
             ctx.res.clearCookie('_id');
             const user = await User_model_1.default.findById(_id);
@@ -142,6 +172,20 @@ const resolvers = {
             if (user === null) {
                 throw ErrorObject_1.invalidUserIdError;
             }
+            // notification 끄기 위해 fcmToken 삭제함.
+            if (fcmToken) {
+                // user fcmToken
+                user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
+                // room fcmToken
+                const promiseList = [];
+                const roomList = await Room_model_1.default.find({ _id: { $in: user.roomIdList } });
+                roomList.forEach((room) => {
+                    room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
+                    promiseList.push(room.save());
+                });
+                await Promise.all(promiseList);
+            }
+            await user.save();
             return user;
         },
         createUser: async (_, args, ctx) => {

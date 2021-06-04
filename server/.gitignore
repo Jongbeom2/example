@@ -75,3 +75,6 @@ graphql.d.ts
 package-lock.json
 
 .env
+
+# Firebase Service account information
+example-df56a-firebase-adminsdk-iwzmp-8e904fa213.json

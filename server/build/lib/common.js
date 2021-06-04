@@ -27,6 +27,7 @@ exports.urlToJwt = exports.jwtToUrl = exports.toLocalMobile = exports.parseMobil
 const jwt = __importStar(require("jsonwebtoken"));
 const crypto_1 = __importDefault(require("crypto"));
 const bcrypt_1 = __importDefault(require("bcrypt")); // 비밀번호 해싱용. hash generator.
+const const_1 = require("./const");
 // import sha256 from 'crypto-js/sha256'; // 토큰생성용.
 // import rand from 'csprng'; // 토큰생성용.
 // Cryptographically secure pseudorandom number generator. bits, radix 인풋.
@@ -51,7 +52,7 @@ exports.extendToken = async (decoded) => {
  * @description
  * JWT 토큰 생성
  */
-exports.generateJWT = (payload, duration = 60 * 10) => {
+exports.generateJWT = (payload, duration = const_1.COOKIE_DURATION_MILLISECONDS / 1000) => {
     // https://www.npmjs.com/package/jsonwebtoken#usage
     return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
         // , sub(제목), aud(대상자), exp(만료시간), nbf(토큰의 활성날짜), iat(발급된시간), jti()
