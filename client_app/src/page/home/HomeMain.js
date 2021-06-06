@@ -1,6 +1,13 @@
 import {useQuery} from '@apollo/client';
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, ScrollView} from 'react-native';
+import {
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {GET_USER_LIST} from './home.query';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {
@@ -11,7 +18,12 @@ import {
 import {AuthContext} from 'src/App';
 import UserCard from 'src/page/home/UserCard';
 import Loading from 'src/component/Loading';
-
+const styles = StyleSheet.create({
+  root: {
+    width: '100%',
+    height: '100%',
+  },
+});
 const HomeMain = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const userId = route.params?.userId;
@@ -43,11 +55,13 @@ const HomeMain = ({navigation, route}) => {
     return <Loading />;
   }
   return (
-    <ScrollView>
-      {userList.map(user => (
-        <UserCard key={user._id} user={user} navigation={navigation} />
-      ))}
-    </ScrollView>
+    <SafeAreaView style={styles.root}>
+      <ScrollView style={styles.root}>
+        {userList.map(user => (
+          <UserCard key={user._id} user={user} navigation={navigation} />
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 export default HomeMain;

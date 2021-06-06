@@ -17,6 +17,7 @@ import {
 import messaging from '@react-native-firebase/messaging';
 import {useMutation} from '@apollo/client';
 import {SIGNOUT} from 'src/page/auth/auth.query';
+import Loading from 'src/component/Loading';
 
 const Drawer = createDrawerNavigator();
 const MainDrawer = ({route}) => {
@@ -77,7 +78,9 @@ const DrawerContent = ({userId, ...rest}) => {
       },
     });
   };
-
+  if (mutationLoading) {
+    return <Loading />;
+  }
   return (
     <DrawerContentScrollView {...rest}>
       <DrawerItemList {...rest} />

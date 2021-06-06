@@ -130,7 +130,12 @@ const SignIn = ({navigation}) => {
     });
   };
   const onClickKakoSignInBtn = async () => {
-    const token = await login();
+    let token;
+    try {
+      token = await login();
+    } catch (e) {
+      return;
+    }
     const fcmToken = await messaging().getToken();
     signInWithKakao({
       variables: {

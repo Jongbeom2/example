@@ -63,7 +63,7 @@ const resolvers: Resolvers = {
             promiseList.push(room.save());
           }
         });
-        await Promise.all(promiseList);
+        Promise.all(promiseList);
       }
       await user.save();
       // access token 생성함.
@@ -185,7 +185,7 @@ const resolvers: Resolvers = {
           room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
           promiseList.push(room.save());
         });
-        await Promise.all(promiseList);
+        Promise.all(promiseList);
       }
       await user.save();
       return user;
