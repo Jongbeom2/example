@@ -24,8 +24,6 @@ const mongoose_1 = __importStar(require("mongoose"));
 exports.UserSchema = new mongoose_1.default.Schema({
     email: {
         type: String,
-        unique: true,
-        sparse: true,
     },
     password: {
         type: String,

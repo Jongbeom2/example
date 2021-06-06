@@ -1,12 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { DEFAULT_PROFILE_URL } from 'src/lib/const';
-
 export const UserSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      unique: true,
-      sparse: true,
     },
     password: {
       type: String,

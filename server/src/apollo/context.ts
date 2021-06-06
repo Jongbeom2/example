@@ -15,6 +15,11 @@ const loaders = {
       queryField: '_id',
       keyMap: keyMapOneToOne,
     })(),
+    byEmail: Loader<UserDoc>({
+      model: UserModel,
+      queryField: 'email',
+      keyMap: keyMapOneToOne,
+    })(),
   },
   room: {
     byId: Loader<RoomDoc>({
@@ -75,6 +80,7 @@ export interface GraphqlContext {
   loaders: {
     user: {
       byId: DataLoader<string, UserDoc>;
+      byEmail: DataLoader<string, UserDoc>;
     };
     room: {
       byId: DataLoader<string, RoomDoc>;

@@ -19,6 +19,11 @@ const loaders = {
             queryField: '_id',
             keyMap: dataLoader_1.keyMapOneToOne,
         })(),
+        byEmail: dataLoader_1.Loader({
+            model: User_model_1.default,
+            queryField: 'email',
+            keyMap: dataLoader_1.keyMapOneToOne,
+        })(),
     },
     room: {
         byId: dataLoader_1.Loader({
