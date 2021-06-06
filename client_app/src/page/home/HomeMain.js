@@ -15,7 +15,7 @@ import {
   MESSAGE_ERROR_AUTH,
   MESSAGE_TITLE,
 } from 'src/res/message';
-import {AuthContext} from 'src/App';
+import {AuthContext} from 'src/Main';
 import UserCard from 'src/page/home/UserCard';
 import Loading from 'src/component/Loading';
 const styles = StyleSheet.create({
@@ -28,7 +28,6 @@ const HomeMain = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const userId = route.params?.userId;
   const [userList, setUserList] = useState([]);
-
   // 유저 리스트 로드
   const {data, loading, error} = useQuery(GET_USER_LIST, {
     variables: {
@@ -46,7 +45,6 @@ const HomeMain = ({navigation, route}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
@@ -56,7 +54,7 @@ const HomeMain = ({navigation, route}) => {
   }
   return (
     <SafeAreaView style={styles.root}>
-      <ScrollView style={styles.root}>
+      <ScrollView>
         {userList.map(user => (
           <UserCard key={user._id} user={user} navigation={navigation} />
         ))}

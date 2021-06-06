@@ -8,7 +8,7 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
-import {AuthContext} from 'src/App';
+import {AuthContext} from 'src/Main';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
@@ -73,7 +73,6 @@ const UserEdit = ({route, navigation}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
@@ -117,7 +116,6 @@ const UserEdit = ({route, navigation}) => {
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (lazyQueryError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
@@ -138,7 +136,6 @@ const UserEdit = ({route, navigation}) => {
   useEffect(() => {
     if (isNotAuthorizedError(mutationError)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (mutationError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }

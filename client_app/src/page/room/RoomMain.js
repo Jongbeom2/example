@@ -8,7 +8,7 @@ import {
   MESSAGE_ERROR_AUTH,
   MESSAGE_TITLE,
 } from 'src/res/message';
-import {AuthContext} from 'src/App';
+import {AuthContext} from 'src/Main';
 import RoomCard from 'src/page/room/RoomCard';
 import {useTheme} from 'react-native-paper';
 import {FAB} from 'react-native-paper';
@@ -57,7 +57,6 @@ const RoomMain = ({navigation, route}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }

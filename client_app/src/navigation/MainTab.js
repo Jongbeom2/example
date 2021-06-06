@@ -62,6 +62,12 @@ const MainTab = ({navigation, route: parentRoute}) => {
       tabBarOptions={{
         activeTintColor: theme.colors.primary,
         inactiveTintColor: theme.colors.custom.grey,
+        style: {
+          height: 48.8,
+        },
+        tabStyle: {
+          height: 48.8,
+        },
       }}
       screenOptions={({route}) => ({
         tabBarLabel: route.name,

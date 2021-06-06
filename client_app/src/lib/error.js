@@ -6,5 +6,5 @@ export const isNotAuthorizedError = error => {
 };
 
 export const isNotAuthorizedErrorSubscription = error => {
-  return error?.message === 'NOT_AUTHORIZED';
+  return error?.message.includes('NOT_AUTHORIZED');
 };

@@ -6,7 +6,5 @@ export const isNotAuthorizedError = (error) => {
 };
 
 export const isNotAuthorizedErrorSubscription = (error) => {
-  return error?.message?.split(
-    'Context creation failed: Context creation failed: Context creation failed: Context creation failed: Context creation failed: Context creation failed: Context creation failed: ',
-  )[1];
+  return error?.message.includes('NOT_AUTHORIZED');
 };

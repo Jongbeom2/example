@@ -4,7 +4,7 @@ import {useContext} from 'react';
 import {useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {Avatar, Button, Text, Title} from 'react-native-paper';
-import {AuthContext} from 'src/App';
+import {AuthContext} from 'src/Main';
 import Loading from 'src/component/Loading';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {
@@ -48,7 +48,6 @@ const UserMain = ({navigation, route}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }

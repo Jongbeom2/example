@@ -28,8 +28,9 @@ const styles = StyleSheet.create({
 const RoomCard = ({room, navigation, userId}) => {
   const {colors} = useTheme();
   const onPress = () => {
-    navigation.navigate('roomdetail', {
+    navigation.navigate('roomdetaildrawer', {
       roomId: room._id,
+      roomName: room.name,
       userId,
     });
   };

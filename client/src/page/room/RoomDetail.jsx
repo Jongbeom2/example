@@ -146,6 +146,7 @@ const RoomDetail = () => {
   }, [lazyQueryData]);
   // 대화 로드 실패
   useEffect(() => {
+    debugger
     if (isNotAuthorizedError(lazyQueryError)) {
       alert(MESSAGE_ERROR_AUTH);
       history.push('/signin');

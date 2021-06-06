@@ -2,7 +2,7 @@ import {useMutation} from '@apollo/client';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, StyleSheet} from 'react-native';
 import {Button, Dialog, TextInput, Portal} from 'react-native-paper';
-import {AuthContext} from 'src/App';
+import {AuthContext} from 'src/Main';
 import Loading from 'src/component/Loading';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {
@@ -60,7 +60,6 @@ const RoomCreateDialog = ({visible, onDismiss, route}) => {
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
       authContext.signOut();
-      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_AUTH);
     } else if (error) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
