@@ -4,7 +4,7 @@ import HomeMain from 'src/page/home/HomeMain';
 import SignIn from './page/auth/SignIn';
 import SignInKakao from './page/auth/SignInKakao';
 import SignUp from './page/auth/SignUp';
-import FeedMain from './page/feed/FeedMain';
+import RestaurantMain from './page/restaurant/RestaurantMain';
 import UserRouter from './page/user/UserRouter';
 import AuthRoute from './components/AuthRoute';
 import RoomRouter from './page/room/RoomRouter';
@@ -36,16 +36,16 @@ const RoutesPageMatcher = () => {
           <UserRouter />
         </AuthRoute>
       );
-    case 'feed':
-      return (
-        <AuthRoute>
-          <FeedMain />
-        </AuthRoute>
-      );
     case 'room':
       return (
         <AuthRoute>
           <RoomRouter />
+        </AuthRoute>
+      );
+    case 'restaurant':
+      return (
+        <AuthRoute>
+          <RestaurantMain />
         </AuthRoute>
       );
     default:

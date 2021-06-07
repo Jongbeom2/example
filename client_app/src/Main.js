@@ -27,7 +27,6 @@ import SplashScreen from 'react-native-splash-screen';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import UserMain from 'src/page/user/UserMain.js';
 import UserEdit from 'src/page/user/UserEdit.js';
-import RoomDetail from 'src/page/room/RoomDetail.js';
 import {
   MESSAGE_ERROR,
   MESSAGE_SUCCESS_SIGNOUT,

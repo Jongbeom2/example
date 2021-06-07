@@ -45,7 +45,7 @@ const SignUp = () => {
       alert(MESSAGE_SUCCESS_SIGNUP);
       history.push('/signin');
     }
-  }, [data]);
+  }, [data, error, history]);
   // 회원가입 실패
   useEffect(() => {
     if (error) {

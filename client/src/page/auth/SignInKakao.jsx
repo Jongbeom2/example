@@ -30,14 +30,14 @@ const SignInKakao = () => {
       alert(MESSAGE_SUCCESS_SIGNIN_KAKAO);
       history.push('/home');
     }
-  }, [data]);
+  }, [data, error, history]);
   // 카카오 로그인 실패
   useEffect(() => {
     if (error) {
       alert(MESSAGE_ERROR_SIGNIN_KAKAO);
       history.push('/signin');
     }
-  }, [error]);
+  }, [error, history]);
   // 카카오 로그인 시작
   useEffect(() => {
     if (code) {
@@ -71,7 +71,7 @@ const SignInKakao = () => {
       alert(MESSAGE_ERROR_SIGNIN_KAKAO);
       history.push('/signin');
     }
-  }, []);
+  }, [signInWithKakao, code, history]);
   return (
     <div className={classes.root}>
       <Loading />

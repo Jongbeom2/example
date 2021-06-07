@@ -69,7 +69,7 @@ const Signin = () => {
       alert(MESSAGE_SUCCESS_SIGNIN);
       history.push('/home');
     }
-  }, [data]);
+  }, [data, error, history]);
   // 로그인 실패
   useEffect(() => {
     if (error) {

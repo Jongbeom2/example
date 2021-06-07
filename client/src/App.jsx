@@ -5,9 +5,7 @@ import {
   ThemeProvider,
   StylesProvider,
 } from '@material-ui/core/styles';
-import styled, {
-  ThemeProvider as StyledThemeProvider,
-} from 'styled-components';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import Theme from 'src/Theme';
 import Router from 'src/routes';
 import client from 'src/apollo/client';
@@ -94,6 +92,8 @@ const App = () => {
           ...state,
           drawerState: action.drawerState,
         };
+      default:
+        return;
     }
   };
   const [state, dispatch] = useReducer(reducer, intialState);

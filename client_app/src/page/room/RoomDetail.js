@@ -1,5 +1,6 @@
 import {useLazyQuery, useMutation, useSubscription} from '@apollo/client';
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -13,6 +14,7 @@ import {
   SafeAreaView,
   Alert,
   FlatList,
+  Text,
 } from 'react-native';
 import {IconButton, useTheme} from 'react-native-paper';
 import {
@@ -34,6 +36,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {GET_PRESIGNED_PUT_URL} from 'src/lib/file.query';
 import DocumentPicker from 'react-native-document-picker';
 import {AuthContext} from 'src/Main';
+import ChatCardLoading from './ChatCardLoading';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -78,6 +81,7 @@ const RoomDetail = ({route, navigation}) => {
   const [chatList, setChatList] = useState([]);
   const [chatFile, setChatFile] = useState(null);
   const [isPlusBtnPressed, setIsPlusBtnPressed] = useState(false);
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
   // 1. 대화 구독
   const {
     data: subscriptionData,
@@ -150,8 +154,7 @@ const RoomDetail = ({route, navigation}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [mutationError, authContext]);
-  // 5. 파일 업로드
-  // presigned url 로드
+  // 4. presigned url 로드
   const [
     getPresignedPutURL,
     {data: lazyQueryData2, loading: lazyQueryLoading2, error: lazyQueryError2},
@@ -160,59 +163,9 @@ const RoomDetail = ({route, navigation}) => {
   useEffect(() => {
     if (lazyQueryData2 && !lazyQueryError2) {
       const presignedURL = lazyQueryData2.getPresignedPutURL.presignedURL;
-      (async function () {
-        try {
-          // Presigned put url을 이용하여 업로드
-          const file = await getBlob(chatFile.uri);
-          const result = await fetch(presignedURL, {
-            method: 'PUT',
-            body: file,
-          });
-          const url = result.url.split('?')[0];
-          const type = file.data.type.split('/')[0];
-          const name = file.data.name;
-          if (type === 'image') {
-            createChat({
-              variables: {
-                createChatInput: {
-                  roomId,
-                  userId,
-                  content: '사진',
-                  imageURL: url,
-                  thumbnailImageURL: url.replace(
-                    'example-jb',
-                    'example-jb-thumbnail',
-                  ),
-                },
-              },
-            });
-          } else {
-            createChat({
-              variables: {
-                createChatInput: {
-                  roomId,
-                  userId,
-                  content: '파일',
-                  fileURL: url,
-                  fileName: name,
-                },
-              },
-            });
-          }
-        } catch (error) {
-          Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
-        }
-      })();
+      uplaodFile(presignedURL);
     }
-  }, [
-    lazyQueryData2,
-    lazyQueryError2,
-    chatFile,
-    setChatFile,
-    createChat,
-    roomId,
-    userId,
-  ]);
+  }, [lazyQueryData2, lazyQueryError2, uplaodFile]);
   // presigned url 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError2)) {
@@ -221,6 +174,56 @@ const RoomDetail = ({route, navigation}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [lazyQueryError2, authContext]);
+  // 5. 파일 업로드
+  const uplaodFile = useCallback(
+    async presignedURL => {
+      console.log('챗 생성');
+      try {
+        // Presigned put url을 이용하여 업로드
+        const file = await getBlob(chatFile.uri);
+        const result = await fetch(presignedURL, {
+          method: 'PUT',
+          body: file,
+        });
+        const url = result.url.split('?')[0];
+        const type = file.data.type.split('/')[0];
+        const name = file.data.name;
+        if (type === 'image') {
+          createChat({
+            variables: {
+              createChatInput: {
+                roomId,
+                userId,
+                content: '사진',
+                imageURL: url,
+                thumbnailImageURL: url.replace(
+                  'example-jb',
+                  'example-jb-thumbnail',
+                ),
+              },
+            },
+          });
+        } else {
+          createChat({
+            variables: {
+              createChatInput: {
+                roomId,
+                userId,
+                content: '파일',
+                fileURL: url,
+                fileName: name,
+              },
+            },
+          });
+        }
+        setIsUploadLoading(false);
+      } catch (error) {
+        console.log(error);
+        Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
+      }
+    },
+    [chatFile, createChat, userId, roomId],
+  );
   const onChangeContent = text => {
     setContent(text);
   };
@@ -258,6 +261,7 @@ const RoomDetail = ({route, navigation}) => {
       if (response.didCancel) {
         return;
       }
+      setIsUploadLoading(true);
       // scroll 제일 밑으로
       flatlistRef.current.scrollToOffset({offset: 0, animated: false});
       setChatFile(response);
@@ -276,6 +280,7 @@ const RoomDetail = ({route, navigation}) => {
       if (response.didCancel) {
         return;
       }
+      setIsUploadLoading(true);
       // scroll 제일 밑으로
       flatlistRef.current.scrollToOffset({offset: 0, animated: false});
       setChatFile(response);
@@ -292,6 +297,7 @@ const RoomDetail = ({route, navigation}) => {
   const onPressFileBtn = async () => {
     try {
       const response = await DocumentPicker.pick();
+      setIsUploadLoading(true);
       setChatFile(response);
       // Presigned put url을 가져옴.
       const fileExtension = response.name.split('.').pop();
@@ -320,6 +326,9 @@ const RoomDetail = ({route, navigation}) => {
         onEndReached={onEndReached}
         keyExtractor={item => item._id}
         renderItem={({item, index}) => <ChatCard chat={item} userId={userId} />}
+        ListHeaderComponent={() =>
+          lazyQueryLoading2 || isUploadLoading ? <ChatCardLoading /> : null
+        }
       />
       <View
         style={[{backgroundColor: colors.custom.white}, styles.inputWrapper]}>

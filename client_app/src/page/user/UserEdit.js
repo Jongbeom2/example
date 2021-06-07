@@ -194,6 +194,9 @@ const UserEdit = ({route, navigation}) => {
   if (!data && loading) {
     return <Loading />;
   }
+  if (lazyQueryLoading) {
+    return <Loading />;
+  }
   return (
     <View style={styles.root}>
       <View>

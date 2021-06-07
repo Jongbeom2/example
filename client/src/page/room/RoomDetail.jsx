@@ -2,12 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import MainWrapper from 'src/components/MainWrapper';
 import { Button, Fab, InputBase } from '@material-ui/core';
-import {
-  useLazyQuery,
-  useMutation,
-  useQuery,
-  useSubscription,
-} from '@apollo/client';
+import { useLazyQuery, useMutation, useSubscription } from '@apollo/client';
 import {
   CREATE_CHAT,
   CHAT_CREATED,
@@ -112,9 +107,12 @@ const RoomDetail = () => {
   // 대화 구독 성공
   useEffect(() => {
     if (subscriptionData && !subscriptionError) {
-      setChatList([subscriptionData.chatCreated, ...chatList]);
+      setChatList((preChatList) => [
+        subscriptionData.chatCreated,
+        ...preChatList,
+      ]);
     }
-  }, [subscriptionData]);
+  }, [subscriptionData, subscriptionError]);
   // 대화 구독 실패
   useEffect(() => {
     if (isNotAuthorizedErrorSubscription(subscriptionError)) {
@@ -123,7 +121,7 @@ const RoomDetail = () => {
     } else if (subscriptionError) {
       alert(MESSAGE_ERROR);
     }
-  }, [subscriptionError]);
+  }, [subscriptionError, history]);
   // 2. 대화 로드
   const [
     getChatList,
@@ -137,23 +135,25 @@ const RoomDetail = () => {
         size: PAGE_SIZE,
       },
     });
-  }, []);
+  }, [getChatList, roomId]);
   // 대화 로드 성공
   useEffect(() => {
     if (lazyQueryData && !lazyQueryError) {
-      setChatList([...chatList, ...lazyQueryData.getChatList]);
+      setChatList((preChatList) => [
+        ...preChatList,
+        ...lazyQueryData.getChatList,
+      ]);
     }
-  }, [lazyQueryData]);
+  }, [lazyQueryData, lazyQueryError]);
   // 대화 로드 실패
   useEffect(() => {
-    debugger
     if (isNotAuthorizedError(lazyQueryError)) {
       alert(MESSAGE_ERROR_AUTH);
       history.push('/signin');
     } else if (lazyQueryError) {
       alert(MESSAGE_ERROR);
     }
-  }, [lazyQueryError]);
+  }, [lazyQueryError, history]);
   // 3. 대화 생성
   const [
     createChat,
@@ -167,7 +167,7 @@ const RoomDetail = () => {
     } else if (mutationError) {
       alert(MESSAGE_ERROR);
     }
-  }, [mutationError]);
+  }, [mutationError, history]);
   // 4. 대화방 나가기
   const [
     updateUserRemoveRoom,
@@ -179,7 +179,7 @@ const RoomDetail = () => {
       alert(MESSAGE_SUCCESS_UPDATE_USER_REMOVE_ROOM);
       history.goBack();
     }
-  }, [mutationData2]);
+  }, [mutationData2, mutationError2, history]);
   // 대화방 나가기 실패
   useEffect(() => {
     if (isNotAuthorizedError(mutationError2)) {
@@ -188,7 +188,7 @@ const RoomDetail = () => {
     } else if (mutationError2) {
       alert(MESSAGE_ERROR);
     }
-  }, [mutationError2]);
+  }, [mutationError2, history]);
   // 5. 파일 업로드
   // presigned url 로드
   const [
@@ -247,7 +247,7 @@ const RoomDetail = () => {
         setIsLoading(false);
       })();
     }
-  }, [lazyQueryData2]);
+  }, [lazyQueryData2, lazyQueryError2, createChat, file, roomId, userId]);
   // presigned url 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError2)) {
@@ -256,7 +256,7 @@ const RoomDetail = () => {
     } else if (lazyQueryError2) {
       alert(MESSAGE_ERROR);
     }
-  }, [lazyQueryError2]);
+  }, [lazyQueryError2, history]);
   const onChangeContent = (event) => {
     setContent(event.target.value);
   };

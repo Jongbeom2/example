@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Avatar,
   Button,
@@ -85,14 +85,14 @@ const CustomAppBar = () => {
         profileThumbnailImageURL: data.getUser.profileThumbnailImageURL,
       });
     }
-  }, [data]);
+  }, [data, error]);
   // 유저 정보 로드 실패
   useEffect(() => {
     if (error) {
       alert(MESSAGE_ERROR);
       history.push('/signin');
     }
-  }, [error]);
+  }, [error, history]);
   // 로그아웃
   const [
     signOut,
@@ -106,7 +106,7 @@ const CustomAppBar = () => {
       Cookie.remove('_id');
       history.push('/signin');
     }
-  }, [mutationData]);
+  }, [mutationData, mutationError, history]);
   // 로그 아웃 실패
   useEffect(() => {
     if (mutationError) {

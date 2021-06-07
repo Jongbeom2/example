@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import MainWrapper from 'src/components/MainWrapper';
 import { useQuery } from '@apollo/client';
@@ -49,7 +49,7 @@ const RoomMain = () => {
     if (data && !error) {
       setRoomList(data.getMyRoomList);
     }
-  }, [data]);
+  }, [data, error]);
   // 대화방 리스트 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
@@ -58,13 +58,19 @@ const RoomMain = () => {
     } else if (error) {
       alert(MESSAGE_ERROR);
     }
-  }, [error]);
+  }, [error, history]);
   const onClickRoomCreateBtn = () => {
     setIsOpenRoomCreateDialog(true);
   };
   const onClickRoomSearchBtn = () => {
     setIsOpenRoomSearchDialog(true);
   };
+  const onCloseRoomCreateDialog = useCallback(() => {
+    setIsOpenRoomCreateDialog(false);
+  }, []);
+  const onCloseRoomSearchDialog = useCallback(() => {
+    setIsOpenRoomSearchDialog(false);
+  }, []);
   return (
     <MainWrapper>
       <div className={classes.root}>
@@ -96,20 +102,14 @@ const RoomMain = () => {
       </div>
       <RoomCreateDialog
         isOpened={isOpenRoomCreateDialog}
-        onClose={() => {
-          refetch();
-          setIsOpenRoomCreateDialog(false);
-        }}
+        refetch={refetch}
+        onClose={onCloseRoomCreateDialog}
       />
-      {isOpenRoomSearchDialog && (
-        <RoomSearchDialog
-          isOpened={isOpenRoomSearchDialog}
-          refetch={refetch}
-          onClose={() => {
-            setIsOpenRoomSearchDialog(false);
-          }}
-        />
-      )}
+      <RoomSearchDialog
+        isOpened={isOpenRoomSearchDialog}
+        refetch={refetch}
+        onClose={onCloseRoomSearchDialog}
+      />
     </MainWrapper>
   );
 };

@@ -14,7 +14,6 @@ import MainWrapper from 'src/components/MainWrapper';
 import { Avatar, Button, Grid, TextField, Typography } from '@material-ui/core';
 import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
 import axios from 'axios';
-import produce from 'immer';
 import { isNotAuthorizedError } from 'src/lib/error';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,7 +79,7 @@ const UserEdit = () => {
     if (queryData && !queryError) {
       setUser(queryData.getUser);
     }
-  }, [queryData]);
+  }, [queryData, queryError]);
   // 유저 정보 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(queryError)) {
@@ -89,7 +88,7 @@ const UserEdit = () => {
     } else if (queryError) {
       alert(MESSAGE_ERROR);
     }
-  }, [queryError]);
+  }, [queryError, history]);
   // presigned url 로드
   const [
     getPresignedPutURL,
@@ -118,7 +117,7 @@ const UserEdit = () => {
         setIsLoading(false);
       })();
     }
-  }, [lazyQueryData]);
+  }, [lazyQueryData, lazyQueryError, imageFile, user]);
   // presigned url 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(lazyQueryError)) {
@@ -127,7 +126,7 @@ const UserEdit = () => {
     } else if (lazyQueryError) {
       alert(MESSAGE_ERROR);
     }
-  }, [lazyQueryError]);
+  }, [lazyQueryError, history]);
   // 유저 정보 업데이트
   const [
     updateUser,
@@ -139,7 +138,7 @@ const UserEdit = () => {
       alert(MESSAGE_SUCCESS_UPDATE_USER);
       history.push(`/user/${userId}`);
     }
-  }, [mutationData]);
+  }, [mutationData, mutationError, history, userId]);
   // 유저 정보 수정 실패
   useEffect(() => {
     if (isNotAuthorizedError(mutationError)) {
@@ -148,7 +147,7 @@ const UserEdit = () => {
     } else if (mutationError) {
       alert(MESSAGE_ERROR);
     }
-  }, [mutationError]);
+  }, [mutationError, history]);
   const onClickCancelBtn = () => {
     history.push(`/user/${userId}`);
   };

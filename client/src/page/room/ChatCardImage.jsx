@@ -2,9 +2,8 @@ import { Dialog, makeStyles } from '@material-ui/core';
 import React, { Suspense, useState } from 'react';
 import { useImage } from 'react-image';
 import invalidImage from 'src/res/img/invalid_image.png';
-const useStyles1 = makeStyles((theme) => ({}));
+
 const ChatCardImage = ({ thumbnailImageURL, imageURL }) => {
-  const classes = useStyles1();
   const [open, setOpen] = useState(false);
   const onClick = () => {
     setOpen(true);
@@ -30,7 +29,7 @@ const ChatCardImage = ({ thumbnailImageURL, imageURL }) => {
   );
 };
 
-const useStyles2 = makeStyles((theme) => ({
+const useStyles1 = makeStyles((theme) => ({
   root: {
     cursor: 'pointer',
     width: '15rem',
@@ -40,17 +39,18 @@ const useStyles2 = makeStyles((theme) => ({
   },
 }));
 const ImageComponent = ({ thumbnailImageURL, imageURL, ...rest }) => {
-  const classes = useStyles2();
+  const classes = useStyles1();
   const { src } = useImage({
     srcList: [thumbnailImageURL, imageURL, invalidImage],
   });
-  return <img {...rest} src={src} className={classes.root} />;
+  return <img alt='chat-image1' {...rest} src={src} className={classes.root} />;
 };
-
+const useStyles2 = makeStyles((theme) => ({}));
 const ImageComponent2 = ({ imageURL, ...rest }) => {
+  const classes = useStyles2();
   const { src } = useImage({
     srcList: [imageURL, invalidImage],
   });
-  return <img {...rest} src={src} />;
+  return <img alt='chat-image2' {...rest} src={src} className={classes.root} />;
 };
 export default ChatCardImage;

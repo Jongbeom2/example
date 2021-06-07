@@ -23,7 +23,7 @@ const MainTab = ({navigation, route: parentRoute}) => {
             roomId: remoteMessage.data.roomId,
             userId,
           });
-          navigation.navigate('roomdetail', {
+          navigation.navigate('roomdetaildrawer', {
             roomId: remoteMessage.data.roomId,
             userId,
           });
@@ -44,7 +44,7 @@ const MainTab = ({navigation, route: parentRoute}) => {
               roomId: remoteMessage.data.roomId,
               userId,
             });
-            navigation.navigate('roomdetail', {
+            navigation.navigate('roomdetaildrawer', {
               roomId: remoteMessage.data.roomId,
               userId,
             });

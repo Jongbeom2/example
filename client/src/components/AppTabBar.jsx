@@ -42,8 +42,8 @@ const tabList = [
     route: 'room',
   },
   {
-    label: '피드',
-    route: 'feed',
+    label: '미금역 맛집',
+    route: 'restaurant',
   },
 ];
 

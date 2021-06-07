@@ -27,14 +27,16 @@ const PopupImage = ({
   }, [onDismiss]);
   return (
     <Portal style={styles.root}>
-      <Dialog visible={visible} onDismiss={closeDialog}>
-        <Image
-          style={[{height: imageHeight, width: imageWidth}, styles.root]}
-          source={{uri: sourceList[sourceIdx]}}
-          onError={onError}
-          {...rest}
-        />
-      </Dialog>
+      {visible && (
+        <Dialog visible={visible} onDismiss={closeDialog}>
+          <Image
+            style={[{height: imageHeight, width: imageWidth}, styles.root]}
+            source={{uri: sourceList[sourceIdx]}}
+            onError={onError}
+            {...rest}
+          />
+        </Dialog>
+      )}
     </Portal>
   );
 };

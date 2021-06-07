@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Button,
@@ -43,49 +43,7 @@ const RoomSearchDialog = ({
   const userId = Cookie.get('_id');
   const [value, setValue] = useState(null);
   const [roomList, setRoomList] = useState([]);
-  // 대화방 로드
-  const { data, loading, error } = useQuery(GET_ROOM_LIST, {
-    variables: {
-      userId,
-    },
-  });
-  // 대화방 로드 성공
-  useEffect(() => {
-    if (data && !error) {
-      setRoomList(data.getRoomList);
-    }
-  }, [data]);
-  // 대화방 로드 실패
-  useEffect(() => {
-    if (isNotAuthorizedError(error)) {
-      alert(MESSAGE_ERROR_AUTH);
-      history.push('/signin');
-    } else if (error) {
-      alert(MESSAGE_ERROR);
-    }
-  }, [error]);
-  // 대화방 참여
-  const [
-    updateUserAddRoom,
-    { data: mutationData, loading: mutationLoading, error: mutationError },
-  ] = useMutation(UPDATE_USER_ADD_ROOM);
-  // 대화방 참여 성공
-  useEffect(() => {
-    if (mutationData && !mutationError) {
-      alert(MESSAGE_SUCCESS_UPDATE_USER_ADD_ROOM);
-      refetch();
-      closeDialog();
-    }
-  }, [mutationData]);
-  // 대화방 참여 실패
-  useEffect(() => {
-    if (isNotAuthorizedError(mutationError)) {
-      alert(MESSAGE_ERROR_AUTH);
-      history.push('/signin');
-    } else if (error) {
-      alert(MESSAGE_ERROR);
-    }
-  }, [mutationError]);
+  // 함수
   const onClickCancelBtn = () => {
     closeDialog();
   };
@@ -105,10 +63,54 @@ const RoomSearchDialog = ({
   const onChangeValue = (event) => {
     setValue(event.target.value);
   };
-  const closeDialog = () => {
+  const closeDialog = useCallback(() => {
     onClose();
     setValue(null);
-  };
+  }, [onClose]);
+  // 대화방 로드
+  const { data, loading, error } = useQuery(GET_ROOM_LIST, {
+    variables: {
+      userId,
+    },
+  });
+  // 대화방 로드 성공
+  useEffect(() => {
+    if (data && !error) {
+      setRoomList(data.getRoomList);
+    }
+  }, [data, error]);
+  // 대화방 로드 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(error)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
+      alert(MESSAGE_ERROR);
+    }
+  }, [error, history]);
+  // 대화방 참여
+  const [
+    updateUserAddRoom,
+    { data: mutationData, loading: mutationLoading, error: mutationError },
+  ] = useMutation(UPDATE_USER_ADD_ROOM);
+  // 대화방 참여 성공
+  useEffect(() => {
+    if (mutationData && !mutationError) {
+      alert(MESSAGE_SUCCESS_UPDATE_USER_ADD_ROOM);
+      refetch();
+      closeDialog();
+    }
+  }, [mutationData, mutationError, refetch, closeDialog]);
+  // 대화방 참여 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(mutationError)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (mutationError) {
+      alert(MESSAGE_ERROR);
+    }
+  }, [mutationError, history]);
+
   return (
     <Dialog className={classes.root} onClose={closeDialog} open={isOpened}>
       {loading && <Loading />}

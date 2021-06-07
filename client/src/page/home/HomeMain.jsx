@@ -39,7 +39,7 @@ const Home = () => {
     if (data && !error) {
       setUserList(data.getUserList);
     }
-  }, [data]);
+  }, [data, error]);
   // 유저 리스트 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
@@ -48,7 +48,7 @@ const Home = () => {
     } else if (error) {
       alert(MESSAGE_ERROR);
     }
-  }, [error]);
+  }, [error, history]);
   return (
     <MainWrapper>
       <div className={classes.root}>

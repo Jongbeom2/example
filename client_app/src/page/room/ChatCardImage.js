@@ -14,9 +14,15 @@ const ChatCardImage = ({sourceList = [], imageWidth = 200, ...rest}) => {
   const [imageHeight, setImageHeight] = useState(0);
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    Image.getSize(sourceList[sourceIdx], (width, height) => {
-      setImageHeight((imageWidth * height) / width);
-    });
+    Image.getSize(
+      sourceList[sourceIdx],
+      (width, height) => {
+        setImageHeight((imageWidth * height) / width);
+      },
+      error => {
+        console.log(error);
+      },
+    );
   }, [sourceList, imageWidth, sourceIdx]);
   const onError = () => {
     setSourceIdx(prev => prev + 1);

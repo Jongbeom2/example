@@ -56,7 +56,7 @@ const UserMain = () => {
     if (data && !error) {
       setUser(data.getUser);
     }
-  }, [data]);
+  }, [data, error]);
   // 유저 정보 로드 실패
   useEffect(() => {
     if (isNotAuthorizedError(error)) {
@@ -65,7 +65,7 @@ const UserMain = () => {
     } else if (error) {
       alert(MESSAGE_ERROR);
     }
-  }, [error]);
+  }, [error, history]);
   const onClickEditBtn = () => {
     history.push(`/user/${userId}/edit`);
   };
