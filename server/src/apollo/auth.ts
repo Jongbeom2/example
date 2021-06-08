@@ -60,7 +60,7 @@ export const auth = (req: any, res: any) => {
     if (process.env.NODE_ENV === 'production') {
       throw notAuthorizedError;
     } else if (process.env.NODE_ENV === 'development') {
-      throw notAuthorizedError;
+      // throw notAuthorizedError;
     } else {
       throw environmentError;
     }

@@ -42,7 +42,7 @@ const tabList = [
     route: 'room',
   },
   {
-    label: '미금역 맛집',
+    label: '분당 맛집',
     route: 'restaurant',
   },
 ];

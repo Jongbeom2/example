@@ -76,3 +76,12 @@ export const existUserEmailError = new ApolloError('EXIST_USER_EMAIL', 'EXIST_US
  * 존재하지 않는 roomId임.
  */
 export const invalidRoomIdError = new ApolloError('INVALID_ROOM_ID', 'INVALID_ROOM_ID');
+/**
+ * @name invalidRestaurantIdError
+ * @description
+ * 존재하지 않는 restaurant임.
+ */
+export const invalidRestaurantIdError = new ApolloError(
+  'INVALID_RESTAURANT_ID',
+  'INVALID_RESTAURANT_ID',
+);

@@ -1,0 +1,19 @@
+type Query {
+  getRestaurantList(minLat: Float!, maxLat: Float!, minLng: Float!, maxLng: Float!): [Restaurant!]!
+}
+
+type Restaurant {
+  _id: ID!
+  name: String!
+  lat: Float!
+  lng: Float!
+  profileImageURL: String!
+  imageURLList: [String!]!
+  rating: Float!
+  ratingList: [RestaurantRating!]!
+}
+
+type RestaurantRating {
+  userId: ID!
+  rating: Float!
+}

@@ -5,64 +5,227 @@ import pinBlack from 'src/res/img/pin_black.png';
 import pinBlue from 'src/res/img/pin_blue.png';
 import pinYellow from 'src/res/img/pin_yellow.png';
 import pinRed from 'src/res/img/pin_red.png';
-const dataList = [
-  {
-    _id: 1,
-    name: '분당 두부',
-    lat: 37.35148,
-    lan: 127.1093,
-    rating: 5,
-  },
-  {
-    _id: 2,
-    name: '서울 감자탕',
-    lat: 37.34706,
-    lan: 127.11049,
-    rating: 3,
-  },
-  {
-    _id: 3,
-    name: '서브웨이',
-    lat: 37.34993,
-    lan: 127.10788,
-    rating: 2,
-  },
-];
+import { GET_RESTAURANT_LIST } from './restaurant.query';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { useState } from 'react';
+import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
+import { isNotAuthorizedError } from 'src/lib/error';
+import { useHistory } from 'react-router';
+import Loading from 'src/components/Loading';
+import RestaurantCard from './RestaurantCard';
+import { Typography } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
+  root: {
+    height: '100%',
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+  },
   map: {
     width: '100%',
-    height: '100%',
+    flex: 1,
+    outline: 'none',
+  },
+  list: {
+    backgroundColor: theme.palette.custom.white,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    maxHeight: '50rem',
+    overflow: 'auto',
+  },
+  clearBtn: {
+    cursor: 'pointer',
+    textAlign: 'center',
+    padding: theme.spacing(1),
+    height: 20,
+    '&:hover': {
+      backgroundColor: theme.palette.custom.border,
+    },
   },
 }));
 const RestaurantMain = () => {
   const classes = useStyles();
+  const history = useHistory();
   const mapRef = useRef(null);
+  const [map, setMap] = useState();
+  const [restaurantList, setRestaurantList] = useState([]);
+  const [markerList, setMarkerList] = useState([]);
+  const [clickedMarker, setClickedMarker] = useState(null);
+  // 식당 리스트
+  const [getRestaurantList, { data, loading, error }] = useLazyQuery(
+    GET_RESTAURANT_LIST,
+  );
+  // 식당 리스트 로드
   useEffect(() => {
-    // map
+    if (data && !error) {
+      setRestaurantList(data.getRestaurantList);
+    }
+  }, [data, error]);
+  // 식당 리스트 로드 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(error)) {
+      alert(MESSAGE_ERROR_AUTH);
+      history.push('/signin');
+    } else if (error) {
+      alert(MESSAGE_ERROR);
+    }
+  }, [error, history]);
+  // 초기화
+  useEffect(() => {
+    // 맵 초기화
     const map = new window.naver.maps.Map(mapRef.current, {
       center: new window.naver.maps.LatLng(37.350376, 127.10892),
-      zoom: 15,
+      zoom: 17,
     });
-    dataList.forEach((data) => {
-      // mark
+    setMap(map);
+    // 맵에 이벤트 추가
+    window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
+      const bounds = map.getBounds();
+      getRestaurantList({
+        variables: {
+          minLat: bounds._min._lat,
+          maxLat: bounds._max._lat,
+          minLng: bounds._min._lng,
+          maxLng: bounds._max._lng,
+        },
+      });
+    });
+    window.naver.maps.Event.addListener(map, 'mouseup', () => {
+      const bounds = map.getBounds();
+      getRestaurantList({
+        variables: {
+          minLat: bounds._min._lat,
+          maxLat: bounds._max._lat,
+          minLng: bounds._min._lng,
+          maxLng: bounds._max._lng,
+        },
+      });
+    });
+    // 데이터 불러오기
+    const bounds = map.getBounds();
+    getRestaurantList({
+      variables: {
+        minLat: bounds._min._lat,
+        maxLat: bounds._max._lat,
+        minLng: bounds._min._lng,
+        maxLng: bounds._max._lng,
+      },
+    });
+  }, [getRestaurantList]);
+  // 새로운 데이터
+  useEffect(() => {
+    const tempMarkerList = [];
+    // 1. 마커 그리기
+    // 2. 마커에 식당 저장하기
+    // 3. 마커에 이벤트 등록하기
+    restaurantList.forEach((restaurant) => {
       const markerOptions = {
-        position: new window.naver.maps.LatLng(data.lat, data.lan),
-        map: map,
-        title: 'a',
+        position: new window.naver.maps.LatLng(restaurant.lat, restaurant.lng),
+        map,
         icon: {
           content: `<img src=${getImage(
-            data.rating,
+            restaurant.rating,
           )} style="width:40px; height:40px;"/>`,
           origin: new window.naver.maps.Point(0, 0),
           anchor: new window.naver.maps.Point(20, 40),
         },
       };
-      const marker = new window.naver.maps.Marker(markerOptions);
+      const tempMarker = new window.naver.maps.Marker(markerOptions);
+      tempMarker.restaurant = restaurant;
+      tempMarker.addListener('mouseover', (e) => {
+        const marker = e.overlay;
+        marker.setIcon({
+          content: `<img src=${getImage(
+            tempMarker.restaurant.rating,
+          )} style="width:50px; height:50px;"/>`,
+          origin: new window.naver.maps.Point(0, 0),
+          anchor: new window.naver.maps.Point(25, 50),
+        });
+      });
+      tempMarker.addListener('mouseout', (e) => {
+        const marker = e.overlay;
+        marker.setIcon({
+          content: `<img src=${getImage(
+            tempMarker.restaurant.rating,
+          )} style="width:40px; height:40px;"/>`,
+          origin: new window.naver.maps.Point(0, 0),
+          anchor: new window.naver.maps.Point(20, 40),
+        });
+      });
+      tempMarkerList.push(tempMarker);
     });
-  }, []);
+    // 4. 마커에 주위마커 저장하기
+    tempMarkerList.forEach((tempMarker) => {
+      tempMarker.overlapedMarkerList = [];
+      const proj = map.getProjection();
+      const position = tempMarker.getPosition();
+      const offset = proj.fromCoordToOffset(position);
+      const tolerance = 10;
+      const rectLeftTop = offset.clone().sub(tolerance, tolerance);
+      const rectRightBottom = offset.clone().add(tolerance, tolerance);
+      const baseRect = window.naver.maps.PointBounds.bounds(
+        rectLeftTop,
+        rectRightBottom,
+      );
+      tempMarkerList.forEach((tempMarker2) => {
+        if (tempMarker !== tempMarker2) {
+          const proj2 = map.getProjection();
+          const position2 = tempMarker2.getPosition();
+          const offset2 = proj2.fromCoordToOffset(position2);
+          const tolerance2 = 10;
+          const rectLeftTop2 = offset2.clone().sub(tolerance2, tolerance2);
+          const rectRightBottom2 = offset2.clone().add(tolerance2, tolerance2);
+          const targetRec = window.naver.maps.PointBounds.bounds(
+            rectLeftTop2,
+            rectRightBottom2,
+          );
+          if (baseRect.intersects(targetRec)) {
+            tempMarker.overlapedMarkerList.push(tempMarker2);
+          }
+        }
+      });
+    });
+    // 5. 마커에 click event 등록하기
+    tempMarkerList.forEach((tempMarker) => {
+      tempMarker.addListener('click', (e) => {
+        setClickedMarker(e.overlay);
+      });
+    });
+    // 6. 기존 마커 지우기
+    setMarkerList((prevMarkerList) => {
+      prevMarkerList.forEach((marker) => {
+        marker.setMap(null);
+      });
+      return tempMarkerList;
+    });
+  }, [restaurantList, map]);
+  const onClickClear = () => {
+    setClickedMarker(null);
+  };
   return (
     <MainWrapper>
-      <div className={classes.map} ref={mapRef} />
+      <div className={classes.root}>
+        {loading && <Loading />}
+        <div className={classes.map} ref={mapRef} />
+        <div className={classes.list}>
+          {clickedMarker?.restaurant && (
+            <>
+              <div className={classes.clearBtn} onClick={onClickClear}>
+                접기 🔻
+              </div>
+              {[
+                clickedMarker.restaurant,
+                ...clickedMarker.overlapedMarkerList.map(
+                  (marker) => marker.restaurant,
+                ),
+              ].map((restaurant) => (
+                <RestaurantCard key={restaurant._id} restaurant={restaurant} />
+              ))}
+            </>
+          )}
+        </div>
+      </div>
     </MainWrapper>
   );
 };

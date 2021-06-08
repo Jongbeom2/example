@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import UserModel from 'src/models/User.model';
 import RoomModel from 'src/models/Room.model';
 import ChatModel from 'src/models/Chat.model';
+import RestaurantModel from 'src/models/Restaurant.model';
 const resolvers: Resolvers = {
   Mutation: {
     createDummyUserList: async (_, args, ctx) => {
@@ -79,6 +80,35 @@ const resolvers: Resolvers = {
       }
       return true;
     },
+    createDummyRestaurantList: async (_, args, ctx) => {
+      faker.locale = 'ko';
+      const promiseList = [];
+      const minLat = 37.395;
+      const maxLat = 37.335;
+      const minLng = 127.09;
+      const maxLng = 127.12;
+      for (let i = 0; i < 1000; i++) {
+        const name = faker.address.streetName() + ' ' + faker.internet.userName();
+        const lat = minLat + (maxLat - minLat) * Math.random();
+        const lng = minLng + (maxLng - minLng) * Math.random();
+        const profileImageURL = faker.image.avatar();
+        const imageURLList = [
+          faker.image.imageUrl(),
+          faker.image.imageUrl(),
+          faker.image.imageUrl(),
+        ];
+        const restaurant = new RestaurantModel({
+          name,
+          lat,
+          lng,
+          profileImageURL,
+          imageURLList,
+        });
+        promiseList.push(restaurant.save());
+      }
+      await Promise.all(promiseList);
+      return true;
+    },
     deleteUserList: async (_, args, ctx) => {
       await UserModel.deleteMany({});
       return true;
@@ -89,6 +119,10 @@ const resolvers: Resolvers = {
     },
     deleteChatList: async (_, args, ctx) => {
       await ChatModel.deleteMany({});
+      return true;
+    },
+    deleteRestaurantList: async (_, args, ctx) => {
+      await RestaurantModel.deleteMany({});
       return true;
     },
   },

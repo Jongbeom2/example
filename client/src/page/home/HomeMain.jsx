@@ -28,6 +28,7 @@ const Home = () => {
   const classes = useStyles();
   const history = useHistory();
   const userId = Cookie.get('_id');
+  // 유저 리스트
   const { data, loading, error } = useQuery(GET_USER_LIST, {
     variables: {
       _id: userId,
