@@ -1,3 +1,4 @@
+import { existRestaurantRatingError, invalidRestaurantIdError } from 'src/error/ErrorObject';
 import RestaurantModel from 'src/models/Restaurant.model';
 import { Resolvers } from 'src/types/graphql';
 const resolvers: Resolvers = {
@@ -27,6 +28,14 @@ const resolvers: Resolvers = {
         .lt(restaurantMaxLng);
       return restaurantList;
     },
+    getRestaurant: async (_, args, ctx) => {
+      const { _id } = args;
+      const restaurant = await RestaurantModel.findById(_id);
+      if (!restaurant) {
+        throw invalidRestaurantIdError;
+      }
+      return restaurant;
+    },
   },
   Restaurant: {
     rating: async (parent, args, ctx) => {
@@ -35,6 +44,23 @@ const resolvers: Resolvers = {
         restaurantRating += rating.rating;
       });
       return restaurantRating;
+    },
+  },
+  Mutation: {
+    updateRestaurantRating: async (parent, args, ctx) => {
+      const { _id, userId, rating } = args.updateRestaurantRatingInput;
+      const restaurant = await RestaurantModel.findById(_id);
+      if (!restaurant) {
+        throw invalidRestaurantIdError;
+      }
+      if (restaurant.ratingList.map((rating) => rating.userId).indexOf(userId) !== -1) {
+        throw existRestaurantRatingError;
+      }
+      restaurant.ratingList.push({
+        userId,
+        rating,
+      });
+      return await restaurant.save();
     },
   },
 };

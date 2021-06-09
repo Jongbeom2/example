@@ -5,21 +5,34 @@ import pinBlack from 'src/res/img/pin_black.png';
 import pinBlue from 'src/res/img/pin_blue.png';
 import pinYellow from 'src/res/img/pin_yellow.png';
 import pinRed from 'src/res/img/pin_red.png';
+import myLocation from 'src/res/img/my_location.png';
 import { GET_RESTAURANT_LIST } from './restaurant.query';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { useState } from 'react';
 import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
 import { isNotAuthorizedError } from 'src/lib/error';
 import { useHistory } from 'react-router';
 import Loading from 'src/components/Loading';
 import RestaurantCard from './RestaurantCard';
-import { Typography } from '@material-ui/core';
+import { Fab } from '@material-ui/core';
+import MyLocationIcon from '@material-ui/icons/MyLocation';
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
+  },
+  btnWrapper: {
+    width: '100%',
+    top: 0,
+    position: 'absolute',
+    display: 'flex',
+    zIndex: theme.zIndex.fixedBtn,
+    justifyContent: 'flex-end',
+    '& button': {
+      margin: theme.spacing(2),
+    },
   },
   map: {
     width: '100%',
@@ -52,6 +65,7 @@ const RestaurantMain = () => {
   const [restaurantList, setRestaurantList] = useState([]);
   const [markerList, setMarkerList] = useState([]);
   const [clickedMarker, setClickedMarker] = useState(null);
+  const [myLocationMarker, setMyLocationMarker] = useState(null);
   // 식당 리스트
   const [getRestaurantList, { data, loading, error }] = useLazyQuery(
     GET_RESTAURANT_LIST,
@@ -80,7 +94,7 @@ const RestaurantMain = () => {
     });
     setMap(map);
     // 맵에 이벤트 추가
-    window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
+    window.naver.maps.Event.addListener(map, 'idle', () => {
       const bounds = map.getBounds();
       getRestaurantList({
         variables: {
@@ -91,17 +105,7 @@ const RestaurantMain = () => {
         },
       });
     });
-    window.naver.maps.Event.addListener(map, 'mouseup', () => {
-      const bounds = map.getBounds();
-      getRestaurantList({
-        variables: {
-          minLat: bounds._min._lat,
-          maxLat: bounds._max._lat,
-          minLng: bounds._min._lng,
-          maxLng: bounds._max._lng,
-        },
-      });
-    });
+
     // 데이터 불러오기
     const bounds = map.getBounds();
     getRestaurantList({
@@ -111,6 +115,29 @@ const RestaurantMain = () => {
         minLng: bounds._min._lng,
         maxLng: bounds._max._lng,
       },
+    });
+    // 내위치 그리기
+    window.navigator.geolocation.watchPosition((location) => {
+      console.log(location);
+      const markerOptions = {
+        position: new window.naver.maps.LatLng(
+          location.coords.latitude,
+          location.coords.longitude,
+        ),
+        map,
+        icon: {
+          content: `<img src=${myLocation} style="width:40px; height:40px;"/>`,
+          origin: new window.naver.maps.Point(0, 0),
+          anchor: new window.naver.maps.Point(20, 40),
+        },
+      };
+      const tempMyLocationMarker = new window.naver.maps.Marker(markerOptions);
+      setMyLocationMarker((prevMyLocationMarker) => {
+        if (prevMyLocationMarker) {
+          prevMyLocationMarker.setMap(null);
+        }
+        return tempMyLocationMarker;
+      });
     });
   }, [getRestaurantList]);
   // 새로운 데이터
@@ -203,10 +230,22 @@ const RestaurantMain = () => {
   const onClickClear = () => {
     setClickedMarker(null);
   };
+  const onClickMyLocationBtn = () => {
+    map.panTo(myLocationMarker.position);
+  };
   return (
     <MainWrapper>
       <div className={classes.root}>
         {loading && <Loading />}
+        <div className={classes.btnWrapper}>
+          <Fab
+            color={myLocationMarker ? 'primary' : ''}
+            size='small'
+            onClick={onClickMyLocationBtn}
+          >
+            <MyLocationIcon fontSize='small' />
+          </Fab>
+        </div>
         <div className={classes.map} ref={mapRef} />
         <div className={classes.list}>
           {clickedMarker?.restaurant && (

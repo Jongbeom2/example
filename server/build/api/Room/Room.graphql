@@ -23,3 +23,13 @@ input CreateRoomInput {
   userId: ID!
   name: String!
 }
+
+input UpdateUserAddRoomInput {
+  userId: ID!
+  roomId: ID!
+}
+
+input UpdateUserRemoveRoomInput {
+  userId: ID!
+  roomId: ID!
+}

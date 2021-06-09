@@ -52,13 +52,3 @@ input UpdateUserInput {
   profileImageURL: String
   profileThumbnailImageURL: String
 }
-
-input UpdateUserAddRoomInput {
-  userId: ID!
-  roomId: ID!
-}
-
-input UpdateUserRemoveRoomInput {
-  userId: ID!
-  roomId: ID!
-}

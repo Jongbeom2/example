@@ -8,6 +8,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const User_model_1 = __importDefault(require("../../models/User.model"));
 const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const Chat_model_1 = __importDefault(require("../../models/Chat.model"));
+const Restaurant_model_1 = __importDefault(require("../../models/Restaurant.model"));
 const resolvers = {
     Mutation: {
         createDummyUserList: async (_, args, ctx) => {
@@ -83,6 +84,35 @@ const resolvers = {
             }
             return true;
         },
+        createDummyRestaurantList: async (_, args, ctx) => {
+            faker_1.default.locale = 'ko';
+            const promiseList = [];
+            const minLat = 37.395;
+            const maxLat = 37.335;
+            const minLng = 127.09;
+            const maxLng = 127.12;
+            for (let i = 0; i < 1000; i++) {
+                const name = faker_1.default.address.streetName() + ' ' + faker_1.default.internet.userName();
+                const lat = minLat + (maxLat - minLat) * Math.random();
+                const lng = minLng + (maxLng - minLng) * Math.random();
+                const profileImageURL = faker_1.default.image.avatar();
+                const imageURLList = [
+                    faker_1.default.image.imageUrl(),
+                    faker_1.default.image.imageUrl(),
+                    faker_1.default.image.imageUrl(),
+                ];
+                const restaurant = new Restaurant_model_1.default({
+                    name,
+                    lat,
+                    lng,
+                    profileImageURL,
+                    imageURLList,
+                });
+                promiseList.push(restaurant.save());
+            }
+            await Promise.all(promiseList);
+            return true;
+        },
         deleteUserList: async (_, args, ctx) => {
             await User_model_1.default.deleteMany({});
             return true;
@@ -93,6 +123,10 @@ const resolvers = {
         },
         deleteChatList: async (_, args, ctx) => {
             await Chat_model_1.default.deleteMany({});
+            return true;
+        },
+        deleteRestaurantList: async (_, args, ctx) => {
+            await Restaurant_model_1.default.deleteMany({});
             return true;
         },
     },

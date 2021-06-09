@@ -8,6 +8,7 @@ import RestaurantMain from './page/restaurant/RestaurantMain';
 import UserRouter from './page/user/UserRouter';
 import AuthRoute from './components/AuthRoute';
 import RoomRouter from './page/room/RoomRouter';
+import RestaurantRouter from './page/restaurant/RestaurantRouter';
 
 const RoutesPageMatcher = () => {
   const { page } = useParams();
@@ -45,7 +46,7 @@ const RoutesPageMatcher = () => {
     case 'restaurant':
       return (
         <AuthRoute>
-          <RestaurantMain />
+          <RestaurantRouter />
         </AuthRoute>
       );
     default:

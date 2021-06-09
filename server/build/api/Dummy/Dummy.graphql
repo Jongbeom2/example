@@ -2,7 +2,9 @@ type Mutation {
   createDummyUserList: Boolean!
   createDummyRoomList: Boolean!
   createDummyChatList: Boolean!
+  createDummyRestaurantList: Boolean!
   deleteUserList: Boolean!
   deleteRoomList: Boolean!
   deleteChatList: Boolean!
+  deleteRestaurantList: Boolean!
 }

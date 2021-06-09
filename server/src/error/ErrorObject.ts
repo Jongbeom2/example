@@ -85,3 +85,7 @@ export const invalidRestaurantIdError = new ApolloError(
   'INVALID_RESTAURANT_ID',
   'INVALID_RESTAURANT_ID',
 );
+export const existRestaurantRatingError = new ApolloError(
+  'EXIST_RESTAURANT_RATING',
+  'EXIST_RESTAURANT_RATING',
+);
