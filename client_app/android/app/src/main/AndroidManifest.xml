@@ -31,12 +31,13 @@
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-
             <!-- Redirect URI: "kakao{NATIVE_APP_KEY}://oauth“ -->
             <data android:host="oauth"
                 android:scheme="kakao9bb9662a8601221f3ee753b07e4cf0f9" />
         </intent-filter>
       </activity>
-
+      <meta-data
+        android:name="com.naver.maps.map.CLIENT_ID"
+        android:value="i48wj7yrty" />
     </application>
 </manifest>

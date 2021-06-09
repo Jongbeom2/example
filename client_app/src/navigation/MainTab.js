@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useTheme} from 'react-native-paper';
 import HomeMain from 'src/page/home/HomeMain';
 import RoomMain from 'src/page/room/RoomMain';
-import FeedMain from 'src/page/feed/FeedMain';
+import RestaurantMain from 'src/page/restaurant/RestaurantMain';
 import messaging from '@react-native-firebase/messaging';
 
 const Tab = createBottomTabNavigator();
@@ -87,9 +87,9 @@ const MainTab = ({navigation, route: parentRoute}) => {
         initialParams={{userId: parentRoute?.params?.userId}}
       />
       <Tab.Screen
-        name="feed"
-        options={{tabBarLabel: '피드'}}
-        component={FeedMain}
+        name="restaurant"
+        options={{tabBarLabel: '맛집'}}
+        component={RestaurantMain}
         initialParams={{userId: parentRoute?.params?.userId}}
       />
     </Tab.Navigator>
@@ -101,8 +101,8 @@ const TabBarIcon = (focused, name, colors) => {
     iconName = 'home';
   } else if (name === 'room') {
     iconName = 'chatbox';
-  } else if (name === 'feed') {
-    iconName = 'ios-images-sharp';
+  } else if (name === 'restaurant') {
+    iconName = 'restaurant';
   }
   const iconSize = 20;
   return (
