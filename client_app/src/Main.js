@@ -35,6 +35,7 @@ import {
 import messaging from '@react-native-firebase/messaging';
 import {SIGNOUT} from './page/auth/auth.query';
 import RoomDetailDrawer from './navigation/RoomDetailDrawer';
+import RestaurantDetail from './page/restaurant/RestaurantDetail';
 
 const theme = {
   ...DefaultTheme,
@@ -228,6 +229,11 @@ const Main = props => {
                     headerRight: HeaderRight,
                   })}
                 />
+                <Stack.Screen
+                  name="restaurantdetail"
+                  component={RestaurantDetail}
+                  options={{title: '식당'}}
+                />
               </>
             )}
           </Stack.Navigator>
@@ -247,7 +253,8 @@ const Main = props => {
         - Drawer.Screen(my)
       - Stack.Screen(user)
       - Stack.Screen(useredit)
-      - Stack.Screen(chat)
+      - Drawer.Navigator
+        - Drawer.Screen(roomdetail)
   */
 const styles = StyleSheet.create({
   iconMenu: {
@@ -274,6 +281,9 @@ const getHeaderTitle = route => {
   // 특수 case
   if (route?.params?.roomName) {
     return route.params.roomName;
+  }
+  if (route?.params?.restaurantName) {
+    return route.params.restaurantName;
   }
   // tab
   switch (routeName) {

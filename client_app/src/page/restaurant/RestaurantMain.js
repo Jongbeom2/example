@@ -15,18 +15,29 @@ import pinBlack from 'src/res/img/pin_black.png';
 import pinBlue from 'src/res/img/pin_blue.png';
 import pinRed from 'src/res/img/pin_red.png';
 import pinYellow from 'src/res/img/pin_yellow.png';
-
+import Animated from 'react-native-reanimated';
+import BottomSheet from 'reanimated-bottom-sheet';
+import {useRef} from 'react/cjs/react.development';
+import {Button, useTheme} from 'react-native-paper';
+import RestaurantCard from './RestaurantCard';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
     height: '100%',
   },
+  bottomSheet: {
+    paddingTop: 5,
+    paddingHorizontal: 5,
+  },
 });
-const RestaurantMain = () => {
+const RestaurantMain = ({navigation}) => {
+  const theme = useTheme();
   const authContext = useContext(AuthContext);
+  const sheetRef = useRef(null);
   const [zoom, setZoom] = useState(17);
   const [restaurantList, setRestaurantList] = useState([]);
   const [activeRestaurantList, setActiveRestaurantList] = useState([]);
+  const [snapPoints, setSnapPoints] = useState(0);
   // 식당 리스트
   const [getRestaurantList, {data, loading, error}] =
     useLazyQuery(GET_RESTAURANT_LIST);
@@ -44,16 +55,6 @@ const RestaurantMain = () => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
-  // useEffect(() => {
-  //   getRestaurantList({
-  //     variables: {
-  //       // minLat: bounds._min._lat,
-  //       // maxLat: bounds._max._lat,
-  //       // minLng: bounds._min._lng,
-  //       // maxLng: bounds._max._lng,
-  //     },
-  //   });
-  // }, [getRestaurantList]);
   const onCameraChange = e => {
     getRestaurantList({
       variables: {
@@ -65,42 +66,78 @@ const RestaurantMain = () => {
     });
     setZoom(e.zoom);
   };
+  const bottomSheetRenderContent = () => {
+    console.log(activeRestaurantList);
+    return (
+      <View
+        style={[
+          {backgroundColor: theme.colors.custom.white},
+          styles.bottomSheet,
+        ]}>
+        {activeRestaurantList.map(restaurant => (
+          <RestaurantCard
+            key={restaurant._id}
+            restaurant={restaurant}
+            navigation={navigation}
+          />
+        ))}
+      </View>
+    );
+  };
   // if (!data && loading) {
   //   return <Loading />;
   // }
   return (
-    <NaverMapView
-      style={styles.root}
-      showsMyLocationButton={true}
-      center={{
-        latitude: 37.35023,
-        longitude: 127.10892,
-        zoom: 17,
-      }}
-      onCameraChange={onCameraChange}>
-      {restaurantList.map(restaurant => (
-        <Marker
-          key={restaurant._id}
-          coordinate={{latitude: restaurant.lat, longitude: restaurant.lng}}
-          image={getImage(restaurant.rating)}
-          width={30}
-          height={30}
-          onClick={e => {
-            console.log(e);
-            const overlapedRestaurantList = [];
-            restaurantList.forEach(targetRestaurant => {
-              if (
-                restaurant !== targetRestaurant &&
-                isOverlaped(restaurant, targetRestaurant, zoom)
-              ) {
-                overlapedRestaurantList.push(targetRestaurant);
-              }
-            });
-            console.log(overlapedRestaurantList);
-          }}
-        />
-      ))}
-    </NaverMapView>
+    <>
+      <NaverMapView
+        style={styles.root}
+        showsMyLocationButton={true}
+        center={{
+          latitude: 37.35023,
+          longitude: 127.10892,
+          zoom: 17,
+        }}
+        useTextureView
+        onCameraChange={onCameraChange}>
+        {restaurantList.map(restaurant => (
+          <Marker
+            key={restaurant._id}
+            coordinate={{latitude: restaurant.lat, longitude: restaurant.lng}}
+            image={getImage(restaurant.rating)}
+            width={30}
+            height={30}
+            onClick={e => {
+              console.log(e);
+              const overlapedRestaurantList = [];
+              restaurantList.forEach(targetRestaurant => {
+                if (
+                  restaurant !== targetRestaurant &&
+                  isOverlaped(restaurant, targetRestaurant, zoom)
+                ) {
+                  overlapedRestaurantList.push(targetRestaurant);
+                }
+              });
+              setActiveRestaurantList([restaurant, ...overlapedRestaurantList]);
+              setSnapPoints(
+                (overlapedRestaurantList.length + 1 > 4
+                  ? 4
+                  : overlapedRestaurantList.length + 1) * 45,
+              ) + 5;
+              sheetRef.current.snapTo(0);
+              // console.log(overlapedRestaurantList);
+            }}
+          />
+        ))}
+      </NaverMapView>
+      <BottomSheet
+        ref={sheetRef}
+        snapPoints={[snapPoints, 0]}
+        initialSnap={1}
+        borderRadius={10}
+        renderContent={bottomSheetRenderContent}
+        enabledInnerScrolling
+      />
+    </>
   );
 };
 
@@ -121,8 +158,7 @@ const isOverlaped = (restaurant, targetRestaurant, zoom) => {
     Math.pow(restaurant.lat - targetRestaurant.lat, 2) +
       Math.pow(restaurant.lng - targetRestaurant.lng, 2),
   );
-  console.log(len);
-  console.log(zoom);
   return len < ((0.0005 * 14) / zoom) * 2;
 };
+
 export default RestaurantMain;
