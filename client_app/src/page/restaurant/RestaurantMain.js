@@ -30,8 +30,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
 });
-const RestaurantMain = ({navigation}) => {
+const RestaurantMain = ({navigation, route}) => {
   const theme = useTheme();
+  const userId = route.params?.userId;
   const authContext = useContext(AuthContext);
   const sheetRef = useRef(null);
   const [zoom, setZoom] = useState(17);
@@ -67,7 +68,6 @@ const RestaurantMain = ({navigation}) => {
     setZoom(e.zoom);
   };
   const bottomSheetRenderContent = () => {
-    console.log(activeRestaurantList);
     return (
       <View
         style={[
@@ -79,6 +79,7 @@ const RestaurantMain = ({navigation}) => {
             key={restaurant._id}
             restaurant={restaurant}
             navigation={navigation}
+            userId={userId}
           />
         ))}
       </View>
@@ -107,7 +108,6 @@ const RestaurantMain = ({navigation}) => {
             width={30}
             height={30}
             onClick={e => {
-              console.log(e);
               const overlapedRestaurantList = [];
               restaurantList.forEach(targetRestaurant => {
                 if (
@@ -121,10 +121,11 @@ const RestaurantMain = ({navigation}) => {
               setSnapPoints(
                 (overlapedRestaurantList.length + 1 > 4
                   ? 4
-                  : overlapedRestaurantList.length + 1) * 45,
-              ) + 5;
+                  : overlapedRestaurantList.length + 1) *
+                  45 +
+                  3,
+              );
               sheetRef.current.snapTo(0);
-              // console.log(overlapedRestaurantList);
             }}
           />
         ))}

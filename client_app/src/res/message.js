@@ -28,3 +28,9 @@ export const MESSAGE_SUCCESS_CREATE_ROOM = '대화방 생성에 성공했습니�
 export const MESSAGE_ERROR_UPLOAD = '업로드에 실패했습니다.';
 // User
 export const MESSAGE_SUCCESS_UPDATE_USER = '유저 정보 수정에 성공했습니다.';
+// Restaurant
+export const MESSAGE_SUCCESS_UPDATE_RESTAURANT_RATING = '평점을 남겼습니다.';
+export const MESSAGE_ERROR_PDATE_RESTAURANT_RATING_INPUT_REQUIRED =
+  '평점을 표시해주세요.';
+export const MESSAGE_ERROR_UPDATE_RESTAURANT_RATING_EXIST_RATING =
+  '이미 평점을 남겼습니다.';

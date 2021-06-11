@@ -232,7 +232,9 @@ const Main = props => {
                 <Stack.Screen
                   name="restaurantdetail"
                   component={RestaurantDetail}
-                  options={{title: '식당'}}
+                  options={({route}) => ({
+                    headerTitle: getHeaderTitle(route),
+                  })}
                 />
               </>
             )}

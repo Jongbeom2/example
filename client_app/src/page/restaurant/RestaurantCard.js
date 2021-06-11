@@ -14,11 +14,12 @@ const styles = StyleSheet.create({
   },
   textWrapper: {},
 });
-const RestaurantCard = ({restaurant, navigation}) => {
+const RestaurantCard = ({restaurant, navigation, userId}) => {
   const onPress = () => {
     navigation.navigate('restaurantdetail', {
       restaurantId: restaurant._id,
       restaurantName: restaurant.name,
+      userId,
     });
   };
   return (

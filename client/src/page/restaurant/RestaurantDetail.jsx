@@ -4,7 +4,13 @@ import { useHistory, useParams } from 'react-router';
 import MainWrapper from 'src/components/MainWrapper';
 import { GET_RESTAURANT, UPDATE_RESTAURANT_RATING } from './restaurant.query';
 import { isNotAuthorizedError } from 'src/lib/error';
-import { MESSAGE_ERROR, MESSAGE_ERROR_AUTH } from 'src/res/message';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_ERROR_AUTH,
+  MESSAGE_ERROR_PDATE_RESTAURANT_RATING_INPUT_REQUIRED,
+  MESSAGE_ERROR_UPDATE_RESTAURANT_RATING_EXIST_RATING,
+  MESSAGE_SUCCESS_UPDATE_RESTAURANT_RATING,
+} from 'src/res/message';
 import { useMutation, useQuery } from '@apollo/client';
 import Loading from 'src/components/Loading';
 import SwipeableViews from 'react-swipeable-views';
@@ -98,7 +104,7 @@ const RestaurantDetail = () => {
   // 식당 평점 수정 성공
   useEffect(() => {
     if (mutationData && !mutationError) {
-      alert('식당 평점 수정 성공');
+      alert(MESSAGE_SUCCESS_UPDATE_RESTAURANT_RATING);
     }
   }, [mutationData, mutationError]);
   // 식당 평점 수정 실패
@@ -107,7 +113,7 @@ const RestaurantDetail = () => {
       alert(MESSAGE_ERROR_AUTH);
       history.push('/signin');
     } else if (mutationError?.message === 'EXIST_RESTAURANT_RATING') {
-      alert('이미 평점');
+      alert(MESSAGE_ERROR_UPDATE_RESTAURANT_RATING_EXIST_RATING);
     } else if (mutationError) {
       alert(MESSAGE_ERROR);
     }
@@ -120,7 +126,7 @@ const RestaurantDetail = () => {
   };
   const onClickRatingBtn = () => {
     if (!rating) {
-      alert('별점을 남겨주세요');
+      alert(MESSAGE_ERROR_PDATE_RESTAURANT_RATING_INPUT_REQUIRED);
       return;
     }
     updateRestaurantRating({
