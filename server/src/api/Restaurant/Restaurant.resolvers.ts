@@ -41,9 +41,9 @@ const resolvers: Resolvers = {
     rating: async (parent, args, ctx) => {
       let restaurantRating = 0;
       parent.ratingList.forEach((rating) => {
-        restaurantRating += rating.rating;
+        restaurantRating += rating.rating / parent.ratingList.length;
       });
-      return restaurantRating;
+      return parseFloat(restaurantRating.toFixed(1));
     },
   },
   Mutation: {

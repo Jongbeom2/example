@@ -8,8 +8,8 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   image: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     marginRight: 10,
   },
   textWrapper: {},

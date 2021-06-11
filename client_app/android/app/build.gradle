@@ -135,8 +135,8 @@ android {
         applicationId "com.jongbeom.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
-        versionName "1.4"
+        versionCode 9
+        versionName "1.6"
     }
     splits {
         abi {
@@ -172,7 +172,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-             signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
     }
 

@@ -1,7 +1,6 @@
 import {useMutation, useQuery} from '@apollo/client';
-import React, {useContext, useState} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {Alert, Image, StyleSheet, View} from 'react-native';
-import {useEffect} from 'react/cjs/react.development';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {AuthContext} from 'src/Main';
 import {

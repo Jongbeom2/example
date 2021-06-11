@@ -1,15 +1,11 @@
 import {useLazyQuery} from '@apollo/client';
-import React, {useContext, useEffect, useState} from 'react';
-import {Alert, StyleSheet, Text, View} from 'react-native';
+import React, {useContext, useEffect, useState, useRef} from 'react';
+import {Alert, StyleSheet, View} from 'react-native';
 import NaverMapView, {Marker} from 'react-native-nmap';
 import Loading from 'src/component/Loading';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {AuthContext} from 'src/Main';
-import {
-  MESSAGE_ERROR,
-  MESSAGE_ERROR_AUTH,
-  MESSAGE_TITLE,
-} from 'src/res/message';
+import {MESSAGE_ERROR, MESSAGE_TITLE} from 'src/res/message';
 import {GET_RESTAURANT_LIST} from './restaurant.query';
 import pinBlack from 'src/res/img/pin_black.png';
 import pinBlue from 'src/res/img/pin_blue.png';
@@ -17,8 +13,7 @@ import pinRed from 'src/res/img/pin_red.png';
 import pinYellow from 'src/res/img/pin_yellow.png';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-import {useRef} from 'react/cjs/react.development';
-import {Button, useTheme} from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
 import RestaurantCard from './RestaurantCard';
 const styles = StyleSheet.create({
   root: {
@@ -57,15 +52,19 @@ const RestaurantMain = ({navigation, route}) => {
     }
   }, [error, authContext]);
   const onCameraChange = e => {
+    const {minLat, maxLat, minLng, maxLng} = getBoundFromContentRegion(
+      e.contentRegion,
+    );
     getRestaurantList({
       variables: {
-        minLat: e.contentRegion[0].latitude,
-        maxLat: e.contentRegion[1].latitude,
-        minLng: e.contentRegion[0].longitude,
-        maxLng: e.contentRegion[2].longitude,
+        minLat,
+        maxLat,
+        minLng,
+        maxLng,
       },
     });
     setZoom(e.zoom);
+    console.log(e);
   };
   const bottomSheetRenderContent = () => {
     return (
@@ -122,7 +121,7 @@ const RestaurantMain = ({navigation, route}) => {
                 (overlapedRestaurantList.length + 1 > 4
                   ? 4
                   : overlapedRestaurantList.length + 1) *
-                  45 +
+                  55 +
                   3,
               );
               sheetRef.current.snapTo(0);
@@ -140,6 +139,28 @@ const RestaurantMain = ({navigation, route}) => {
       />
     </>
   );
+};
+
+const getBoundFromContentRegion = contentRegion => {
+  let minLat = 999999;
+  let maxLat = -999999;
+  let minLng = 99999;
+  let maxLng = -999999;
+  contentRegion.forEach(ele => {
+    if (minLat > ele.latitude) {
+      minLat = ele.latitude;
+    }
+    if (maxLat < ele.latitude) {
+      maxLat = ele.latitude;
+    }
+    if (minLng > ele.longitude) {
+      minLng = ele.longitude;
+    }
+    if (maxLng < ele.longitude) {
+      maxLng = ele.longitude;
+    }
+  });
+  return {minLat, maxLat, minLng, maxLng};
 };
 
 const getImage = rating => {
