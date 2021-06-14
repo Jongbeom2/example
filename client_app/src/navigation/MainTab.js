@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useTheme} from 'react-native-paper';
 import HomeMain from 'src/page/home/HomeMain';
 import RoomMain from 'src/page/room/RoomMain';
-import RestaurantMain from 'src/page/restaurant/RestaurantMain';
+// import RestaurantMain from 'src/page/restaurant/RestaurantMain';
 import messaging from '@react-native-firebase/messaging';
 
 const Tab = createBottomTabNavigator();
@@ -86,12 +86,12 @@ const MainTab = ({navigation, route: parentRoute}) => {
         component={RoomMain}
         initialParams={{userId: parentRoute?.params?.userId}}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="restaurant"
         options={{tabBarLabel: '맛집'}}
         component={RestaurantMain}
         initialParams={{userId: parentRoute?.params?.userId}}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };

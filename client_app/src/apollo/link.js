@@ -3,6 +3,7 @@ import {createUploadLink} from 'apollo-upload-client';
 import {WebSocketLink} from '@apollo/client/link/ws';
 import {getMainDefinition} from '@apollo/client/utilities';
 import {REACT_APP_GRAPHQL_API_URL, REACT_APP_GRAPHQL_WEBSOCKET_URL} from '@env';
+console.log(REACT_APP_GRAPHQL_API_URL);
 const ENABLE_SUBSCRIPTION = true;
 const headersForAllRequests = {'X-EXAMPLE-Header': 'EXAMPLE'};
 const terminatingLink = createUploadLink({
