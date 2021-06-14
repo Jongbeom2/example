@@ -5841,10 +5841,10 @@ react-native-iphone-x-helper@^1.3.0, react-native-iphone-x-helper@^1.3.1:
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
   integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
 
-react-native-nmap@^0.0.66:
-  version "0.0.66"
-  resolved "https://registry.yarnpkg.com/react-native-nmap/-/react-native-nmap-0.0.66.tgz#caea39b1af54d4e46c4313c21130986d3adea3fc"
-  integrity sha512-+XMJOqn4zZ6PWO0UH478yj0b9PjYGHQcLUd0W5gJQ3DqGeJEb3vvWVDMbkzcuHsh59hkhGPsE9Q6pZkXxKsYtQ==
+react-native-naver-map@^0.1.23:
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/react-native-naver-map/-/react-native-naver-map-0.1.23.tgz#0fc6cdad2ab468812f4ebfe077a0c225b3fb228b"
+  integrity sha512-JTVmt8w4nIZhDM4E6uDL5dvbM4y8OKawWV19+q8a46bdWBfrOPnPcfNOgxd5+hi7ZmsqLC4xVrnmCa3RV7bMJQ==
 
 react-native-paper@^4.8.1:
   version "4.8.1"
