@@ -34,7 +34,7 @@ import {
 } from 'src/res/message';
 import messaging from '@react-native-firebase/messaging';
 import { SIGNOUT } from './page/auth/auth.query';
-// import RoomDetailDrawer from './navigation/RoomDetailDrawer';
+import RoomDetailDrawer from './navigation/RoomDetailDrawer';
 // import RestaurantDetail from './page/restaurant/RestaurantDetail';
 
 const theme = {
@@ -113,7 +113,7 @@ const Main = props => {
   // 2. 초기화
   useEffect(() => {
     if (Platform.OS === "android") {
-      // permission
+      // device permission
       (async () => {
         const granted = await PermissionsAndroid.requestMultiple(
           [
@@ -133,9 +133,17 @@ const Main = props => {
           },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('권한 허용');
+          console.log('안드로이드 Device 권한 허용');
         } else {
-          console.log('권한 허용 실패');
+          console.log(' 안드로이드 Device 권한 허용 실패');
+        }
+      })();
+    } else {
+      //  firebase permission
+      (async () => {
+        const authorizationStatus = await messaging().requestPermission();
+        if (authorizationStatus) {
+          console.log('IOS Firebase 권한 허용, Permission status:', authorizationStatus);
         }
       })();
     }
@@ -181,7 +189,7 @@ const Main = props => {
           <Stack.Navigator
             screenOptions={{
               headerStyle: {
-                height: 56,
+                // height: 56,
               },
             }}>
             {state.isLoading === true && (
@@ -225,15 +233,15 @@ const Main = props => {
                   component={UserEdit}
                   options={{ title: '내정보' }}
                 />
-                {/* <Stack.Screen
+                <Stack.Screen
                   name="roomdetaildrawer"
                   component={RoomDetailDrawer}
-                  options={({route}) => ({
+                  options={({ route }) => ({
                     headerTitle: getHeaderTitle(route),
                     headerRight: HeaderRight,
                   })}
                 />
-                <Stack.Screen
+                {/* <Stack.Screen
                   name="restaurantdetail"
                   component={RestaurantDetail}
                   options={({route}) => ({
