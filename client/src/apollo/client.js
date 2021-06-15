@@ -4,6 +4,7 @@ import { link } from 'src/apollo/link';
 import typeDefs from 'src/apollo/typeDefs';
 
 // ApolloClient is an encapsulation of ApolloLink, ApolloCache... instances
+
 const client = new ApolloClient({
   // Provide required constructor fields
   cache,

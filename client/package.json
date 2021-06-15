@@ -79,7 +79,6 @@
   },
   "devDependencies": {
     "copyfiles": "^2.4.0",
-    "cross-env": "^7.0.3",
     "http-server": "^0.12.3",
     "kill-port": "^1.6.1",
     "prettier": "^2.1.2",
@@ -88,8 +87,8 @@
   "scripts": {
     "start": "http-server ./build",
     "build": "react-scripts build",
-    "predev": "yarn && yarn kill-port 3200",
-    "dev": "cross-env REACT_APP_MODE=development PORT=3200 react-scripts start"
+    "dev": "set REACT_APP_MODE=development&& yarn && yarn kill-port 3200 && set PORT=3200 && react-scripts start",
+    "dev2": "set REACT_APP_MODE=development&& yarn && yarn kill-port 3200 && set PORT=3200 && yarn react-app-rewired start"
   },
   "browserslist": {
     "production": [

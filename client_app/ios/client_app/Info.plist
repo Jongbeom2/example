@@ -4,6 +4,7 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Ionicons.ttf</string>
 		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>
 		<string>EvilIcons.ttf</string>
@@ -14,7 +15,6 @@
 		<string>FontAwesome5_Solid.ttf</string>
 		<string>Fontisto.ttf</string>
 		<string>Foundation.ttf</string>
-		<string>Ionicons.ttf</string>
 		<string>MaterialCommunityIcons.ttf</string>
 		<string>MaterialIcons.ttf</string>
 		<string>Octicons.ttf</string>
@@ -91,9 +91,5 @@
 	<false/>
 	<key>NMFClientId</key>
 	<string>i48wj7yrty</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Access to take a photo by camera</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Access to pick a photo</string>
 </dict>
 </plist>
