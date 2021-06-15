@@ -116,29 +116,29 @@ const RestaurantMain = () => {
         maxLng: bounds._max._lng,
       },
     });
-    // 내위치 그리기
-    window.navigator.geolocation.watchPosition((location) => {
-      console.log(location);
-      const markerOptions = {
-        position: new window.naver.maps.LatLng(
-          location.coords.latitude,
-          location.coords.longitude,
-        ),
-        map,
-        icon: {
-          content: `<img src=${myLocation} style="width:40px; height:40px;"/>`,
-          origin: new window.naver.maps.Point(0, 0),
-          anchor: new window.naver.maps.Point(20, 40),
-        },
-      };
-      const tempMyLocationMarker = new window.naver.maps.Marker(markerOptions);
-      setMyLocationMarker((prevMyLocationMarker) => {
-        if (prevMyLocationMarker) {
-          prevMyLocationMarker.setMap(null);
-        }
-        return tempMyLocationMarker;
-      });
-    });
+    // // 내위치 그리기
+    // window.navigator.geolocation.watchPosition((location) => {
+    //   console.log(location);
+    //   const markerOptions = {
+    //     position: new window.naver.maps.LatLng(
+    //       location.coords.latitude,
+    //       location.coords.longitude,
+    //     ),
+    //     map,
+    //     icon: {
+    //       content: `<img src=${myLocation} style="width:40px; height:40px;"/>`,
+    //       origin: new window.naver.maps.Point(0, 0),
+    //       anchor: new window.naver.maps.Point(20, 40),
+    //     },
+    //   };
+    //   const tempMyLocationMarker = new window.naver.maps.Marker(markerOptions);
+    //   setMyLocationMarker((prevMyLocationMarker) => {
+    //     if (prevMyLocationMarker) {
+    //       prevMyLocationMarker.setMap(null);
+    //     }
+    //     return tempMyLocationMarker;
+    //   });
+    // });
   }, [getRestaurantList]);
   // 새로운 데이터
   useEffect(() => {
