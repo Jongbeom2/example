@@ -35,7 +35,7 @@ import {
 import messaging from '@react-native-firebase/messaging';
 import { SIGNOUT } from './page/auth/auth.query';
 import RoomDetailDrawer from './navigation/RoomDetailDrawer';
-// import RestaurantDetail from './page/restaurant/RestaurantDetail';
+import RestaurantDetail from './page/restaurant/RestaurantDetail';
 
 const theme = {
   ...DefaultTheme,
@@ -241,13 +241,13 @@ const Main = props => {
                     headerRight: HeaderRight,
                   })}
                 />
-                {/* <Stack.Screen
+                <Stack.Screen
                   name="restaurantdetail"
                   component={RestaurantDetail}
-                  options={({route}) => ({
+                  options={({ route }) => ({
                     headerTitle: getHeaderTitle(route),
                   })}
-                /> */}
+                />
               </>
             )}
           </Stack.Navigator>
