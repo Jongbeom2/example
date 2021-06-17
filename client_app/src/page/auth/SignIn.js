@@ -17,7 +17,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { websocketLink } from 'src/apollo/link';
 import Loading from 'src/component/Loading';
-// import {login} from '@react-native-seoul/kakao-login';
+import { login } from '@react-native-seoul/kakao-login';
 import messaging from '@react-native-firebase/messaging';
 const styles = StyleSheet.create({
   root: {
@@ -135,21 +135,26 @@ const SignIn = ({ navigation }) => {
     });
   };
   const onClickKakoSignInBtn = async () => {
-    // let token;
-    // try {
-    //   token = await login();
-    // } catch (e) {
-    //   return;
-    // }
-    // const fcmToken = await messaging().getToken();
-    // signInWithKakao({
-    //   variables: {
-    //     signInWithKakaoInput: {
-    //       accessToken: token.accessToken,
-    //       fcmToken,
-    //     },
-    //   },
-    // });
+    let token;
+    try {
+      token = await login();
+    } catch (e) {
+      return;
+    }
+    let fcmToken;
+    try {
+      fcmToken = await messaging().getToken();
+    } catch (e) {
+      console.log('fcmToken을 받는데 실패했습니다.', e);
+    }
+    signInWithKakao({
+      variables: {
+        signInWithKakaoInput: {
+          accessToken: token.accessToken,
+          fcmToken,
+        },
+      },
+    });
   };
   if (loading || mutationLoading) {
     return <Loading />;
