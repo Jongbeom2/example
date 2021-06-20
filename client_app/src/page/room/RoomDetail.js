@@ -15,6 +15,7 @@ import {
   Alert,
   FlatList,
   Text,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { IconButton, useTheme } from 'react-native-paper';
 import {
@@ -37,6 +38,8 @@ import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
 import DocumentPicker from 'react-native-document-picker';
 import { AuthContext } from 'src/Main';
 import ChatCardLoading from './ChatCardLoading';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
+
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -320,7 +323,7 @@ const RoomDetail = ({ route, navigation }) => {
     }
   };
   return (
-    <SafeAreaView style={styles.root}>
+    <KeyboardAvoidingView style={styles.root} >
       <FlatList
         ref={flatlistRef}
         style={[{ backgroundColor: colors.primaryLight }, styles.chatWrapper]}
@@ -384,7 +387,8 @@ const RoomDetail = ({ route, navigation }) => {
           />
         </View>
       )}
-    </SafeAreaView>
+      <KeyboardSpacer />
+    </KeyboardAvoidingView>
   );
 };
 

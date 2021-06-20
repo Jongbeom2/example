@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Alert, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, View } from 'react-native';
 import { AuthContext } from 'src/Main';
 import { TextInput, Button, useTheme } from 'react-native-paper';
 import { Text } from 'react-native-paper';
@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     width: 300,
   },
   text: {
+    textAlign: 'center',
     marginBottom: 20,
   },
   btnWrapper: {
@@ -160,7 +161,7 @@ const SignIn = ({ navigation }) => {
     return <Loading />;
   }
   return (
-    <SafeAreaView style={styles.root}>
+    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <TextInput
         style={styles.textInput}
         placeholder="이메일"
@@ -223,7 +224,7 @@ const SignIn = ({ navigation }) => {
           G
         </Button>
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 export default SignIn;

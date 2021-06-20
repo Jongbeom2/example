@@ -1,10 +1,10 @@
-import React, {useState, useContext, useEffect} from 'react';
-import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
-import {AuthContext} from '../../App';
-import {TextInput, Button, useTheme} from 'react-native-paper';
-import {Text} from 'react-native-paper';
-import {useMutation} from '@apollo/client';
-import {CREATE_USER} from './auth.query';
+import React, { useState, useContext, useEffect } from 'react';
+import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, View } from 'react-native';
+import { AuthContext } from '../../App';
+import { TextInput, Button, useTheme } from 'react-native-paper';
+import { Text } from 'react-native-paper';
+import { useMutation } from '@apollo/client';
+import { CREATE_USER } from './auth.query';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_INPUT_ALL_REQUIRED,
@@ -47,13 +47,13 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
 });
-const SignUp = ({navigation}) => {
+const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
   const [nickname, setNickname] = useState('');
   // 회원가입
-  const [createUser, {data, loading, error}] = useMutation(CREATE_USER);
+  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
   const onChangeEmail = text => {
     setEmail(text);
   };
@@ -107,7 +107,7 @@ const SignUp = ({navigation}) => {
     return <Loading />;
   }
   return (
-    <SafeAreaView style={styles.root}>
+    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <TextInput
         style={styles.textInput}
         placeholder="이메일"
@@ -144,7 +144,7 @@ const SignUp = ({navigation}) => {
         }}>
         이미 회원이신가요?
       </Button>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 export default SignUp;

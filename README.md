@@ -89,3 +89,11 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 [https://github.com/navermaps/ios-map-sdk#%EB%8C%80%EC%9A%A9%EB%9F%89-%ED%8C%8C%EC%9D%BC%EC%9D%84-%EB%B0%9B%EA%B8%B0-%EC%9C%84%ED%95%B4-git-lfs-%EC%84%A4%EC%B9%98%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%A9%EB%8B%88%EB%8B%A4](https://github.com/navermaps/ios-map-sdk#%EB%8C%80%EC%9A%A9%EB%9F%89-%ED%8C%8C%EC%9D%BC%EC%9D%84-%EB%B0%9B%EA%B8%B0-%EC%9C%84%ED%95%B4-git-lfs-%EC%84%A4%EC%B9%98%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%A9%EB%8B%88%EB%8B%A4)
 
 [https://github.com/QuadFlask/react-native-naver-map/issues/42#issuecomment-749524390](https://github.com/QuadFlask/react-native-naver-map/issues/42#issuecomment-749524390)
+
+### **이슈4**
+
+- react-native-paper 패키지의 Dialog를 사용할 때 Keyboard가 Dialog를 가림. 하지만 Dialog와 KeyboardAvoidingView와 함께 쓸 수 없음.
+- Android는 알아서 처리해주는데 IOS의 경우 처리를 해줘야함.
+- react-native-paper에서는 따로 개선을 해주고 있지 않는 상황이라 우선 Dialog의 위치를 옮겨 해결함.
+
+[https://github.com/callstack/react-native-paper/issues/2172#issuecomment-725769818](https://github.com/callstack/react-native-paper/issues/2172#issuecomment-725769818)

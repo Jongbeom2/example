@@ -1,6 +1,6 @@
-import {useLazyQuery, useMutation, useQuery} from '@apollo/client';
-import React, {useContext, useEffect, useState} from 'react';
-import {Alert, StyleSheet, View} from 'react-native';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import React, { useContext, useEffect, useState } from 'react';
+import { Alert, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 import {
   Avatar,
   Button,
@@ -8,8 +8,8 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
-import {AuthContext} from 'src/Main';
-import {isNotAuthorizedError} from 'src/lib/error';
+import { AuthContext } from 'src/Main';
+import { isNotAuthorizedError } from 'src/lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
@@ -17,9 +17,9 @@ import {
   MESSAGE_SUCCESS_UPDATE_USER,
   MESSAGE_TITLE,
 } from 'src/res/message';
-import {GET_USER, UPDATE_USER} from 'src/page/user/user.query';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {GET_PRESIGNED_PUT_URL} from 'src/lib/file.query';
+import { GET_USER, UPDATE_USER } from 'src/page/user/user.query';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
 import Loading from 'src/component/Loading';
 
 const styles = StyleSheet.create({
@@ -52,15 +52,15 @@ const styles = StyleSheet.create({
     width: 300,
   },
 });
-const UserEdit = ({route, navigation}) => {
+const UserEdit = ({ route, navigation }) => {
   const userId = route.params?.userId;
   const theme = useTheme();
   const authContext = useContext(AuthContext);
   const [user, setUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   // 유저 정보 로드
-  const {data, loading, error} = useQuery(GET_USER, {
-    variables: {_id: userId},
+  const { data, loading, error } = useQuery(GET_USER, {
+    variables: { _id: userId },
     fetchPolicy: 'cache-and-network',
   });
   // 유저 정보 로드 성공
@@ -78,12 +78,12 @@ const UserEdit = ({route, navigation}) => {
     }
   }, [error, authContext]);
   const onChangeNickname = text => {
-    setUser({...user, nickname: text});
+    setUser({ ...user, nickname: text });
   };
   // presigned url 로드
   const [
     getPresignedPutURL,
-    {data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError},
+    { data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError },
   ] = useLazyQuery(GET_PRESIGNED_PUT_URL);
   // presigned url 로드 성공
   useEffect(() => {
@@ -123,7 +123,7 @@ const UserEdit = ({route, navigation}) => {
   // 유저 정보 업데이트
   const [
     updateUser,
-    {data: mutationData, loading: mutaionLoading, error: mutationError},
+    { data: mutationData, loading: mutaionLoading, error: mutationError },
   ] = useMutation(UPDATE_USER);
   // 유저 정보 수정 성공
   useEffect(() => {
@@ -156,7 +156,7 @@ const UserEdit = ({route, navigation}) => {
     navigation.goBack();
   };
   const onPressDeleteBtn = () => {
-    setUser({...user, profileImageURL: '', profileThumbnailImageURL: ''});
+    setUser({ ...user, profileImageURL: '', profileThumbnailImageURL: '' });
   };
   const onPressCameraBtn = () => {
     launchCamera({}, response => {
@@ -198,7 +198,7 @@ const UserEdit = ({route, navigation}) => {
     return <Loading />;
   }
   return (
-    <View style={styles.root}>
+    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <View>
         {user?.profileImageURL ? (
           <>
@@ -251,7 +251,7 @@ const UserEdit = ({route, navigation}) => {
       <Button style={styles.btn} onPress={onPressCancelBtn}>
         취소
       </Button>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

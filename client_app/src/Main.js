@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  SafeAreaView
 } from 'react-native';
 import {
   NavigationContainer,
@@ -36,7 +37,6 @@ import messaging from '@react-native-firebase/messaging';
 import { SIGNOUT } from './page/auth/auth.query';
 import RoomDetailDrawer from './navigation/RoomDetailDrawer';
 import RestaurantDetail from './page/restaurant/RestaurantDetail';
-
 const theme = {
   ...DefaultTheme,
   roundness: 2,
@@ -185,73 +185,75 @@ const Main = props => {
   return (
     <AuthContext.Provider value={authContext}>
       <PaperProvider theme={theme}>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                // height: 56,
-              },
-            }}>
-            {state.isLoading === true && (
-              <Stack.Screen
-                name="loading"
-                component={Loading}
-                options={{ headerShown: false }}
-              />
-            )}
-            {state.isSignIn === false ? (
-              <>
+        <SafeAreaView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
+                headerStyle: {
+                  // height: 56,
+                },
+              }}>
+              {state.isLoading === true && (
                 <Stack.Screen
-                  name="signin"
-                  component={SignIn}
-                  options={{ title: '로그인' }}
+                  name="loading"
+                  component={Loading}
+                  options={{ headerShown: false }}
                 />
-                <Stack.Screen
-                  name="signup"
-                  component={SignUp}
-                  options={{ title: '회원가입' }}
-                />
-              </>
-            ) : (
-              <>
-                <Stack.Screen
-                  name="drawer"
-                  component={MainDrawer}
-                  options={({ route }) => ({
-                    headerTitle: getHeaderTitle(route),
-                    headerRight: HeaderRight,
-                  })}
-                  initialParams={{ userId: state.userId }}
-                />
-                <Stack.Screen
-                  name="user"
-                  component={UserMain}
-                  options={{ title: '유저' }}
-                />
-                <Stack.Screen
-                  name="useredit"
-                  component={UserEdit}
-                  options={{ title: '내정보' }}
-                />
-                <Stack.Screen
-                  name="roomdetaildrawer"
-                  component={RoomDetailDrawer}
-                  options={({ route }) => ({
-                    headerTitle: getHeaderTitle(route),
-                    headerRight: HeaderRight,
-                  })}
-                />
-                <Stack.Screen
-                  name="restaurantdetail"
-                  component={RestaurantDetail}
-                  options={({ route }) => ({
-                    headerTitle: getHeaderTitle(route),
-                  })}
-                />
-              </>
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
+              )}
+              {state.isSignIn === false ? (
+                <>
+                  <Stack.Screen
+                    name="signin"
+                    component={SignIn}
+                    options={{ title: '로그인' }}
+                  />
+                  <Stack.Screen
+                    name="signup"
+                    component={SignUp}
+                    options={{ title: '회원가입' }}
+                  />
+                </>
+              ) : (
+                <>
+                  <Stack.Screen
+                    name="drawer"
+                    component={MainDrawer}
+                    options={({ route }) => ({
+                      headerTitle: getHeaderTitle(route),
+                      headerRight: HeaderRight,
+                    })}
+                    initialParams={{ userId: state.userId }}
+                  />
+                  <Stack.Screen
+                    name="user"
+                    component={UserMain}
+                    options={{ title: '유저' }}
+                  />
+                  <Stack.Screen
+                    name="useredit"
+                    component={UserEdit}
+                    options={{ title: '내정보' }}
+                  />
+                  <Stack.Screen
+                    name="roomdetaildrawer"
+                    component={RoomDetailDrawer}
+                    options={({ route }) => ({
+                      headerTitle: getHeaderTitle(route),
+                      headerRight: HeaderRight,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="restaurantdetail"
+                    component={RestaurantDetail}
+                    options={({ route }) => ({
+                      headerTitle: getHeaderTitle(route),
+                    })}
+                  />
+                </>
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaView>
       </PaperProvider>
     </AuthContext.Provider>
   );
