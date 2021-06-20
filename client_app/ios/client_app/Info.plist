@@ -8,6 +8,8 @@
 	<string>client_app</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -32,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>9bb9662a8601221f3ee753b07e4cf0f9</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -57,11 +59,11 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Access to take a photo by camera</string>
+	<string>사진 공유 기능을 이용하기 위한 유저의 카메라 권한 요청</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>맛집 검색 기능을 이용하기 위한 유저의 위치 정보 권한 요청</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Access to pick a photo</string>
+	<string>사진 공유 기능을 이용하기 위한 유저의 사진 권한 요청</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
@@ -92,6 +94,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
