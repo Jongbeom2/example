@@ -4,6 +4,14 @@
 
 [https://appicon.co/](https://appicon.co/)
 
+### **개인정보 처리방침 생성**
+
+[https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do](https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do)
+
+### **ios 스크린샷 사양**
+
+[https://help.apple.com/app-store-connect/#/devd274dd925](https://help.apple.com/app-store-connect/#/devd274dd925)
+
 # **이슈**
 
 ### **이슈1**
