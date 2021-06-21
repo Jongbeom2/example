@@ -387,7 +387,7 @@ const RoomDetail = ({ route, navigation }) => {
           />
         </View>
       )}
-      <KeyboardSpacer />
+      {Platform.OS === "ios" && <KeyboardSpacer />}
     </KeyboardAvoidingView>
   );
 };

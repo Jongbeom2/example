@@ -1,6 +1,6 @@
 # **참고 웹사이트**
 
-### **App Icon, Splash Image 생성**
+### **App Icon, Image 생성**
 
 [https://appicon.co/](https://appicon.co/)
 

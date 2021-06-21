@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Image, StyleSheet} from 'react-native';
-import {Dialog, Portal} from 'react-native-paper';
-import {Dimensions} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Image, StyleSheet } from 'react-native';
+import { Dialog, Portal } from 'react-native-paper';
+import { Dimensions } from 'react-native';
 const styles = StyleSheet.create({
   root: {},
 });
@@ -27,16 +27,14 @@ const PopupImage = ({
   }, [onDismiss]);
   return (
     <Portal style={styles.root}>
-      {visible && (
-        <Dialog visible={visible} onDismiss={closeDialog}>
-          <Image
-            style={[{height: imageHeight, width: imageWidth}, styles.root]}
-            source={{uri: sourceList[sourceIdx]}}
-            onError={onError}
-            {...rest}
-          />
-        </Dialog>
-      )}
+      <Dialog visible={visible} onDismiss={closeDialog}>
+        <Image
+          style={[{ height: imageHeight, width: imageWidth }, styles.root]}
+          source={{ uri: sourceList[sourceIdx] }}
+          onError={onError}
+          {...rest}
+        />
+      </Dialog>
     </Portal>
   );
 };

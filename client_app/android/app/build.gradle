@@ -135,7 +135,7 @@ android {
         applicationId "com.jongbeom.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
+        versionCode 12
         versionName "1.6"
     }
     splits {
