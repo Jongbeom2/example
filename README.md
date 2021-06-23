@@ -1,16 +1,33 @@
-# **참고 웹사이트**
+# **Prettier Eslint 세팅**
 
-### **App Icon, Image 생성**
+### **세팅 과정**
 
-[https://appicon.co/](https://appicon.co/)
+1. Extension 설치
 
-### **개인정보 처리방침 생성**
+- Prettier, Eslint extension 설치함.
 
-[https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do](https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do)
+2. VS Code 설정
 
-### **ios 스크린샷 사양**
+- Ctrl + Shift + p 입력함.
+- Preferences: Open Settings (JSON) 입력함.
+- settings.json 다음과 같이 수정함.
 
-[https://help.apple.com/app-store-connect/#/devd274dd925](https://help.apple.com/app-store-connect/#/devd274dd925)
+```jsx
+{
+  // Set the default
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.fontSize": 14,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+}
+```
+
+3. VS Code 재시작
+
+### **Prettier Eslint와 관련된 package.json 설정**
+
+- package.json에는 eslint-config-prettier가 설치되어 있어야함. eslint와 prettier 충돌을 막기 위해 설치함.
+- package.json에는 prettier가 설치되어 있어야함. yarn pretty 스크립트를 실행하기 위함.
 
 # **이슈**
 
@@ -111,3 +128,17 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 - react-native-paper에서는 따로 개선을 해주고 있지 않는 상황이라 우선 Dialog의 위치를 옮겨 해결함.
 
 [https://github.com/callstack/react-native-paper/issues/2172#issuecomment-725769818](https://github.com/callstack/react-native-paper/issues/2172#issuecomment-725769818)
+
+# **참고 웹사이트**
+
+### **App Icon, Image 생성**
+
+[https://appicon.co/](https://appicon.co/)
+
+### **개인정보 처리방침 생성**
+
+[https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do](https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do)
+
+### **ios 스크린샷 사양**
+
+[https://help.apple.com/app-store-connect/#/devd274dd925](https://help.apple.com/app-store-connect/#/devd274dd925)
