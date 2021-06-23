@@ -1,17 +1,17 @@
-import { useQuery } from '@apollo/client';
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import { GET_MY_ROOM_LIST } from 'src/page/room/room.query';
-import { isNotAuthorizedError } from 'src/lib/error';
+import {useQuery} from '@apollo/client';
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {GET_MY_ROOM_LIST} from 'src/page/room/room.query';
+import {isNotAuthorizedError} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
   MESSAGE_TITLE,
 } from 'src/res/message';
-import { AuthContext } from 'src/Main';
+import {AuthContext} from 'src/Main';
 import RoomCard from 'src/page/room/RoomCard';
-import { useTheme } from 'react-native-paper';
-import { FAB } from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
+import {FAB} from 'react-native-paper';
 import RoomSearchDialog from 'src/page/room/RoomSearchDialog';
 import RoomCreateDialog from 'src/page/room/RoomCreateDialog';
 import Loading from 'src/component/Loading';
@@ -34,13 +34,13 @@ const styles = StyleSheet.create({
     bottom: 50,
   },
 });
-const RoomMain = ({ navigation, route }) => {
+const RoomMain = ({navigation, route}) => {
   const theme = useTheme();
   const authContext = useContext(AuthContext);
   const [isOpenRoomCreateDialog, setIsOpenRoomCreateDialog] = useState(false);
   const [isOpenRoomSearchDialog, setIsOpenRoomSearchDialog] = useState(false);
   // 대화방 리스트
-  const { data, loading, error } = useQuery(GET_MY_ROOM_LIST, {
+  const {data, loading, error} = useQuery(GET_MY_ROOM_LIST, {
     variables: {
       userId: route.params?.userId,
     },
@@ -83,13 +83,13 @@ const RoomMain = ({ navigation, route }) => {
         ))}
       </ScrollView>
       <FAB
-        style={[{ backgroundColor: theme.colors.primary }, styles.createBtn]}
+        style={[{backgroundColor: theme.colors.primary}, styles.createBtn]}
         small
         icon="magnify"
         onPress={onPressSearchBtn}
       />
       <FAB
-        style={[{ backgroundColor: theme.colors.primary }, styles.searchBtn]}
+        style={[{backgroundColor: theme.colors.primary}, styles.searchBtn]}
         small
         icon="plus"
         onPress={onPressCreateBtn}

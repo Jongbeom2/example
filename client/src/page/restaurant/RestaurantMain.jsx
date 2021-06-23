@@ -67,9 +67,8 @@ const RestaurantMain = () => {
   const [clickedMarker, setClickedMarker] = useState(null);
   const [myLocationMarker, setMyLocationMarker] = useState(null);
   // 식당 리스트
-  const [getRestaurantList, { data, loading, error }] = useLazyQuery(
-    GET_RESTAURANT_LIST,
-  );
+  const [getRestaurantList, { data, loading, error }] =
+    useLazyQuery(GET_RESTAURANT_LIST);
   // 식당 리스트 로드
   useEffect(() => {
     if (data && !error) {

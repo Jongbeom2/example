@@ -21,9 +21,8 @@ const SignInKakao = () => {
   const history = useHistory();
   const code = queryString.parse(history.location.search).code;
   // 카카오 로그인
-  const [signInWithKakao, { data, loading, error }] = useMutation(
-    SIGNIN_WITH_KAKAO,
-  );
+  const [signInWithKakao, { data, loading, error }] =
+    useMutation(SIGNIN_WITH_KAKAO);
   // 카카오 로그인 성공
   useEffect(() => {
     if (data && !error) {

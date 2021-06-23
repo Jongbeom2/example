@@ -1,8 +1,8 @@
-import { useMutation, useQuery } from '@apollo/client';
-import React, { useEffect, useContext, useState } from 'react';
-import { Alert, Image, SafeAreaView, StyleSheet, View } from 'react-native';
-import { isNotAuthorizedError } from 'src/lib/error';
-import { AuthContext } from 'src/Main';
+import {useMutation, useQuery} from '@apollo/client';
+import React, {useEffect, useContext, useState} from 'react';
+import {Alert, Image, SafeAreaView, StyleSheet, View} from 'react-native';
+import {isNotAuthorizedError} from 'src/lib/error';
+import {AuthContext} from 'src/Main';
 import {
   MESSAGE_ERROR,
   MESSAGE_TITLE,
@@ -10,12 +10,12 @@ import {
   MESSAGE_ERROR_UPDATE_RESTAURANT_RATING_EXIST_RATING,
   MESSAGE_ERROR_PDATE_RESTAURANT_RATING_INPUT_REQUIRED,
 } from 'src/res/message';
-import { GET_RESTAURANT, UPDATE_RESTAURANT_RATING } from './restaurant.query';
+import {GET_RESTAURANT, UPDATE_RESTAURANT_RATING} from './restaurant.query';
 import Carousel from 'react-native-snap-carousel';
-import { Dimensions } from 'react-native';
-import { Button, Surface, Text } from 'react-native-paper';
+import {Dimensions} from 'react-native';
+import {Button, Surface, Text} from 'react-native-paper';
 import Loading from 'src/component/Loading';
-import { AirbnbRating } from 'react-native-ratings';
+import {AirbnbRating} from 'react-native-ratings';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
@@ -51,15 +51,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
-const RestaurantDetail = ({ route }) => {
+const RestaurantDetail = ({route}) => {
   const userId = route.params?.userId;
   const restaurantId = route?.params?.restaurantId;
   const authContext = useContext(AuthContext);
   const [restaurant, setRestaurant] = useState(null);
   const [rating, setRating] = useState(0);
   // 식당 정보 로드
-  const { data, loading, error } = useQuery(GET_RESTAURANT, {
-    variables: { _id: restaurantId },
+  const {data, loading, error} = useQuery(GET_RESTAURANT, {
+    variables: {_id: restaurantId},
     fetchPolicy: 'cache-first',
   });
   // 식당 정보 로드 성공
@@ -79,7 +79,7 @@ const RestaurantDetail = ({ route }) => {
   // 식당 평점 수정
   const [
     updateRestaurantRating,
-    { data: mutationData, loading: mutationLoading, error: mutationError },
+    {data: mutationData, loading: mutationLoading, error: mutationError},
   ] = useMutation(UPDATE_RESTAURANT_RATING);
   // 식당 평점 수정 성공
   useEffect(() => {
@@ -121,8 +121,8 @@ const RestaurantDetail = ({ route }) => {
       },
     });
   };
-  const renderItem = ({ item, index }) => {
-    return <Image style={styles.image} source={{ uri: item }} />;
+  const renderItem = ({item, index}) => {
+    return <Image style={styles.image} source={{uri: item}} />;
   };
   if (!data && loading) {
     return <Loading />;
@@ -140,7 +140,7 @@ const RestaurantDetail = ({ route }) => {
           itemWidth={windowWidth}
         />
       </View>
-      <Surface style={[styles.surface, { top: windowHeight * 0.3 - 40 }]}>
+      <Surface style={[styles.surface, {top: windowHeight * 0.3 - 40}]}>
         <Text style={styles.titleText}>{restaurant?.name}</Text>
         <Text>⭐ {restaurant?.rating}</Text>
         <Text>최근 리뷰 153</Text>

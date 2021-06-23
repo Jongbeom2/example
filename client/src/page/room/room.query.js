@@ -78,7 +78,7 @@ export const CREATE_CHAT = gql`
 `;
 
 export const CHAT_CREATED = gql`
-  subscription($roomId: ID!) {
+  subscription ($roomId: ID!) {
     chatCreated(roomId: $roomId) {
       _id
       user {

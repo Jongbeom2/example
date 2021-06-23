@@ -1,19 +1,19 @@
-import { useLazyQuery } from '@apollo/client';
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Alert, SafeAreaView, StyleSheet, View } from 'react-native';
-import NaverMapView, { Marker } from 'react-native-nmap';
+import {useLazyQuery} from '@apollo/client';
+import React, {useContext, useEffect, useState, useRef} from 'react';
+import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
+import NaverMapView, {Marker} from 'react-native-nmap';
 import Loading from 'src/component/Loading';
-import { isNotAuthorizedError } from 'src/lib/error';
-import { AuthContext } from 'src/Main';
-import { MESSAGE_ERROR, MESSAGE_TITLE } from 'src/res/message';
-import { GET_RESTAURANT_LIST } from './restaurant.query';
+import {isNotAuthorizedError} from 'src/lib/error';
+import {AuthContext} from 'src/Main';
+import {MESSAGE_ERROR, MESSAGE_TITLE} from 'src/res/message';
+import {GET_RESTAURANT_LIST} from './restaurant.query';
 import pinBlack from 'src/res/img/pin_black.png';
 import pinBlue from 'src/res/img/pin_blue.png';
 import pinRed from 'src/res/img/pin_red.png';
 import pinYellow from 'src/res/img/pin_yellow.png';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-import { useTheme } from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
 import RestaurantCard from './RestaurantCard';
 const styles = StyleSheet.create({
   root: {
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
 });
-const RestaurantMain = ({ navigation, route }) => {
+const RestaurantMain = ({navigation, route}) => {
   const theme = useTheme();
   const userId = route.params?.userId;
   const authContext = useContext(AuthContext);
@@ -35,7 +35,7 @@ const RestaurantMain = ({ navigation, route }) => {
   const [activeRestaurantList, setActiveRestaurantList] = useState([]);
   const [snapPoints, setSnapPoints] = useState(0);
   // 식당 리스트
-  const [getRestaurantList, { data, loading, error }] =
+  const [getRestaurantList, {data, loading, error}] =
     useLazyQuery(GET_RESTAURANT_LIST);
   // 식당 리스트 로드
   useEffect(() => {
@@ -52,7 +52,7 @@ const RestaurantMain = ({ navigation, route }) => {
     }
   }, [error, authContext]);
   const onCameraChange = e => {
-    const { minLat, maxLat, minLng, maxLng } = getBoundFromContentRegion(
+    const {minLat, maxLat, minLng, maxLng} = getBoundFromContentRegion(
       e.contentRegion,
     );
     getRestaurantList({
@@ -70,7 +70,7 @@ const RestaurantMain = ({ navigation, route }) => {
     return (
       <View
         style={[
-          { backgroundColor: theme.colors.custom.white },
+          {backgroundColor: theme.colors.custom.white},
           styles.bottomSheet,
         ]}>
         {activeRestaurantList.map(restaurant => (
@@ -102,7 +102,7 @@ const RestaurantMain = ({ navigation, route }) => {
         {restaurantList.map(restaurant => (
           <Marker
             key={restaurant._id}
-            coordinate={{ latitude: restaurant.lat, longitude: restaurant.lng }}
+            coordinate={{latitude: restaurant.lat, longitude: restaurant.lng}}
             image={getImage(restaurant.rating)}
             width={30}
             height={30}
@@ -121,8 +121,8 @@ const RestaurantMain = ({ navigation, route }) => {
                 (overlapedRestaurantList.length + 1 > 4
                   ? 4
                   : overlapedRestaurantList.length + 1) *
-                55 +
-                3,
+                  55 +
+                  3,
               );
               sheetRef.current.snapTo(0);
             }}
@@ -160,7 +160,7 @@ const getBoundFromContentRegion = contentRegion => {
       maxLng = ele.longitude;
     }
   });
-  return { minLat, maxLat, minLng, maxLng };
+  return {minLat, maxLat, minLng, maxLng};
 };
 
 const getImage = rating => {
@@ -178,7 +178,7 @@ const getImage = rating => {
 const isOverlaped = (restaurant, targetRestaurant, zoom) => {
   const len = Math.sqrt(
     Math.pow(restaurant.lat - targetRestaurant.lat, 2) +
-    Math.pow(restaurant.lng - targetRestaurant.lng, 2),
+      Math.pow(restaurant.lng - targetRestaurant.lng, 2),
   );
   return len < ((0.0005 * 14) / zoom) * 2;
 };

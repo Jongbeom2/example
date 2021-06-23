@@ -1,10 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, View } from 'react-native';
-import { AuthContext } from 'src/Main';
-import { TextInput, Button, useTheme } from 'react-native-paper';
-import { Text } from 'react-native-paper';
-import { useMutation } from '@apollo/client';
-import { SIGNIN, SIGNIN_WITH_KAKAO } from 'src/page/auth/auth.query';
+import React, {useState, useEffect, useContext} from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {AuthContext} from 'src/Main';
+import {TextInput, Button, useTheme} from 'react-native-paper';
+import {Text} from 'react-native-paper';
+import {useMutation} from '@apollo/client';
+import {SIGNIN, SIGNIN_WITH_KAKAO} from 'src/page/auth/auth.query';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_INPUT_ALL_REQUIRED,
@@ -15,9 +21,9 @@ import {
   MESSAGE_TITLE,
 } from 'src/res/message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { websocketLink } from 'src/apollo/link';
+import {websocketLink} from 'src/apollo/link';
 import Loading from 'src/component/Loading';
-import { login } from '@react-native-seoul/kakao-login';
+import {login} from '@react-native-seoul/kakao-login';
 import messaging from '@react-native-firebase/messaging';
 const styles = StyleSheet.create({
   root: {
@@ -54,13 +60,13 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
 });
-const SignIn = ({ navigation }) => {
-  const { colors } = useTheme();
+const SignIn = ({navigation}) => {
+  const {colors} = useTheme();
   const authContext = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   // 1. 로그인
-  const [mutationSignIn, { data, loading, error }] = useMutation(SIGNIN);
+  const [mutationSignIn, {data, loading, error}] = useMutation(SIGNIN);
   // 로그인 성공
   useEffect(() => {
     if (data && !error) {
@@ -90,7 +96,7 @@ const SignIn = ({ navigation }) => {
   // 2. 카카오 로그인
   const [
     signInWithKakao,
-    { data: mutationData, loading: mutationLoading, error: mutationError },
+    {data: mutationData, loading: mutationLoading, error: mutationError},
   ] = useMutation(SIGNIN_WITH_KAKAO);
   // 카카오 로그인 성공
   useEffect(() => {
@@ -161,7 +167,9 @@ const SignIn = ({ navigation }) => {
     return <Loading />;
   }
   return (
-    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView
+      style={styles.root}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <TextInput
         style={styles.textInput}
         placeholder="이메일"
@@ -186,7 +194,7 @@ const SignIn = ({ navigation }) => {
         }}>
         회원가입
       </Button>
-      <Text style={[styles.text, { color: colors.custom.textSecondary }]}>
+      <Text style={[styles.text, {color: colors.custom.textSecondary}]}>
         SNS 계정으로 간편 로그인
       </Text>
       <View style={styles.btnWrapper}>
@@ -209,7 +217,7 @@ const SignIn = ({ navigation }) => {
               backgroundColor: colors.custom.naver,
             },
           ]}
-          onPress={() => { }}>
+          onPress={() => {}}>
           N
         </Button>
         <Button
@@ -220,7 +228,7 @@ const SignIn = ({ navigation }) => {
               backgroundColor: colors.custom.google,
             },
           ]}
-          onPress={() => { }}>
+          onPress={() => {}}>
           G
         </Button>
       </View>

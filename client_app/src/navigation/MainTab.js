@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, {useEffect} from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 // https://oblador.github.io/react-native-vector-icons/
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useTheme } from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
 import HomeMain from 'src/page/home/HomeMain';
 import RoomMain from 'src/page/room/RoomMain';
 import RestaurantMain from 'src/page/restaurant/RestaurantMain';
 import messaging from '@react-native-firebase/messaging';
 
 const Tab = createBottomTabNavigator();
-const MainTab = ({ navigation, route: parentRoute }) => {
+const MainTab = ({navigation, route: parentRoute}) => {
   const userId = parentRoute.params?.userId;
   const theme = useTheme();
   useEffect(() => {
     // 앱 사용 상태일 때 메세지 도착
-    messaging().onMessage(remoteMessage => { });
+    messaging().onMessage(remoteMessage => {});
     // 앱 백그라운드 상태일 때 메세지 도착
     messaging().onNotificationOpenedApp(remoteMessage => {
       if (remoteMessage) {
@@ -69,28 +69,28 @@ const MainTab = ({ navigation, route: parentRoute }) => {
           height: 48.8,
         },
       }}
-      screenOptions={({ route }) => ({
+      screenOptions={({route}) => ({
         tabBarLabel: route.name,
-        tabBarIcon: ({ focused }) =>
+        tabBarIcon: ({focused}) =>
           TabBarIcon(focused, route?.name, theme.colors),
       })}>
       <Tab.Screen
         name="home"
-        options={{ tabBarLabel: '홈' }}
+        options={{tabBarLabel: '홈'}}
         component={HomeMain}
-        initialParams={{ userId: parentRoute?.params?.userId }}
+        initialParams={{userId: parentRoute?.params?.userId}}
       />
       <Tab.Screen
         name="room"
-        options={{ tabBarLabel: '대화방' }}
+        options={{tabBarLabel: '대화방'}}
         component={RoomMain}
-        initialParams={{ userId: parentRoute?.params?.userId }}
+        initialParams={{userId: parentRoute?.params?.userId}}
       />
       <Tab.Screen
         name="restaurant"
-        options={{ tabBarLabel: '맛집' }}
+        options={{tabBarLabel: '맛집'}}
         component={RestaurantMain}
-        initialParams={{ userId: parentRoute?.params?.userId }}
+        initialParams={{userId: parentRoute?.params?.userId}}
       />
     </Tab.Navigator>
   );

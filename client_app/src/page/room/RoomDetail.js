@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation, useSubscription } from '@apollo/client';
+import {useLazyQuery, useMutation, useSubscription} from '@apollo/client';
 import React, {
   useCallback,
   useContext,
@@ -17,7 +17,7 @@ import {
   Text,
   KeyboardAvoidingView,
 } from 'react-native';
-import { IconButton, useTheme } from 'react-native-paper';
+import {IconButton, useTheme} from 'react-native-paper';
 import {
   CHAT_CREATED,
   CREATE_CHAT,
@@ -33,10 +33,10 @@ import {
   MESSAGE_TITLE,
 } from 'src/res/message';
 import ChatCard from 'src/page/room/ChatCard';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {GET_PRESIGNED_PUT_URL} from 'src/lib/file.query';
 import DocumentPicker from 'react-native-document-picker';
-import { AuthContext } from 'src/Main';
+import {AuthContext} from 'src/Main';
 import ChatCardLoading from './ChatCardLoading';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 
@@ -73,11 +73,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
-const RoomDetail = ({ route, navigation }) => {
+const RoomDetail = ({route, navigation}) => {
   const PAGE_SIZE = 15;
   const roomId = route?.params.roomId;
   const userId = route?.params?.userId;
-  const { colors } = useTheme();
+  const {colors} = useTheme();
   const authContext = useContext(AuthContext);
   let flatlistRef = useRef();
   const [content, setContent] = useState('');
@@ -103,7 +103,7 @@ const RoomDetail = ({ route, navigation }) => {
         ...preChatList,
       ]);
     }
-    return () => { };
+    return () => {};
   }, [subscriptionData, subscriptionError]);
   // 대화 구독 실패
   useEffect(() => {
@@ -116,7 +116,7 @@ const RoomDetail = ({ route, navigation }) => {
   // 2. 대화 로드
   const [
     getChatList,
-    { data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError },
+    {data: lazyQueryData, loading: lazyQueryLoading, error: lazyQueryError},
   ] = useLazyQuery(GET_CHAT_LIST);
   useEffect(() => {
     getChatList({
@@ -147,7 +147,7 @@ const RoomDetail = ({ route, navigation }) => {
   // 3. 대화 생성
   const [
     createChat,
-    { data: mutationData, loading: mutationLoading, error: mutationError },
+    {data: mutationData, loading: mutationLoading, error: mutationError},
   ] = useMutation(CREATE_CHAT);
   // 대화 생성 실패
   useEffect(() => {
@@ -160,7 +160,7 @@ const RoomDetail = ({ route, navigation }) => {
   // 4. presigned url 로드
   const [
     getPresignedPutURL,
-    { data: lazyQueryData2, loading: lazyQueryLoading2, error: lazyQueryError2 },
+    {data: lazyQueryData2, loading: lazyQueryLoading2, error: lazyQueryError2},
   ] = useLazyQuery(GET_PRESIGNED_PUT_URL);
   // presigned url 로드 성공
   useEffect(() => {
@@ -234,7 +234,7 @@ const RoomDetail = ({ route, navigation }) => {
       return;
     }
     // scroll 제일 밑으로
-    flatlistRef.current.scrollToOffset({ offset: 0, animated: false });
+    flatlistRef.current.scrollToOffset({offset: 0, animated: false});
     setContent('');
     createChat({
       variables: {
@@ -269,7 +269,7 @@ const RoomDetail = ({ route, navigation }) => {
       }
       setIsUploadLoading(true);
       // scroll 제일 밑으로
-      flatlistRef.current.scrollToOffset({ offset: 0, animated: false });
+      flatlistRef.current.scrollToOffset({offset: 0, animated: false});
       setChatFile(response.assets[0]);
       // Presigned put url을 가져옴.
       const fileExtension = response.assets[0].uri.split('.').pop();
@@ -288,7 +288,7 @@ const RoomDetail = ({ route, navigation }) => {
       }
       setIsUploadLoading(true);
       // scroll 제일 밑으로
-      flatlistRef.current.scrollToOffset({ offset: 0, animated: false });
+      flatlistRef.current.scrollToOffset({offset: 0, animated: false});
       setChatFile(response.assets[0]);
       // Presigned put url을 가져옴.
       const fileExtension = response.assets[0].uri.split('.').pop();
@@ -323,21 +323,21 @@ const RoomDetail = ({ route, navigation }) => {
     }
   };
   return (
-    <KeyboardAvoidingView style={styles.root} >
+    <KeyboardAvoidingView style={styles.root}>
       <FlatList
         ref={flatlistRef}
-        style={[{ backgroundColor: colors.primaryLight }, styles.chatWrapper]}
+        style={[{backgroundColor: colors.primaryLight}, styles.chatWrapper]}
         data={chatList}
         inverted
         onEndReached={onEndReached}
         keyExtractor={item => item._id}
-        renderItem={({ item, index }) => <ChatCard chat={item} userId={userId} />}
+        renderItem={({item, index}) => <ChatCard chat={item} userId={userId} />}
         ListHeaderComponent={() =>
           lazyQueryLoading2 || isUploadLoading ? <ChatCardLoading /> : null
         }
       />
       <View
-        style={[{ backgroundColor: colors.custom.white }, styles.inputWrapper]}>
+        style={[{backgroundColor: colors.custom.white}, styles.inputWrapper]}>
         <IconButton
           style={styles.inputPlusBtn}
           icon={isPlusBtnPressed ? 'close-box' : 'plus-box'}
@@ -353,7 +353,7 @@ const RoomDetail = ({ route, navigation }) => {
           numberOfLines={2}
           onFocus={() => {
             // scroll 제일 밑으로
-            flatlistRef.current.scrollToOffset({ offset: 0, animated: false });
+            flatlistRef.current.scrollToOffset({offset: 0, animated: false});
           }}
         />
         <IconButton
@@ -366,7 +366,7 @@ const RoomDetail = ({ route, navigation }) => {
       </View>
       {isPlusBtnPressed && (
         <View
-          style={[{ backgroundColor: colors.custom.white }, styles.plusWrapper]}>
+          style={[{backgroundColor: colors.custom.white}, styles.plusWrapper]}>
           <IconButton
             icon="camera"
             color={colors.custom.red}
@@ -387,7 +387,7 @@ const RoomDetail = ({ route, navigation }) => {
           />
         </View>
       )}
-      {Platform.OS === "ios" && <KeyboardSpacer />}
+      {Platform.OS === 'ios' && <KeyboardSpacer />}
     </KeyboardAvoidingView>
   );
 };
