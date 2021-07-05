@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   StyleSheet,
   View,
