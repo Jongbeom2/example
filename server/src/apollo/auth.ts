@@ -44,7 +44,7 @@ export const auth = (req: any, res: any) => {
     console.info(`## query: ${colors.blue.bold(queryName)}`);
   }
 
-  const queryWhiteList = ['createUser', 'signIn', 'signInWithKakao', 'signOut'];
+  const queryWhiteList = ['createUser', 'signIn', 'signInWithKakao', 'signOut', 'getNow'];
   // Test
   // queryWhiteList.push('getChatList');
   if (queryWhiteList.includes(queryName)) {

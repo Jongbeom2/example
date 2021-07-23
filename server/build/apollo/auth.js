@@ -47,7 +47,7 @@ exports.auth = (req, res) => {
     if (queryName !== '__schema') {
         console.info(`## query: ${colors_1.default.blue.bold(queryName)}`);
     }
-    const queryWhiteList = ['createUser', 'signIn', 'signInWithKakao', 'signOut'];
+    const queryWhiteList = ['createUser', 'signIn', 'signInWithKakao', 'signOut', 'getNow'];
     // Test
     // queryWhiteList.push('getChatList');
     if (queryWhiteList.includes(queryName)) {
