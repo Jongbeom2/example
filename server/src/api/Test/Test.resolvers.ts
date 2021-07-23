@@ -7,6 +7,7 @@ const resolvers: Resolvers = {
         createdAt: Date.now(),
       };
     },
+    getNow: (_, args, ctx) => Date.now(),
   },
 };
 

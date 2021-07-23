@@ -4,11 +4,11 @@ import HomeMain from 'src/page/home/HomeMain';
 import SignIn from './page/auth/SignIn';
 import SignInKakao from './page/auth/SignInKakao';
 import SignUp from './page/auth/SignUp';
-import RestaurantMain from './page/restaurant/RestaurantMain';
 import UserRouter from './page/user/UserRouter';
 import AuthRoute from './components/AuthRoute';
 import RoomRouter from './page/room/RoomRouter';
 import RestaurantRouter from './page/restaurant/RestaurantRouter';
+import CloudfrontMain from './page/cloudfront/CloudfrontMain';
 
 const RoutesPageMatcher = () => {
   const { page } = useParams();
@@ -48,6 +48,12 @@ const RoutesPageMatcher = () => {
         <AuthRoute>
           <RestaurantRouter />
         </AuthRoute>
+      );
+    case 'cloudfront':
+      return (
+        <Route>
+          <CloudfrontMain />
+        </Route>
       );
     default:
       return (

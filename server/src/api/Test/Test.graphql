@@ -1,5 +1,6 @@
 type Query {
   getTest: Test
+  getNow: DateTime
 }
 type Test {
   content: String
