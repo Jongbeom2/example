@@ -139,6 +139,10 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 
 [https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do](https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do)
 
+### **사용자 이용 약관**
+
+[https://ftc.go.kr/solution/skin/doc.html?fn=6e43130ccee6f1a2611c5f4e85877cde2d4b54a754404ed2045a05309310db98&rs=/fileupload/data/result/BBSMSTR_000000002320](https://ftc.go.kr/solution/skin/doc.html?fn=6e43130ccee6f1a2611c5f4e85877cde2d4b54a754404ed2045a05309310db98&rs=/fileupload/data/result/BBSMSTR_000000002320)
+
 ### **ios 스크린샷 사양**
 
 [https://help.apple.com/app-store-connect/#/devd274dd925](https://help.apple.com/app-store-connect/#/devd274dd925)
