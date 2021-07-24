@@ -34,3 +34,6 @@ export const MESSAGE_ERROR_PDATE_RESTAURANT_RATING_INPUT_REQUIRED =
   '평점을 표시해주세요.';
 export const MESSAGE_ERROR_UPDATE_RESTAURANT_RATING_EXIST_RATING =
   '이미 평점을 남겼습니다.';
+// Chat
+export const MESSAGE_SUCCESS_ARCHIVE_CHAT =
+  '대화 신고에 성공했습니다. 신고한 메세지는 곧 삭제됩니다';

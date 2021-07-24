@@ -1,14 +1,6 @@
-import React, {useState, useContext, useEffect} from 'react';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {AuthContext} from '../../App';
-import {TextInput, Button, useTheme} from 'react-native-paper';
-import {Text} from 'react-native-paper';
+import React, {useState, useEffect} from 'react';
+import {Alert, KeyboardAvoidingView, Platform, StyleSheet} from 'react-native';
+import {TextInput, Button} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
 import {CREATE_USER} from './auth.query';
 import {
@@ -19,6 +11,7 @@ import {
   MESSAGE_TITLE,
 } from '../../res/message';
 import Loading from '../../component/Loading';
+import OnboardingMain from '../onboarding/OnboardingMain';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -54,6 +47,7 @@ const styles = StyleSheet.create({
   },
 });
 const SignUp = ({navigation}) => {
+  const [isAgree, setIsAgree] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
@@ -109,8 +103,14 @@ const SignUp = ({navigation}) => {
       },
     });
   };
+  const onPressConfirmBtn = () => {
+    setIsAgree(true);
+  };
   if (loading) {
     return <Loading />;
+  }
+  if (!isAgree) {
+    return <OnboardingMain onPressConfirmBtn={onPressConfirmBtn} />;
   }
   return (
     <KeyboardAvoidingView

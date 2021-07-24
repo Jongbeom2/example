@@ -3,7 +3,7 @@ import ChatModel from 'src/models/Chat.model';
 import { Resolvers } from 'src/types/graphql';
 import { pubsub } from 'src/apollo/pubsub';
 import RoomModel from 'src/models/Room.model';
-import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
+import { invalidChatIdError, invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 import colors from 'colors';
 import admin from 'firebase-admin';
 
@@ -93,6 +93,16 @@ const resolvers: Resolvers = {
         );
       }
       return chat;
+    },
+    archiveChat: async (_, args, ctx) => {
+      const { _id } = args.archiveChatInput;
+      const chat = await ChatModel.findById(_id);
+      // 존재하지 않는 chat _id임.
+      if (chat === null) {
+        throw invalidChatIdError;
+      }
+      chat.isArchived = true;
+      return await chat.save();
     },
   },
   Subscription: {

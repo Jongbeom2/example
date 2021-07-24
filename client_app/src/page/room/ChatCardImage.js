@@ -9,7 +9,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
-const ChatCardImage = ({sourceList = [], imageWidth = 200, ...rest}) => {
+const ChatCardImage = ({
+  sourceList = [],
+  imageWidth = 200,
+  onLongPress,
+  ...rest
+}) => {
   const [sourceIdx, setSourceIdx] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
   const [open, setOpen] = useState(false);
@@ -32,7 +37,7 @@ const ChatCardImage = ({sourceList = [], imageWidth = 200, ...rest}) => {
   };
   return (
     <>
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={onPress} onLongPress={onLongPress}>
         <Image
           style={[{height: imageHeight, width: imageWidth}, styles.root]}
           source={{uri: sourceList[sourceIdx]}}

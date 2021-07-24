@@ -74,6 +74,7 @@ export const GET_CHAT_LIST = gql`
       thumbnailImageURL
       fileURL
       fileName
+      isArchived
       createdAt
     }
   }
@@ -103,6 +104,14 @@ export const CHAT_CREATED = gql`
       fileURL
       fileName
       createdAt
+    }
+  }
+`;
+
+export const ARCHIVE_CHAT = gql`
+  mutation archiveChat($archiveChatInput: ArchiveChatInput!) {
+    archiveChat(archiveChatInput: $archiveChatInput) {
+      _id
     }
   }
 `;

@@ -1,9 +1,18 @@
-import React from 'react';
-import {StyleSheet, View, Image} from 'react-native';
+import React, {useContext, useEffect} from 'react';
+import {StyleSheet, View, Image, Alert} from 'react-native';
 import {Avatar, Button, Text, useTheme} from 'react-native-paper';
 import ChatCardImage from 'src/page/room/ChatCardImage';
 import invalidImage from 'src/res/img/invalid_image.png';
 import RNFetchBlob from 'rn-fetch-blob';
+import {useMutation} from '@apollo/client';
+import {ARCHIVE_CHAT} from './room.query';
+import {isNotAuthorizedError} from 'src/lib/error';
+import {AuthContext} from 'src/Main';
+import {
+  MESSAGE_ERROR,
+  MESSAGE_SUCCESS_ARCHIVE_CHAT,
+  MESSAGE_TITLE,
+} from 'src/res/message';
 const styles = StyleSheet.create({
   systemChatRoot: {
     marginVertical: 5,
@@ -64,6 +73,27 @@ const styles = StyleSheet.create({
 });
 const ChatCard = ({chat, userId}) => {
   const {colors} = useTheme();
+  const authContext = useContext(AuthContext);
+  // 신고
+  const [
+    archiveChat,
+    {data: mutationData, loading: mutationLoading, error: mutationError},
+  ] = useMutation(ARCHIVE_CHAT);
+  // 신고 성공
+  useEffect(() => {
+    if (mutationData && !mutationError) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_ARCHIVE_CHAT);
+    }
+  }, [mutationData, mutationError]);
+  // 신고 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(mutationError)) {
+      authContext.signOut();
+    } else if (mutationError) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
+    }
+  }, [mutationError, authContext]);
+  // 파일 다운로드
   const onPressFile = () => {
     RNFetchBlob.config({
       // add this option that makes response data to be stored as a file,
@@ -85,6 +115,26 @@ const ChatCard = ({chat, userId}) => {
         console.log('The file saved to ', res.path());
       });
   };
+  const onLongPress = () => {
+    Alert.alert('신고하기', '부적절한 내용으로 신고하시겠습니까?', [
+      {
+        text: '취소',
+        style: 'cancel',
+      },
+      {
+        text: '신고하기',
+        onPress: () =>
+          archiveChat({
+            variables: {
+              archiveChatInput: {
+                _id: chat._id,
+              },
+            },
+          }),
+      },
+    ]);
+  };
+  // 시스템 채팅
   if (chat.isSystem) {
     return (
       <View style={styles.systemChatRoot}>
@@ -102,7 +152,13 @@ const ChatCard = ({chat, userId}) => {
   if (chat.user._id === userId) {
     return (
       <View style={styles.myChatRoot}>
-        {chat.imageURL ? (
+        {chat.isArchived ? (
+          <Text
+            style={[{backgroundColor: colors.custom.yellow}, styles.myChatText]}
+            onLongPress={onLongPress}>
+            {chat.isArchived ? '신고된 대화입니다.' : chat.content}
+          </Text>
+        ) : chat.imageURL ? (
           <ChatCardImage
             sourceList={[
               chat.thumbnailImageURL,
@@ -141,25 +197,34 @@ const ChatCard = ({chat, userId}) => {
       />
       <View style={styles.chatUserWrapper}>
         <Text style={styles.chatNickname}>{chat.user?.nickname}</Text>
-        {chat.imageURL ? (
+        {chat.isArchived ? (
+          <Text
+            style={[{backgroundColor: colors.custom.white}, styles.chatText]}
+            onLongPress={onLongPress}>
+            {chat.isArchived ? '신고된 대화입니다.' : chat.content}
+          </Text>
+        ) : chat.imageURL ? (
           <ChatCardImage
             sourceList={[
               chat.thumbnailImageURL,
               chat.imageURL,
               Image.resolveAssetSource(invalidImage).uri,
             ]}
+            onLongPress={onLongPress}
           />
         ) : chat.fileURL ? (
           <Button
             style={styles.chatFile}
             color={colors.primaryDrak}
             mode="contained"
-            onPress={onPressFile}>
+            onPress={onPressFile}
+            onLongPress={onLongPress}>
             {chat.fileName}
           </Button>
         ) : (
           <Text
-            style={[{backgroundColor: colors.custom.white}, styles.chatText]}>
+            style={[{backgroundColor: colors.custom.white}, styles.chatText]}
+            onLongPress={onLongPress}>
             {chat.content}
           </Text>
         )}

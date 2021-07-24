@@ -33,6 +33,11 @@ export const ChatSchema = new mongoose.Schema(
     fileName: {
       type: String,
     },
+    isArchived: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
   },
   { timestamps: true },
 );
@@ -48,6 +53,7 @@ interface Chat {
   thumbnailImageURL?: string;
   fileURL?: string;
   fileName?: string;
+  isArchived: boolean;
 }
 
 export interface ChatDoc extends Chat, Document {}

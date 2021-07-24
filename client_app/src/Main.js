@@ -38,7 +38,6 @@ import messaging from '@react-native-firebase/messaging';
 import {SIGNOUT} from './page/auth/auth.query';
 import RoomDetailDrawer from './navigation/RoomDetailDrawer';
 import RestaurantDetail from './page/restaurant/RestaurantDetail';
-import OnboardingMain from './page/onboarding/OnboardingMain';
 const theme = {
   ...DefaultTheme,
   roundness: 2,
@@ -69,19 +68,10 @@ const Main = props => {
   const [state, dispatch] = useReducer(
     (prevState, action) => {
       switch (action.type) {
-        case 'SHOW_ONBOARDING':
-          return {
-            ...prevState,
-            isLoading: false,
-            isVisted: false,
-            isSignIn: false,
-            userId: null,
-          };
         case 'SIGN_IN':
           return {
             ...prevState,
             isLoading: false,
-            isVisted: true,
             isSignIn: true,
             userId: action.userId,
           };
@@ -89,7 +79,6 @@ const Main = props => {
           return {
             ...prevState,
             isLoading: false,
-            isVisted: true,
             isSignIn: false,
             userId: null,
           };
@@ -97,7 +86,6 @@ const Main = props => {
     },
     {
       isLoading: true,
-      isVisted: true,
       isSignIn: false,
       userId: null,
     },
@@ -164,18 +152,11 @@ const Main = props => {
       })();
     }
     (async () => {
-      // isVisted true 아니면 onboarding 화면 보여주고,
-      // true면 userId 유무에 따라 signin 되었을 때의 화면과 signout 되었을 때의 화면을 보여줌.
-      const isVisted = await AsyncStorage.getItem('isVisted');
       const userId = await AsyncStorage.getItem('userId');
-      if (!isVisted) {
-        dispatch({type: 'SHOW_ONBOARDING'});
+      if (userId) {
+        dispatch({type: 'SIGN_IN', userId});
       } else {
-        if (userId) {
-          dispatch({type: 'SIGN_IN', userId});
-        } else {
-          dispatch({type: 'SIGN_OUT'});
-        }
+        dispatch({type: 'SIGN_OUT'});
       }
     })();
     // hide splash screen
@@ -215,13 +196,6 @@ const Main = props => {
                   name="loading"
                   component={Loading}
                   options={{headerShown: false}}
-                />
-              )}
-              {state.isVisted === false && (
-                <Stack.Screen
-                  name="onbaording"
-                  component={OnboardingMain}
-                  options={{title: '개인정보 처리방침 및 사용자 이용 약관'}}
                 />
               )}
               {state.isSignIn === false ? (

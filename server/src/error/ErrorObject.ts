@@ -89,3 +89,9 @@ export const existRestaurantRatingError = new ApolloError(
   'EXIST_RESTAURANT_RATING',
   'EXIST_RESTAURANT_RATING',
 );
+export const invalidChatIdError = new ApolloError('INVALID_CHAT_ID', 'INVALID_CHAT_ID');
+/**
+ * @name invalidChatIdError
+ * @description
+ * 존재하지 않는 chat임.
+ */
