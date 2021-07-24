@@ -12,6 +12,7 @@ type User {
   profileThumbnailImageURL: String
   loginType: String!
   kakaoId: String
+  mainRoomId: ID
   roomIdList: [ID!]!
   roomList: [Room!]!
 }

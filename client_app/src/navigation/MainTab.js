@@ -3,10 +3,11 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 // https://oblador.github.io/react-native-vector-icons/
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useTheme} from 'react-native-paper';
-import HomeMain from 'src/page/home/HomeMain';
+import UserListMain from 'src/page/uesrlist/UserListMain';
 import RoomMain from 'src/page/room/RoomMain';
 import RestaurantMain from 'src/page/restaurant/RestaurantMain';
 import messaging from '@react-native-firebase/messaging';
+import HomeMain from 'src/page/home/HomeMain';
 
 const Tab = createBottomTabNavigator();
 const MainTab = ({navigation, route: parentRoute}) => {
@@ -81,6 +82,12 @@ const MainTab = ({navigation, route: parentRoute}) => {
         initialParams={{userId: parentRoute?.params?.userId}}
       />
       <Tab.Screen
+        name="userlist"
+        options={{tabBarLabel: '함께하는 맘들'}}
+        component={UserListMain}
+        initialParams={{userId: parentRoute?.params?.userId}}
+      />
+      {/* <Tab.Screen
         name="room"
         options={{tabBarLabel: '대화방'}}
         component={RoomMain}
@@ -91,14 +98,16 @@ const MainTab = ({navigation, route: parentRoute}) => {
         options={{tabBarLabel: '맛집'}}
         component={RestaurantMain}
         initialParams={{userId: parentRoute?.params?.userId}}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
 const TabBarIcon = (focused, name, colors) => {
-  let iconName = 'home';
+  let iconName = 'userlist';
   if (name === 'home') {
     iconName = 'home';
+  } else if (name === 'userlist') {
+    iconName = 'people';
   } else if (name === 'room') {
     iconName = 'chatbox';
   } else if (name === 'restaurant') {

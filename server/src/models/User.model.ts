@@ -27,6 +27,10 @@ export const UserSchema = new mongoose.Schema(
     appleId: {
       type: String,
     },
+    mainRoomId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Room',
+    },
     roomIdList: [
       {
         type: Schema.Types.ObjectId,

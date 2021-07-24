@@ -1,49 +1,47 @@
-import {useTheme} from 'react-native-paper';
-import React from 'react';
-import {StyleSheet} from 'react-native';
+import {useQuery} from '@apollo/client';
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert, View} from 'react-native';
 import {Text, Button} from 'react-native-paper';
-import {ScrollView} from 'react-native-gesture-handler';
-import PrivateInfoPolicy from './PrivateInfoPolicy';
-import UsePolicy from './UsePolicy';
-const styles = StyleSheet.create({
-  root: {
-    padding: 10,
-    width: '100%',
-    height: '100%',
-  },
-  titleContainer: {
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  titleContainer2: {
-    fontWeight: 'bold',
-    marginBottom: 5,
-    marginTop: 20,
-  },
-  flexContainer: {
-    height: 50,
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  confirmBtn: {
-    marginTop: 20,
-  },
-});
-const OnboardingMain = ({onPressConfirmBtn}) => {
-  const onPress = () => {
-    onPressConfirmBtn();
-  };
+import Loading from 'src/component/Loading';
+import {isNotAuthorizedError} from 'src/lib/error';
+import {AuthContext} from 'src/Main';
+import {MESSAGE_ERROR, MESSAGE_TITLE} from 'src/res/message';
+import {GET_USER} from '../user/user.query';
+const OnboardingMain = ({navigation, route}) => {
+  const authContext = useContext(AuthContext);
+  const [user, setUser] = useState(null);
+  // 유저 정보 로드
+  const {data, loading, error} = useQuery(GET_USER, {
+    variables: {_id: route.params?.userId},
+    fetchPolicy: 'cache-and-network',
+  });
+  // 유저 정보 로드 성공
+  useEffect(() => {
+    if (data && !error) {
+      setUser(data.getUser);
+    }
+  }, [data, error, authContext]);
+  // 유저 정보 로드 실패
+  useEffect(() => {
+    if (isNotAuthorizedError(error)) {
+      authContext.signOut();
+    } else if (error) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
+    }
+  }, [error, authContext]);
+  if (!data && loading) {
+    return <Loading />;
+  }
   return (
-    <ScrollView style={styles.root}>
-      <Text style={styles.titleContainer}>개인정보 처리방침</Text>
-      <PrivateInfoPolicy />
-      <Text style={[styles.titleContainer2]}>사용자 이용 약관</Text>
-      <UsePolicy />
-      <Button style={styles.confirmBtn} mode="contained" onPress={onPress}>
-        동의하기
+    <View>
+      <Text>온보딩</Text>
+      <Button
+        onPress={() => {
+          authContext.visit();
+        }}>
+        완료
       </Button>
-    </ScrollView>
+    </View>
   );
 };
 export default OnboardingMain;

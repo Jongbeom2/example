@@ -1,6 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {Alert, KeyboardAvoidingView, Platform, StyleSheet} from 'react-native';
-import {TextInput, Button} from 'react-native-paper';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+} from 'react-native';
+import {TextInput, Button, Text, useTheme} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
 import {CREATE_USER} from './auth.query';
 import {
@@ -11,7 +17,8 @@ import {
   MESSAGE_TITLE,
 } from '../../res/message';
 import Loading from '../../component/Loading';
-import OnboardingMain from '../onboarding/OnboardingMain';
+import PolicyMain from '../policy/PolicyMain';
+import logo from 'src/res/img/logo.png';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -32,9 +39,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: 300,
   },
-  text: {
-    marginBottom: 20,
-  },
   btnWrapper: {
     width: 300,
     flexDirection: 'row',
@@ -45,8 +49,18 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
   },
+  text: {
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    marginBottom: 10,
+  },
 });
 const SignUp = ({navigation}) => {
+  const {colors} = useTheme();
   const [isAgree, setIsAgree] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -110,12 +124,16 @@ const SignUp = ({navigation}) => {
     return <Loading />;
   }
   if (!isAgree) {
-    return <OnboardingMain onPressConfirmBtn={onPressConfirmBtn} />;
+    return <PolicyMain onPressConfirmBtn={onPressConfirmBtn} />;
   }
   return (
     <KeyboardAvoidingView
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Image style={styles.logo} source={logo} />
+      <Text style={[styles.text, {color: colors.custom.textSecondary}]}>
+        맘톡, 엄마들의 이야기
+      </Text>
       <TextInput
         style={styles.textInput}
         placeholder="이메일"

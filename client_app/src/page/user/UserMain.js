@@ -69,8 +69,6 @@ const UserMain = ({navigation, route}) => {
         source={{uri: user?.profileImageURL}}
       />
       <Title style={styles.nickname}>{user?.nickname || ''}</Title>
-      <Text style={styles.text}>게시물 0</Text>
-      <Text style={styles.text}>참여중인 대화방 0 </Text>
       {route.name === 'my' && (
         <Button mode="contained" onPress={onPressEditBtn}>
           편집

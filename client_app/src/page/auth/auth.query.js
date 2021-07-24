@@ -15,6 +15,7 @@ export const SIGNIN = gql`
       nickname
       profileImageURL
       profileThumbnailImageURL
+      mainRoomId
       roomIdList
     }
   }
@@ -27,6 +28,7 @@ export const SIGNIN_WITH_KAKAO = gql`
       nickname
       profileImageURL
       profileThumbnailImageURL
+      mainRoomId
       roomIdList
     }
   }
@@ -39,6 +41,7 @@ export const SIGNIN_WITH_APPLE = gql`
       nickname
       profileImageURL
       profileThumbnailImageURL
+      mainRoomId
       roomIdList
     }
   }
@@ -51,6 +54,7 @@ export const SIGNOUT = gql`
       nickname
       profileImageURL
       profileThumbnailImageURL
+      mainRoomId
       roomIdList
     }
   }

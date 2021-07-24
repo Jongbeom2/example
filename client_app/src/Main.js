@@ -38,14 +38,15 @@ import messaging from '@react-native-firebase/messaging';
 import {SIGNOUT} from './page/auth/auth.query';
 import RoomDetailDrawer from './navigation/RoomDetailDrawer';
 import RestaurantDetail from './page/restaurant/RestaurantDetail';
+import OnboardingMain from './page/onboarding/OnboardingMain';
 const theme = {
   ...DefaultTheme,
   roundness: 2,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3379fe',
-    primaryDrak: '#2354b1',
-    primaryLight: '#deebff',
+    primary: '#92685d',
+    primaryDrak: '#4a332b',
+    primaryLight: '#e0bca9',
     custom: {
       textPrimary: '#222222',
       textSecondary: '#666666',
@@ -74,6 +75,7 @@ const Main = props => {
             isLoading: false,
             isSignIn: true,
             userId: action.userId,
+            isVisted: action.isVisted,
           };
         case 'SIGN_OUT':
           return {
@@ -82,12 +84,18 @@ const Main = props => {
             isSignIn: false,
             userId: null,
           };
+        case 'VISIT':
+          return {
+            ...prevState,
+            isVisted: true,
+          };
       }
     },
     {
       isLoading: true,
       isSignIn: false,
       userId: null,
+      isVisted: false,
     },
   );
   // 1. 로그아웃
@@ -153,8 +161,10 @@ const Main = props => {
     }
     (async () => {
       const userId = await AsyncStorage.getItem('userId');
+      const isVisted = await AsyncStorage.getItem('isVisted');
+      console.log(userId, userId);
       if (userId) {
-        dispatch({type: 'SIGN_IN', userId});
+        dispatch({type: 'SIGN_IN', userId, isVisted: JSON.parse(isVisted)});
       } else {
         dispatch({type: 'SIGN_OUT'});
       }
@@ -165,9 +175,10 @@ const Main = props => {
   // 3. authContext
   const authContext = useMemo(
     () => ({
-      signIn: async userId => {
+      signIn: async (userId, isVisted) => {
         await AsyncStorage.setItem('userId', userId);
-        dispatch({type: 'SIGN_IN', userId});
+        await AsyncStorage.setItem('isVisted', isVisted.toString());
+        dispatch({type: 'SIGN_IN', userId, isVisted});
       },
       signOut: async () => {
         const userId = await AsyncStorage.getItem('userId');
@@ -181,10 +192,13 @@ const Main = props => {
           },
         });
       },
+      visit: async () => {
+        await AsyncStorage.setItem('isVisted', 'true');
+        dispatch({type: 'VISIT'});
+      },
     }),
     [signOut],
   );
-  console.log(state.isVisted);
   return (
     <AuthContext.Provider value={authContext}>
       <PaperProvider theme={theme}>
@@ -211,6 +225,12 @@ const Main = props => {
                     options={{title: '회원가입'}}
                   />
                 </>
+              ) : state.isVisted === false ? (
+                <Stack.Screen
+                  name="내정보"
+                  component={OnboardingMain}
+                  initialParams={{userId: state.userId}}
+                />
               ) : (
                 <>
                   <Stack.Screen

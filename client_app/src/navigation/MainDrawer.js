@@ -8,12 +8,18 @@ import {
 import UserMain from 'src/page/user/UserMain';
 import MainTab from 'src/navigation/MainTab';
 import {AuthContext} from 'src/Main';
+import {useTheme} from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
 const MainDrawer = ({navigation, route}) => {
+  const theme = useTheme();
   return (
     <Drawer.Navigator
       initialRouteName="tab"
+      drawerContentOptions={{
+        activeTintColor: theme.colors.primary,
+        inactiveTintColor: theme.colors.custom.grey,
+      }}
       drawerType="front"
       drawerPosition="left"
       drawerContent={props => (

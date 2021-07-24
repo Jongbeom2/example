@@ -1,15 +1,14 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   View,
 } from 'react-native';
 import {AuthContext} from 'src/Main';
-import {TextInput, Button, useTheme} from 'react-native-paper';
-import {Text} from 'react-native-paper';
+import {Text, TextInput, Button, useTheme} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
 import {
   SIGNIN,
@@ -33,6 +32,7 @@ import Loading from 'src/component/Loading';
 import {login} from '@react-native-seoul/kakao-login';
 import messaging from '@react-native-firebase/messaging';
 import {appleAuth} from '@invertase/react-native-apple-authentication';
+import logo from 'src/res/img/logo.png';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -68,6 +68,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
   },
+  logo: {
+    width: 50,
+    height: 50,
+    marginBottom: 10,
+  },
 });
 const SignIn = ({navigation}) => {
   const {colors} = useTheme();
@@ -87,7 +92,11 @@ const SignIn = ({navigation}) => {
         // websocketLink.subscriptionClient는 SubscriptionClient 객체임.
         // https://github.com/apollographql/subscriptions-transport-ws
         websocketLink.subscriptionClient.close(false, false);
-        authContext.signIn(data.signIn._id);
+        console.log(data.signIn.mainRoomId);
+        authContext.signIn(
+          data.signIn._id,
+          data.signIn.mainRoomId ? true : false,
+        );
         Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
       })();
     }
@@ -226,6 +235,10 @@ const SignIn = ({navigation}) => {
     <KeyboardAvoidingView
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Image style={styles.logo} source={logo} />
+      <Text style={[styles.text, {color: colors.custom.textSecondary}]}>
+        맘톡, 엄마들의 이야기
+      </Text>
       <TextInput
         style={styles.textInput}
         placeholder="이메일"

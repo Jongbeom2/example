@@ -1,8 +1,7 @@
 import {useLazyQuery} from '@apollo/client';
 import React, {useContext, useEffect, useState, useRef} from 'react';
-import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
+import {Alert, StyleSheet, View} from 'react-native';
 import NaverMapView, {Marker} from 'react-native-nmap';
-import Loading from 'src/component/Loading';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {AuthContext} from 'src/Main';
 import {MESSAGE_ERROR, MESSAGE_TITLE} from 'src/res/message';
@@ -11,7 +10,6 @@ import pinBlack from 'src/res/img/pin_black.png';
 import pinBlue from 'src/res/img/pin_blue.png';
 import pinRed from 'src/res/img/pin_red.png';
 import pinYellow from 'src/res/img/pin_yellow.png';
-import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {useTheme} from 'react-native-paper';
 import RestaurantCard from './RestaurantCard';
@@ -64,7 +62,6 @@ const RestaurantMain = ({navigation, route}) => {
       },
     });
     setZoom(e.zoom);
-    console.log(e);
   };
   const bottomSheetRenderContent = () => {
     return (
@@ -84,9 +81,6 @@ const RestaurantMain = ({navigation, route}) => {
       </View>
     );
   };
-  // if (!data && loading) {
-  //   return <Loading />;
-  // }
   return (
     <View>
       <NaverMapView
