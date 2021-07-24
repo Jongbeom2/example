@@ -32,6 +32,18 @@ export const SIGNIN_WITH_KAKAO = gql`
   }
 `;
 
+export const SIGNIN_WITH_APPLE = gql`
+  mutation signInWithApple($signInWithAppleInput: SignInWithAppleInput!) {
+    signInWithApple(signInWithAppleInput: $signInWithAppleInput) {
+      _id
+      nickname
+      profileImageURL
+      profileThumbnailImageURL
+      roomIdList
+    }
+  }
+`;
+
 export const SIGNOUT = gql`
   mutation signOut($signOutInput: SignOutInput!) {
     signOut(signOutInput: $signOutInput) {

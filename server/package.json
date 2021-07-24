@@ -24,6 +24,7 @@
     "apollo-server": "^2.18.1",
     "apollo-server-express": "^2.18.1",
     "app-root-path": "^3.0.0",
+    "apple-signin-auth": "^1.5.1",
     "aws-sdk": "^2.906.0",
     "axios": "^0.20.0",
     "bcrypt": "^5.0.1",

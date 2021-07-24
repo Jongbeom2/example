@@ -7,6 +7,8 @@ export const MESSAGE_ERROR_SIGNIN_INVALID_USER =
   '유저 정보가 일치하지 않습니다.';
 export const MESSAGE_SUCCESS_SIGNIN_KAKAO = '카카오 로그인에 성공했습니다.';
 export const MESSAGE_ERROR_SIGNIN_KAKAO = '카카오 로그인에 실패했습니다.';
+export const MESSAGE_SUCCESS_SIGNIN_APPLE = '애플 로그인에 성공했습니다.';
+export const MESSAGE_ERROR_SIGNIN_APPLE = '애플 로그인에 실패했습니다.';
 // Signup
 export const MESSAGE_SUCCESS_SIGNUP = '회원가입에 성공했습니다.';
 export const MESSAGE_ERROR_SIGNUP_INVALID_EMAIL =

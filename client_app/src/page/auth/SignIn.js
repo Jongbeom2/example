@@ -11,13 +11,19 @@ import {AuthContext} from 'src/Main';
 import {TextInput, Button, useTheme} from 'react-native-paper';
 import {Text} from 'react-native-paper';
 import {useMutation} from '@apollo/client';
-import {SIGNIN, SIGNIN_WITH_KAKAO} from 'src/page/auth/auth.query';
+import {
+  SIGNIN,
+  SIGNIN_WITH_APPLE,
+  SIGNIN_WITH_KAKAO,
+} from 'src/page/auth/auth.query';
 import {
   MESSAGE_ERROR,
   MESSAGE_ERROR_INPUT_ALL_REQUIRED,
+  MESSAGE_ERROR_SIGNIN_APPLE,
   MESSAGE_ERROR_SIGNIN_INVALID_USER,
   MESSAGE_ERROR_SIGNIN_KAKAO,
   MESSAGE_SUCCESS_SIGNIN,
+  MESSAGE_SUCCESS_SIGNIN_APPLE,
   MESSAGE_SUCCESS_SIGNIN_KAKAO,
   MESSAGE_TITLE,
 } from 'src/res/message';
@@ -26,6 +32,7 @@ import {websocketLink} from 'src/apollo/link';
 import Loading from 'src/component/Loading';
 import {login} from '@react-native-seoul/kakao-login';
 import messaging from '@react-native-firebase/messaging';
+import {appleAuth} from '@invertase/react-native-apple-authentication';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -52,13 +59,14 @@ const styles = StyleSheet.create({
   },
   btnWrapper: {
     width: 300,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   socialSignInBtn: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 200,
+    height: 40,
+    borderRadius: 5,
+    marginBottom: 10,
   },
 });
 const SignIn = ({navigation}) => {
@@ -115,6 +123,27 @@ const SignIn = ({navigation}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_SIGNIN_KAKAO);
     }
   }, [mutationError]);
+  // 3. 애플 로그인
+  const [
+    signInWithApple,
+    {data: mutationData2, loading: mutationLoading2, error: mutationError2},
+  ] = useMutation(SIGNIN_WITH_APPLE);
+  // 애플 로그인 성공
+  useEffect(() => {
+    if (mutationData2 && !mutationError2) {
+      (async () => {
+        websocketLink.subscriptionClient.close(false, false);
+        authContext.signIn(mutationData2.signInWithApple._id);
+        Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN_APPLE);
+      })();
+    }
+  }, [mutationData2, mutationError2, authContext]);
+  // 애플 로그인 실패
+  useEffect(() => {
+    if (mutationError2) {
+      Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_SIGNIN_APPLE);
+    }
+  }, [mutationError2]);
   const onChangeEmail = text => {
     setEmail(text);
   };
@@ -164,7 +193,33 @@ const SignIn = ({navigation}) => {
       },
     });
   };
-  if (loading || mutationLoading) {
+  const onClickAppleSignInBtn = async () => {
+    let token;
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+      token = appleAuthRequestResponse.identityToken;
+    } catch (e) {
+      return;
+    }
+    let fcmToken;
+    try {
+      fcmToken = await messaging().getToken();
+    } catch (e) {
+      console.log('fcmToken을 받는데 실패했습니다.', e);
+    }
+    signInWithApple({
+      variables: {
+        signInWithAppleInput: {
+          identityToken: token,
+          fcmToken,
+        },
+      },
+    });
+  };
+  if (loading || mutationLoading || mutationLoading2) {
     return <Loading />;
   }
   return (
@@ -208,30 +263,21 @@ const SignIn = ({navigation}) => {
             },
           ]}
           onPress={onClickKakoSignInBtn}>
-          K
+          카카오톡 로그인
         </Button>
-        <Button
-          color={colors.custom.textPrimary}
-          contentStyle={[
-            styles.socialSignInBtn,
-            {
-              backgroundColor: colors.custom.naver,
-            },
-          ]}
-          onPress={() => {}}>
-          N
-        </Button>
-        <Button
-          color={colors.custom.textPrimary}
-          contentStyle={[
-            styles.socialSignInBtn,
-            {
-              backgroundColor: colors.custom.google,
-            },
-          ]}
-          onPress={() => {}}>
-          G
-        </Button>
+        {Platform.OS === 'ios' && (
+          <Button
+            color={colors.custom.textPrimary}
+            contentStyle={[
+              styles.socialSignInBtn,
+              {
+                backgroundColor: colors.custom.white,
+              },
+            ]}
+            onPress={onClickAppleSignInBtn}>
+            애플 로그인
+          </Button>
+        )}
       </View>
     </KeyboardAvoidingView>
   );

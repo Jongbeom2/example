@@ -3,6 +3,7 @@ import { Resolvers } from 'src/types/graphql';
 import UserModel from 'src/models/User.model';
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
+import appleSigninAuth from 'apple-signin-auth';
 import { COOKIE_DURATION_MILLISECONDS, DEFAULT_PROFILE_URL } from 'src/lib/const';
 import {
   invalidUserEmailError,
@@ -112,6 +113,71 @@ const resolvers: Resolvers = {
           profileImageURL: data.kakao_account.profile.profile_image_url,
           profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
           loginType: 'kakao',
+        });
+      }
+      // notification을 위해 fcmToken 저장함.
+      if (fcmToken) {
+        // user fcmToken
+        if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+          user.fcmTokenList.push(fcmToken);
+        }
+        // room fcmToken
+        const promiseList: Promise<RoomDoc>[] = [];
+        const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } });
+        roomList.forEach((room) => {
+          if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+            room.fcmTokenList.push(fcmToken);
+            promiseList.push(room.save());
+          }
+        });
+        await Promise.all(promiseList);
+      }
+      await user.save();
+      // access token 생성함.
+      const accessToken = generateJWT({
+        access: true,
+        my: {
+          userId: user._id,
+        },
+      });
+
+      // 유저 정보 쿠키에 저장함.
+      const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
+      if (isNodeEnvDevelopment) {
+        ctx.res.cookie('accessToken', accessToken, {
+          maxAge: COOKIE_DURATION_MILLISECONDS,
+          httpOnly: true,
+        });
+        ctx.res.cookie('_id', user._id.toString(), {
+          maxAge: COOKIE_DURATION_MILLISECONDS,
+          httpOnly: false,
+        });
+      } else {
+        ctx.res.cookie('accessToken', accessToken, {
+          maxAge: COOKIE_DURATION_MILLISECONDS,
+          httpOnly: true,
+          domain: '.jongbeom.com',
+        });
+        ctx.res.cookie('_id', user._id.toString(), {
+          maxAge: COOKIE_DURATION_MILLISECONDS,
+          httpOnly: false,
+          domain: '.jongbeom.com',
+        });
+      }
+      return user;
+    },
+    signInWithApple: async (_, args, ctx) => {
+      const { identityToken, fcmToken } = args.signInWithAppleInput;
+      // identityToken apple user 정보 가져옴.
+      const appleIdTokenClaims = await appleSigninAuth.verifyIdToken(identityToken);
+      console.log('identityToken', identityToken);
+      console.log('appleIdTokenClaims', appleIdTokenClaims);
+      let user = await UserModel.findOne({ appleId: appleIdTokenClaims.sub });
+      if (user === null) {
+        user = await new UserModel({
+          appleId: appleIdTokenClaims.sub,
+          nickname: appleIdTokenClaims.email,
+          loginType: 'apple',
         });
       }
       // notification을 위해 fcmToken 저장함.

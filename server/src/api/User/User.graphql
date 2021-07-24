@@ -19,6 +19,7 @@ type User {
 type Mutation {
   signIn(signInInput: SignInInput!): User!
   signInWithKakao(signInWithKakaoInput: SignInWithKakaoInput!): User!
+  signInWithApple(signInWithAppleInput: SignInWithAppleInput!): User!
   signOut(signOutInput: SignOutInput!): User!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
@@ -37,6 +38,11 @@ input SignOutInput {
 
 input SignInWithKakaoInput {
   accessToken: String!
+  fcmToken: String
+}
+
+input SignInWithAppleInput {
+  identityToken: String!
   fcmToken: String
 }
 

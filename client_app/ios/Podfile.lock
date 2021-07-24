@@ -20,16 +20,16 @@ PODS:
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
-  - FirebaseCoreDiagnostics (8.1.0):
+  - FirebaseCoreDiagnostics (8.4.0):
     - GoogleDataTransport (~> 9.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebaseInstallations (8.1.0):
+  - FirebaseInstallations (8.4.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/UserDefaults (~> 7.4)
-    - PromisesObjC (~> 1.2)
+    - PromisesObjC (< 3.0, >= 1.2)
   - FirebaseMessaging (8.1.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
@@ -84,26 +84,26 @@ PODS:
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - glog (0.3.5)
-  - GoogleDataTransport (9.0.1):
+  - GoogleDataTransport (9.1.0):
     - GoogleUtilities/Environment (~> 7.2)
     - nanopb (~> 2.30908.0)
-    - PromisesObjC (~> 1.2)
-  - GoogleUtilities/AppDelegateSwizzler (7.4.1):
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/AppDelegateSwizzler (7.5.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (7.4.1):
-    - PromisesObjC (~> 1.2)
-  - GoogleUtilities/Logger (7.4.1):
+  - GoogleUtilities/Environment (7.5.0):
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/Logger (7.5.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/Network (7.4.1):
+  - GoogleUtilities/Network (7.5.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.4.1)"
-  - GoogleUtilities/Reachability (7.4.1):
+  - "GoogleUtilities/NSData+zlib (7.5.0)"
+  - GoogleUtilities/Reachability (7.5.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (7.4.1):
+  - GoogleUtilities/UserDefaults (7.5.0):
     - GoogleUtilities/Logger
   - kakao-login (3.3.2):
     - KakaoSDK (~> 2.4.0)
@@ -155,7 +155,7 @@ PODS:
   - nanopb/encode (2.30908.0)
   - NMapsMap (3.10.1)
   - OpenSSL-Universal (1.1.180)
-  - PromisesObjC (1.2.12)
+  - PromisesObjC (2.0.0)
   - RCT-Folly (2020.01.13.00):
     - boost-for-react-native
     - DoubleConversion
@@ -426,6 +426,8 @@ PODS:
     - React-perflogger (= 0.64.1)
   - rn-fetch-blob (0.12.0):
     - React-Core
+  - RNAppleAuthentication (2.1.2):
+    - React-Core
   - RNCAsyncStorage (1.15.5):
     - React-Core
   - RNCMaskedView (0.1.11):
@@ -534,6 +536,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
+  - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -648,6 +651,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
+  RNAppleAuthentication:
+    :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCMaskedView:
@@ -676,8 +681,8 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 37d7d26f6fa5e0e201509388976c3f530451a21c
   Firebase: 4bb49ae87756034cef870fa3c4006235eb46f475
   FirebaseCore: 389c4ce9a7cce4a7e25eb22326b4bee0050557b2
-  FirebaseCoreDiagnostics: 3e249cee3de5c5f9cfd6cc2a19997231286fec11
-  FirebaseInstallations: 7f31798a8198c354eadcb87176d2090b62edc187
+  FirebaseCoreDiagnostics: cad03be1904b975f845e632f2720c3337da27faf
+  FirebaseInstallations: 1585729afc787877763208c2088ed84221161f77
   FirebaseMessaging: c8871b0907dcf4e76de81241eb6a62be6d657d2f
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
@@ -687,8 +692,8 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: 8a20b5c5fcf9436cac58551dc049867247f64b00
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
-  GoogleDataTransport: 04c3e9a480bbcaa2ec3f5d27f1cdeb6a92f20c8d
-  GoogleUtilities: f8a43108b38a68eebe8b3540e1f4f2d28843ce20
+  GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
+  GoogleUtilities: eea970f4a389963963bffe8d8fabe43540678b9c
   kakao-login: f545fda326cdf9419645abb7c8f36ec97132c26b
   KakaoSDK: 1e80d6877c0eac6a310f93c73fb15ca56c05f2bd
   KakaoSDKAuth: fcba1c9ede431683f5bdd84c835a96981cb115a5
@@ -703,7 +708,7 @@ SPEC CHECKSUMS:
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   NMapsMap: 1dc27ca06eac287ce1f001a972172766dca2abe1
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
-  PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
+  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: ec2ebc96b7bfba3ca5c32740f5a0c6a014a274d2
   RCTTypeSafety: 22567f31e67c3e088c7ac23ea46ab6d4779c0ea5
@@ -733,6 +738,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: ff951a0c241bfaefc4940a3f1f1a229e7cb32fa6
   ReactCommon: bedc99ed4dae329c4fcf128d0c31b9115e5365ca
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
+  RNAppleAuthentication: e95bcfbd044013667f35c5ca20ae17d39500c009
   RNCAsyncStorage: 56a3355a10b5d660c48c6e37325ac85ebfd09885
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNFBApp: 406bc9586c70ccf20504b4d3b54ac4341c98993f

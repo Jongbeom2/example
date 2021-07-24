@@ -24,6 +24,9 @@ export const UserSchema = new mongoose.Schema(
     kakaoId: {
       type: String,
     },
+    appleId: {
+      type: String,
+    },
     roomIdList: [
       {
         type: Schema.Types.ObjectId,
@@ -49,7 +52,8 @@ interface User {
   profileImageURL?: string;
   profileThumbnailImageURL?: string;
   loginType?: string;
-  kakaoId: string;
+  kakaoId?: string;
+  appleId?: string;
   roomIdList: string[];
   fcmTokenList: string[];
 }
