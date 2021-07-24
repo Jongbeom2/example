@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.existRestaurantRatingError = exports.invalidRestaurantIdError = exports.invalidRoomIdError = exports.existUserEmailError = exports.invalidUserPasswordError = exports.invalidUserEmailError = exports.invalidUserIdError = exports.corsError = exports.invalidContextError = exports.notAuthorizedError = exports.environmentError = exports.customError = void 0;
+exports.invalidChatIdError = exports.existRestaurantRatingError = exports.invalidRestaurantIdError = exports.invalidRoomIdError = exports.existUserEmailError = exports.invalidUserPasswordError = exports.invalidUserEmailError = exports.invalidUserIdError = exports.corsError = exports.invalidContextError = exports.notAuthorizedError = exports.environmentError = exports.customError = void 0;
 /**
  * @name
  * Error 처리를 위한 객체
@@ -86,3 +86,9 @@ exports.invalidRoomIdError = new apollo_server_1.ApolloError('INVALID_ROOM_ID', 
  */
 exports.invalidRestaurantIdError = new apollo_server_1.ApolloError('INVALID_RESTAURANT_ID', 'INVALID_RESTAURANT_ID');
 exports.existRestaurantRatingError = new apollo_server_1.ApolloError('EXIST_RESTAURANT_RATING', 'EXIST_RESTAURANT_RATING');
+exports.invalidChatIdError = new apollo_server_1.ApolloError('INVALID_CHAT_ID', 'INVALID_CHAT_ID');
+/**
+ * @name invalidChatIdError
+ * @description
+ * 존재하지 않는 chat임.
+ */

@@ -12,11 +12,13 @@ type Chat {
   thumbnailImageURL: String
   fileURL: String
   fileName: String
+  isArchived: Boolean!
   createdAt: DateTime!
 }
 
 type Mutation {
   createChat(createChatInput: CreateChatInput!): Chat!
+  archiveChat(archiveChatInput: ArchiveChatInput!): Chat!
 }
 
 input CreateChatInput {
@@ -27,6 +29,10 @@ input CreateChatInput {
   thumbnailImageURL: String
   fileURL: String
   fileName: String
+}
+
+input ArchiveChatInput {
+  _id: ID!
 }
 
 type Subscription {

@@ -7,6 +7,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const User_model_1 = __importDefault(require("../../models/User.model"));
 const axios_1 = __importDefault(require("axios"));
 const common_1 = require("../../lib/common");
+const apple_signin_auth_1 = __importDefault(require("apple-signin-auth"));
 const const_1 = require("../../lib/const");
 const ErrorObject_1 = require("../../error/ErrorObject");
 const dataLoader_1 = require("../../apollo/dataLoader");
@@ -110,6 +111,71 @@ const resolvers = {
                     profileImageURL: data.kakao_account.profile.profile_image_url,
                     profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
                     loginType: 'kakao',
+                });
+            }
+            // notification을 위해 fcmToken 저장함.
+            if (fcmToken) {
+                // user fcmToken
+                if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+                    user.fcmTokenList.push(fcmToken);
+                }
+                // room fcmToken
+                const promiseList = [];
+                const roomList = await Room_model_1.default.find({ _id: { $in: user.roomIdList } });
+                roomList.forEach((room) => {
+                    if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+                        room.fcmTokenList.push(fcmToken);
+                        promiseList.push(room.save());
+                    }
+                });
+                await Promise.all(promiseList);
+            }
+            await user.save();
+            // access token 생성함.
+            const accessToken = common_1.generateJWT({
+                access: true,
+                my: {
+                    userId: user._id,
+                },
+            });
+            // 유저 정보 쿠키에 저장함.
+            const isNodeEnvDevelopment = process.env.NODE_ENV === 'development';
+            if (isNodeEnvDevelopment) {
+                ctx.res.cookie('accessToken', accessToken, {
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+                    httpOnly: true,
+                });
+                ctx.res.cookie('_id', user._id.toString(), {
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+                    httpOnly: false,
+                });
+            }
+            else {
+                ctx.res.cookie('accessToken', accessToken, {
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+                    httpOnly: true,
+                    domain: '.jongbeom.com',
+                });
+                ctx.res.cookie('_id', user._id.toString(), {
+                    maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+                    httpOnly: false,
+                    domain: '.jongbeom.com',
+                });
+            }
+            return user;
+        },
+        signInWithApple: async (_, args, ctx) => {
+            const { identityToken, fcmToken } = args.signInWithAppleInput;
+            // identityToken apple user 정보 가져옴.
+            const appleIdTokenClaims = await apple_signin_auth_1.default.verifyIdToken(identityToken);
+            console.log('identityToken', identityToken);
+            console.log('appleIdTokenClaims', appleIdTokenClaims);
+            let user = await User_model_1.default.findOne({ appleId: appleIdTokenClaims.sub });
+            if (user === null) {
+                user = await new User_model_1.default({
+                    appleId: appleIdTokenClaims.sub,
+                    nickname: appleIdTokenClaims.email,
+                    loginType: 'apple',
                 });
             }
             // notification을 위해 fcmToken 저장함.

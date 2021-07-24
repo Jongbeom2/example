@@ -85,6 +85,16 @@ const resolvers = {
             }
             return chat;
         },
+        archiveChat: async (_, args, ctx) => {
+            const { _id } = args.archiveChatInput;
+            const chat = await Chat_model_1.default.findById(_id);
+            // 존재하지 않는 chat _id임.
+            if (chat === null) {
+                throw ErrorObject_1.invalidChatIdError;
+            }
+            chat.isArchived = true;
+            return await chat.save();
+        },
     },
     Subscription: {
         chatCreated: {

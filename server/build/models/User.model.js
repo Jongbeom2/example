@@ -45,6 +45,9 @@ exports.UserSchema = new mongoose_1.default.Schema({
     kakaoId: {
         type: String,
     },
+    appleId: {
+        type: String,
+    },
     roomIdList: [
         {
             type: mongoose_1.Schema.Types.ObjectId,

@@ -53,6 +53,11 @@ exports.ChatSchema = new mongoose_1.default.Schema({
     fileName: {
         type: String,
     },
+    isArchived: {
+        type: Boolean,
+        default: false,
+        required: true,
+    },
 }, { timestamps: true });
 const ChatModel = mongoose_1.default.model('Chat', exports.ChatSchema);
 exports.default = ChatModel;
