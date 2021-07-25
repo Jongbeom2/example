@@ -17,7 +17,6 @@ import {
   MESSAGE_TITLE,
 } from '../../res/message';
 import Loading from '../../component/Loading';
-import PolicyMain from '../policy/PolicyMain';
 import logo from 'src/res/img/logo.png';
 const styles = StyleSheet.create({
   root: {
@@ -61,11 +60,9 @@ const styles = StyleSheet.create({
 });
 const SignUp = ({navigation}) => {
   const {colors} = useTheme();
-  const [isAgree, setIsAgree] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
-  const [nickname, setNickname] = useState('');
   // 회원가입
   const [createUser, {data, loading, error}] = useMutation(CREATE_USER);
   const onChangeEmail = text => {
@@ -94,16 +91,8 @@ const SignUp = ({navigation}) => {
   const onChangePassword2 = text => {
     setPassword2(text);
   };
-  const onChangeNickname = text => {
-    setNickname(text);
-  };
   const onPressSignUpBtn = () => {
-    if (
-      email === '' ||
-      password === '' ||
-      password2 === '' ||
-      nickname === ''
-    ) {
+    if (email === '' || password === '' || password2 === '') {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_INPUT_ALL_REQUIRED);
       return;
     }
@@ -112,19 +101,12 @@ const SignUp = ({navigation}) => {
         createUserInput: {
           email,
           password,
-          nickname,
         },
       },
     });
   };
-  const onPressConfirmBtn = () => {
-    setIsAgree(true);
-  };
   if (loading) {
     return <Loading />;
-  }
-  if (!isAgree) {
-    return <PolicyMain onPressConfirmBtn={onPressConfirmBtn} />;
   }
   return (
     <KeyboardAvoidingView
@@ -151,12 +133,6 @@ const SignUp = ({navigation}) => {
         onChangeText={onChangePassword2}
         secureTextEntry={true}
       />
-      <TextInput
-        style={styles.textInput}
-        placeholder="닉네임"
-        onChangeText={onChangeNickname}
-      />
-
       <Button
         style={styles.signInBtn}
         onPress={onPressSignUpBtn}

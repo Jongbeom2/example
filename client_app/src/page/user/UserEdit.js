@@ -166,12 +166,16 @@ const UserEdit = ({route, navigation}) => {
   };
   const onPressCameraBtn = () => {
     launchCamera({}, response => {
+      if (response.errorCode) {
+        console.log(response.errorCode);
+        return;
+      }
       if (response.didCancel) {
         return;
       }
-      setImageFile(response);
+      setImageFile(response.assets[0]);
       // Presigned put url을 가져옴.
-      const fileExtension = response.uri.split('.').pop();
+      const fileExtension = response.assets[0].uri.split('.').pop();
       getPresignedPutURL({
         variables: {
           key: `profile/${userId}/${new Date().getTime()}.${fileExtension}`,
@@ -184,9 +188,9 @@ const UserEdit = ({route, navigation}) => {
       if (response.didCancel) {
         return;
       }
-      setImageFile(response);
+      setImageFile(response.assets[0]);
       // Presigned put url을 가져옴.
-      const fileExtension = response.uri.split('.').pop();
+      const fileExtension = response.assets[0].uri.split('.').pop();
       getPresignedPutURL({
         variables: {
           key: `profile/${userId}/${new Date().getTime()}.${fileExtension}`,

@@ -17,7 +17,7 @@ export const MESSAGE_ERROR_SIGNUP_EXIST_EMAIL = '이미 이메일이 존재합�
 // Signout
 export const MESSAGE_SUCCESS_SIGNOUT = '로그아웃에 성공했습니다.';
 // Common
-export const MESSAGE_TITLE = '예제입니다.';
+export const MESSAGE_TITLE = '맘톡';
 export const MESSAGE_ERROR = '문제가 발생했습니다.';
 export const MESSAGE_ERROR_AUTH = '로그인이 필요합니다.';
 // Room
@@ -39,3 +39,5 @@ export const MESSAGE_ERROR_UPDATE_RESTAURANT_RATING_EXIST_RATING =
 // Chat
 export const MESSAGE_SUCCESS_ARCHIVE_CHAT =
   '대화 신고에 성공했습니다. 신고한 메세지는 곧 삭제됩니다';
+// Contact
+export const MESSAGE_CONTACT = '문의 사항이 있는 경우 연락주세요. 01067402570';

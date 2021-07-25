@@ -4,7 +4,7 @@ import UserModel from 'src/models/User.model';
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
 import appleSigninAuth from 'apple-signin-auth';
-import { COOKIE_DURATION_MILLISECONDS, DEFAULT_PROFILE_URL } from 'src/lib/const';
+import { COOKIE_DURATION_MILLISECONDS } from 'src/lib/const';
 import {
   invalidUserEmailError,
   invalidUserIdError,
@@ -108,10 +108,10 @@ const resolvers: Resolvers = {
       let user = await UserModel.findOne({ kakaoId: data.id });
       if (user === null) {
         user = await new UserModel({
-          nickname: data.kakao_account.profile.nickname,
+          // nickname: data.kakao_account.profile.nickname,
           kakaoId: data.id,
-          profileImageURL: data.kakao_account.profile.profile_image_url,
-          profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
+          // profileImageURL: data.kakao_account.profile.profile_image_url,
+          // profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
           loginType: 'kakao',
         });
       }
@@ -170,13 +170,11 @@ const resolvers: Resolvers = {
       const { identityToken, fcmToken } = args.signInWithAppleInput;
       // identityToken apple user 정보 가져옴.
       const appleIdTokenClaims = await appleSigninAuth.verifyIdToken(identityToken);
-      console.log('identityToken', identityToken);
-      console.log('appleIdTokenClaims', appleIdTokenClaims);
       let user = await UserModel.findOne({ appleId: appleIdTokenClaims.sub });
       if (user === null) {
         user = await new UserModel({
           appleId: appleIdTokenClaims.sub,
-          nickname: appleIdTokenClaims.email,
+          // nickname: appleIdTokenClaims.email,
           loginType: 'apple',
         });
       }
@@ -257,7 +255,7 @@ const resolvers: Resolvers = {
       return user;
     },
     createUser: async (_, args, ctx) => {
-      const { nickname, email, password } = args.createUserInput;
+      const { email, password } = args.createUserInput;
       const preUser = await UserModel.findOne({ email });
       // 이미 존재하는 user email
       if (preUser !== null) {
@@ -265,7 +263,6 @@ const resolvers: Resolvers = {
       }
       const hash = await bcrypt.hash(password, 10);
       const user = await new UserModel({
-        nickname,
         email,
         password: hash,
         loginType: 'host',
@@ -273,6 +270,8 @@ const resolvers: Resolvers = {
       return user;
     },
     updateUser: async (_, args, ctx) => {
+      const ranNum = Math.floor(Math.random() * 6);
+      const DEFAULT_PROFILE_URL = `https://example-jb-dummy.s3.ap-northeast-2.amazonaws.com/profiles/${ranNum}.png`;
       const { _id, nickname, profileImageURL, profileThumbnailImageURL } = args.updateUserInput;
       const user = await UserModel.findByIdAndUpdate(
         _id,

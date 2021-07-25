@@ -16,6 +16,8 @@ import {
   FlatList,
   Text,
   KeyboardAvoidingView,
+  Platform,
+  Image,
 } from 'react-native';
 import {IconButton, useTheme} from 'react-native-paper';
 import {
@@ -85,6 +87,10 @@ const RoomDetail = ({route, navigation}) => {
   const [chatFile, setChatFile] = useState(null);
   const [isPlusBtnPressed, setIsPlusBtnPressed] = useState(false);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
+  const [thumbnailImageURL, setThumbnailImageURL] = useState('');
+  const [hashedThumbnailImageURL, setHashedThumbnailImageURL] = useState(null);
+  const [isImageResizing, setIsImageResizing] = useState(false);
+  let intervalRef = useRef();
   // 1. 대화 구독
   const {
     data: subscriptionData,
@@ -177,7 +183,7 @@ const RoomDetail = ({route, navigation}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [lazyQueryError2, authContext]);
-  // 5. 파일 업로드
+  // 5. 이미지 및 파일 업로드
   const uplaodFile = useCallback(
     async presignedURL => {
       try {
@@ -191,20 +197,11 @@ const RoomDetail = ({route, navigation}) => {
         const type = file.data.type.split('/')[0];
         const name = file.data.name;
         if (type === 'image') {
-          createChat({
-            variables: {
-              createChatInput: {
-                roomId,
-                userId,
-                content: '사진',
-                imageURL: url,
-                thumbnailImageURL: url.replace(
-                  'example-jb',
-                  'example-jb-thumbnail',
-                ),
-              },
-            },
-          });
+          // 리사이즈된 이미지가 확인되면 그때 채팅 생성
+          setThumbnailImageURL(
+            url.replace('example-jb', 'example-jb-thumbnail'),
+          );
+          setIsImageResizing(true);
         } else {
           createChat({
             variables: {
@@ -217,8 +214,8 @@ const RoomDetail = ({route, navigation}) => {
               },
             },
           });
+          setIsUploadLoading(false);
         }
-        setIsUploadLoading(false);
       } catch (error) {
         console.log(error);
         Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
@@ -226,6 +223,38 @@ const RoomDetail = ({route, navigation}) => {
     },
     [chatFile, createChat, userId, roomId],
   );
+  // 썸네일 이미지 생성되면 그때 이미지 채팅 생성
+  useEffect(() => {
+    if (isImageResizing) {
+      intervalRef.current = setInterval(async () => {
+        setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
+        console.log('resize on', thumbnailImageURL + `#${Date.now()}`);
+      }, 1000);
+    }
+    if (intervalRef.current && !isImageResizing) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      createChat({
+        variables: {
+          createChatInput: {
+            roomId,
+            userId,
+            content: '사진',
+            imageURL: thumbnailImageURL.replace(
+              'example-jb-thumbnail',
+              'example-jb',
+            ),
+            thumbnailImageURL: thumbnailImageURL,
+          },
+        },
+      });
+      setIsUploadLoading(false);
+    }
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, [thumbnailImageURL, isImageResizing, createChat, roomId, userId]);
+  //
   const onChangeContent = text => {
     setContent(text);
   };
@@ -333,9 +362,28 @@ const RoomDetail = ({route, navigation}) => {
         keyExtractor={item => item._id}
         renderItem={({item, index}) => <ChatCard chat={item} userId={userId} />}
         ListHeaderComponent={() =>
-          lazyQueryLoading2 || isUploadLoading ? <ChatCardLoading /> : null
+          lazyQueryLoading2 || isUploadLoading ? (
+            <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+              <Image
+                style={{width: 1, height: 1}}
+                source={{
+                  uri: hashedThumbnailImageURL,
+                }}
+                onLoad={() => {
+                  console.log('on Load');
+                  setIsImageResizing(false);
+                }}
+                onError={() => {
+                  console.log('on Error');
+                  setIsImageResizing(true);
+                }}
+              />
+              <ChatCardLoading />
+            </View>
+          ) : null
         }
       />
+
       <View
         style={[{backgroundColor: colors.custom.white}, styles.inputWrapper]}>
         <IconButton

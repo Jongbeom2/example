@@ -46,7 +46,7 @@ const theme = {
     ...DefaultTheme.colors,
     primary: '#92685d',
     primaryDrak: '#4a332b',
-    primaryLight: '#e0bca9',
+    primaryLight: '#e2d3cd',
     custom: {
       textPrimary: '#222222',
       textSecondary: '#666666',
@@ -57,6 +57,7 @@ const theme = {
       red: '#eb4d4b',
       orange: '#f0932b',
       grey: '#666666',
+      greyLight: '#eeeeee',
       green: '#6ab04c',
       yellow: '#f9e000',
     },
@@ -162,7 +163,6 @@ const Main = props => {
     (async () => {
       const userId = await AsyncStorage.getItem('userId');
       const isVisted = await AsyncStorage.getItem('isVisted');
-      console.log(userId, userId);
       if (userId) {
         dispatch({type: 'SIGN_IN', userId, isVisted: JSON.parse(isVisted)});
       } else {
@@ -227,7 +227,7 @@ const Main = props => {
                 </>
               ) : state.isVisted === false ? (
                 <Stack.Screen
-                  name="내정보"
+                  name="시작하기"
                   component={OnboardingMain}
                   initialParams={{userId: state.userId}}
                 />

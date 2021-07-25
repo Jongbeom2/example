@@ -92,10 +92,9 @@ const SignIn = ({navigation}) => {
         // websocketLink.subscriptionClient는 SubscriptionClient 객체임.
         // https://github.com/apollographql/subscriptions-transport-ws
         websocketLink.subscriptionClient.close(false, false);
-        console.log(data.signIn.mainRoomId);
         authContext.signIn(
           data.signIn._id,
-          data.signIn.mainRoomId ? true : false,
+          data.signIn.roomIdList.length !== 0 ? true : false,
         );
         Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN);
       })();

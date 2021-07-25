@@ -9,7 +9,6 @@ export const UserSchema = new mongoose.Schema(
     },
     nickname: {
       type: String,
-      required: true,
     },
     profileImageURL: {
       type: String,
@@ -26,10 +25,6 @@ export const UserSchema = new mongoose.Schema(
     },
     appleId: {
       type: String,
-    },
-    mainRoomId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Room',
     },
     roomIdList: [
       {

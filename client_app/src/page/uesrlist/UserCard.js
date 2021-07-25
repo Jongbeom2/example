@@ -8,10 +8,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   nickname: {
     marginLeft: 20,
-    textAlignVertical: 'center',
   },
 });
 const UserCard = ({navigation, user}) => {

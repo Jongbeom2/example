@@ -1,6 +1,6 @@
 import {useMutation} from '@apollo/client';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, Keyboard, StyleSheet} from 'react-native';
+import {Alert, Keyboard, Platform, StyleSheet} from 'react-native';
 import {Button, Dialog, TextInput, Portal} from 'react-native-paper';
 import {AuthContext} from 'src/Main';
 import Loading from 'src/component/Loading';

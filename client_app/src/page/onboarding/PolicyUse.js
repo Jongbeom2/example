@@ -1,32 +1,67 @@
-import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
-import {Text, useTheme} from 'react-native-paper';
+import React, {useState} from 'react';
+import {ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
+import {Button, Dialog, Portal, Text, useTheme} from 'react-native-paper';
+import {MESSAGE_TITLE} from 'src/res/message';
 const styles = StyleSheet.create({
   root: {
-    height: 200,
+    width: 300,
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 10,
+    borderRadius: 10,
   },
-  contentContainer: {
-    flex: 1,
-    padding: 10,
-    width: '100%',
+  text: {
+    fontSize: 15,
+  },
+  dialogContent: {
+    height: 400,
   },
 });
 // 생성 사이트
 // https://ftc.go.kr/solution/skin/doc.html?fn=6e43130ccee6f1a2611c5f4e85877cde2d4b54a754404ed2045a05309310db98&rs=/fileupload/data/result/BBSMSTR_000000002320/
-const UsePolicy = () => {
-  const theme = useTheme();
+const PolicyUse = () => {
+  const {colors} = useTheme();
+  const [visible, setVisible] = useState(false);
+  const onPress = () => {
+    setVisible(true);
+  };
+  const closeDialog = () => {
+    setVisible(false);
+  };
   return (
-    <ScrollView style={styles.root}>
-      <Text
-        style={[
-          {backgroundColor: theme.colors.custom.white},
-          styles.contentContainer,
-        ]}>
-        {`제1장 총칙
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.root, {backgroundColor: colors.custom.greyLight}]}>
+      <Text style={styles.text}>사용자 이용 약관</Text>
+      <Button>자세히</Button>
+      <Portal>
+        <Dialog visible={visible} onDismiss={closeDialog}>
+          <Dialog.Title>{MESSAGE_TITLE}</Dialog.Title>
+          <Dialog.Content style={styles.dialogContent}>
+            <ScrollView>
+              <Text>{message}</Text>
+            </ScrollView>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button style={styles.btn} onPress={closeDialog}>
+              확인
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </TouchableOpacity>
+  );
+};
+export default PolicyUse;
+
+const message = `제1장 총칙
 
  
 
-제1조 (목적) 이 약관은 예제입니다(이하 “회사”라 합니다)가 모바일 기기를 통해 제공하는 서비스 및 이에 부수하는 네트워크, 웹사이트, 기타 서비스(이하 “서비스”라 합니다)의 이용에 대한 회사와 서비스 이용자의 권리ㆍ의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
+제1조 (목적) 이 약관은 맘톡(이하 “회사”라 합니다)가 모바일 기기를 통해 제공하는 서비스 및 이에 부수하는 네트워크, 웹사이트, 기타 서비스(이하 “서비스”라 합니다)의 이용에 대한 회사와 서비스 이용자의 권리ㆍ의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
 
  
 
@@ -444,9 +479,4 @@ const UsePolicy = () => {
 
 제29조 (회원의 고충처리 및 분쟁해결)
 
-① 회사는 회원의 편의를 고려하여 회원의 의견이나 불만을 제시하는 방법을 서비스 내 또는 그 연결화면에 안내합니다. 회사는 이러한 회원의 의견이나 불만을 처리하기 위한 전담인력을 운영합니다.`}
-      </Text>
-    </ScrollView>
-  );
-};
-export default UsePolicy;
+① 회사는 회원의 편의를 고려하여 회원의 의견이나 불만을 제시하는 방법을 서비스 내 또는 그 연결화면에 안내합니다. 회사는 이러한 회원의 의견이나 불만을 처리하기 위한 전담인력을 운영합니다.`;

@@ -7,7 +7,6 @@ import UserListMain from 'src/page/uesrlist/UserListMain';
 import RoomMain from 'src/page/room/RoomMain';
 import RestaurantMain from 'src/page/restaurant/RestaurantMain';
 import messaging from '@react-native-firebase/messaging';
-import HomeMain from 'src/page/home/HomeMain';
 
 const Tab = createBottomTabNavigator();
 const MainTab = ({navigation, route: parentRoute}) => {
@@ -77,8 +76,8 @@ const MainTab = ({navigation, route: parentRoute}) => {
       })}>
       <Tab.Screen
         name="home"
-        options={{tabBarLabel: '홈'}}
-        component={HomeMain}
+        options={{tabBarLabel: '대화방'}}
+        component={RoomMain}
         initialParams={{userId: parentRoute?.params?.userId}}
       />
       <Tab.Screen
@@ -88,12 +87,6 @@ const MainTab = ({navigation, route: parentRoute}) => {
         initialParams={{userId: parentRoute?.params?.userId}}
       />
       {/* <Tab.Screen
-        name="room"
-        options={{tabBarLabel: '대화방'}}
-        component={RoomMain}
-        initialParams={{userId: parentRoute?.params?.userId}}
-      />
-      <Tab.Screen
         name="restaurant"
         options={{tabBarLabel: '맛집'}}
         component={RestaurantMain}
@@ -108,8 +101,6 @@ const TabBarIcon = (focused, name, colors) => {
     iconName = 'home';
   } else if (name === 'userlist') {
     iconName = 'people';
-  } else if (name === 'room') {
-    iconName = 'chatbox';
   } else if (name === 'restaurant') {
     iconName = 'restaurant';
   }

@@ -1,35 +1,70 @@
-import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
-import {Text, useTheme} from 'react-native-paper';
+import React, {useState} from 'react';
+import {ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
+import {Button, Dialog, Portal, Text, useTheme} from 'react-native-paper';
+import {MESSAGE_TITLE} from 'src/res/message';
 const styles = StyleSheet.create({
   root: {
-    height: 200,
+    width: 300,
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 10,
+    borderRadius: 10,
   },
-  contentContainer: {
-    flex: 1,
-    padding: 10,
-    width: '100%',
+  text: {
+    fontSize: 15,
+  },
+  dialogContent: {
+    height: 400,
   },
 });
 // 생성 사이트
 // https://www.privacy.go.kr/a3sc/per/inf/perInfStep01.do
-const PrivateInfoPolicy = () => {
-  const theme = useTheme();
+const PolicyPrivateInfo = () => {
+  const {colors} = useTheme();
+  const [visible, setVisible] = useState(false);
+  const onPress = () => {
+    setVisible(true);
+  };
+  const closeDialog = () => {
+    setVisible(false);
+  };
   return (
-    <ScrollView style={styles.root}>
-      <Text
-        style={[
-          {backgroundColor: theme.colors.custom.white},
-          styles.contentContainer,
-        ]}>
-        {`<2021 Jongbeom Inc.>('https://example.jongbeom.com/signin'이하 '예제입니다')은(는) 「개인정보 보호법」 제30조에 따라 정부주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다.
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.root, {backgroundColor: colors.custom.greyLight}]}>
+      <Text style={styles.text}>개인정보 처리방침</Text>
+      <Button>자세히</Button>
+      <Portal>
+        <Dialog visible={visible} onDismiss={closeDialog}>
+          <Dialog.Title>{MESSAGE_TITLE}</Dialog.Title>
+          <Dialog.Content style={styles.dialogContent}>
+            <ScrollView>
+              <Text>{message}</Text>
+            </ScrollView>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button style={styles.btn} onPress={closeDialog}>
+              확인
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </TouchableOpacity>
+  );
+};
+export default PolicyPrivateInfo;
+
+const message = `<2021 Jongbeom Inc.>('https://example.jongbeom.com/signin'이하 '맘톡')은(는) 「개인정보 보호법」 제30조에 따라 정부주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다.
 
 ○ 이 개인정보처리방침은 2021년 1월 1부터 적용됩니다.
 
 
 제1조(개인정보의 처리 목적)
 
-<2021 Jongbeom Inc.>('https://example.jongbeom.com/signin'이하 '예제입니다')은(는) 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며 이용 목적이 변경되는 겨우에는 「개인정보 보호법」 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.
+<2021 Jongbeom Inc.>('https://example.jongbeom.com/signin'이하 '맘톡')은(는) 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며 이용 목적이 변경되는 겨우에는 「개인정보 보호법」 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.
 
 1. 홈페이지 회원가입 및 관리
 
@@ -132,7 +167,7 @@ const PrivateInfoPolicy = () => {
 개인정보 취급 관련 안정성 확보를 위해 정기적(분기 1회)으로 자체 감사를 실시하고 있습니다.
 
 2. 해킹 등에 대비한 기술적 대책
-<2021 Jongbeom Inc.>('예제입니다')은 해킹이나 컴퓨터 바이러스 등에 의한 개인정보 유출 및 훼손을 막기 위하여 보안프로그램을 설치하고 주기적인 갱신·점검을 하며 외부로부터 접근이 통제된 구역에 시스템을 설치하고 기술적/물리적으로 감시 및 차단하고 있습니다.
+<2021 Jongbeom Inc.>('맘톡')은 해킹이나 컴퓨터 바이러스 등에 의한 개인정보 유출 및 훼손을 막기 위하여 보안프로그램을 설치하고 주기적인 갱신·점검을 하며 외부로부터 접근이 통제된 구역에 시스템을 설치하고 기술적/물리적으로 감시 및 차단하고 있습니다.
 
 3. 개인정보의 암호화
 이용자의 개인정보는 비밀번호는 암호화 되어 저장 및 관리되고 있어, 본인만이 알 수 있으며 중요한 데이터는 파일 및 전송 데이터를 암호화 하거나 파일 잠금 기능을 사용하는 등의 별도 보안기능을 사용하고 있습니다.
@@ -197,9 +232,4 @@ const PrivateInfoPolicy = () => {
 제13조(개인정보 처리방침 변경)
 
 
-① 이 개인정보처리방침은 2021년 1월 1부터 적용됩니다.`}
-      </Text>
-    </ScrollView>
-  );
-};
-export default PrivateInfoPolicy;
+① 이 개인정보처리방침은 2021년 1월 1부터 적용됩니다.`;

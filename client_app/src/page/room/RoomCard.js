@@ -1,14 +1,15 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {Avatar, useTheme} from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
 import {getShortStr} from 'src/lib/common';
 const styles = StyleSheet.create({
   root: {
-    marginLeft: 20,
-    marginTop: 10,
-    marginBottom: 10,
+    padding: 10,
+    marginHorizontal: 20,
+    marginTop: 20,
     flexDirection: 'row',
+    borderRadius: 5,
   },
   nameWrapper: {
     flexShrink: 1,
@@ -18,7 +19,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   recentMessage: {
-    marginTop: 5,
+    marginVertical: 10,
   },
   userNum: {
     marginLeft: 20,
@@ -35,8 +36,9 @@ const RoomCard = ({room, navigation, userId}) => {
     });
   };
   return (
-    <TouchableOpacity style={styles.root} onPress={onPress}>
-      <Avatar.Image size={40} label="A" />
+    <TouchableOpacity
+      style={[styles.root, {backgroundColor: colors.custom.white}]}
+      onPress={onPress}>
       <View style={styles.nameWrapper}>
         <Text style={styles.name}>{getShortStr(room?.name, 20)}</Text>
         <Text

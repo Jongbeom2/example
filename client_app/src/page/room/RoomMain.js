@@ -4,6 +4,7 @@ import {Alert, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {GET_MY_ROOM_LIST} from 'src/page/room/room.query';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {
+  MESSAGE_CONTACT,
   MESSAGE_ERROR,
   MESSAGE_ERROR_AUTH,
   MESSAGE_TITLE,
@@ -61,6 +62,9 @@ const RoomMain = ({navigation, route}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [error, authContext]);
+  const onPressContactBtn = () => {
+    Alert.alert(MESSAGE_TITLE, MESSAGE_CONTACT);
+  };
   const onPressSearchBtn = () => {
     setIsOpenRoomSearchDialog(true);
   };
@@ -83,6 +87,12 @@ const RoomMain = ({navigation, route}) => {
         ))}
       </ScrollView>
       <FAB
+        style={[{backgroundColor: theme.colors.primary}, styles.searchBtn]}
+        small
+        icon="information-variant"
+        onPress={onPressContactBtn}
+      />
+      {/* <FAB
         style={[{backgroundColor: theme.colors.primary}, styles.createBtn]}
         small
         icon="magnify"
@@ -107,7 +117,7 @@ const RoomMain = ({navigation, route}) => {
         onDismiss={() => {
           setIsOpenRoomSearchDialog(false);
         }}
-      />
+      /> */}
     </View>
   );
 };
