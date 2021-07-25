@@ -30,7 +30,6 @@ exports.UserSchema = new mongoose_1.default.Schema({
     },
     nickname: {
         type: String,
-        required: true,
     },
     profileImageURL: {
         type: String,

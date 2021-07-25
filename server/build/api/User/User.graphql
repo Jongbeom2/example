@@ -7,7 +7,7 @@ type User {
   _id: ID!
   email: String
   password: String
-  nickname: String!
+  nickname: String
   profileImageURL: String
   profileThumbnailImageURL: String
   loginType: String!
@@ -49,7 +49,6 @@ input SignInWithAppleInput {
 input CreateUserInput {
   email: String!
   password: String!
-  nickname: String!
 }
 
 input UpdateUserInput {
