@@ -14,11 +14,11 @@ const PopupImage = ({
 }) => {
   const [sourceIdx, setSourceIdx] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
-  useEffect(() => {
+  const onLoad = () => {
     Image.getSize(sourceList[sourceIdx], (width, height) => {
       setImageHeight((imageWidth * height) / width);
     });
-  }, [sourceList, imageWidth, sourceIdx]);
+  };
   const onError = () => {
     setSourceIdx(prev => prev + 1);
   };
@@ -31,6 +31,7 @@ const PopupImage = ({
         <Image
           style={[{height: imageHeight, width: imageWidth}, styles.root]}
           source={{uri: sourceList[sourceIdx]}}
+          onLoad={onLoad}
           onError={onError}
           {...rest}
         />

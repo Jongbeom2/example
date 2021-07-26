@@ -18,7 +18,7 @@ const ChatCardImage = ({
   const [sourceIdx, setSourceIdx] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
   const [open, setOpen] = useState(false);
-  useEffect(() => {
+  const onLoad = () => {
     Image.getSize(
       sourceList[sourceIdx],
       (width, height) => {
@@ -28,7 +28,7 @@ const ChatCardImage = ({
         console.log(error);
       },
     );
-  }, [sourceList, imageWidth, sourceIdx]);
+  };
   const onError = () => {
     setSourceIdx(prev => prev + 1);
   };
@@ -42,6 +42,7 @@ const ChatCardImage = ({
           style={[{height: imageHeight, width: imageWidth}, styles.root]}
           source={{uri: sourceList[sourceIdx]}}
           onError={onError}
+          onLoad={onLoad}
           {...rest}
         />
       </TouchableOpacity>

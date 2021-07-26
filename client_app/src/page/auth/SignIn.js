@@ -120,7 +120,10 @@ const SignIn = ({navigation}) => {
     if (mutationData && !mutationError) {
       (async () => {
         websocketLink.subscriptionClient.close(false, false);
-        authContext.signIn(mutationData.signInWithKakao._id);
+        authContext.signIn(
+          mutationData.signInWithKakao._id,
+          mutationData.signInWithKakao.roomIdList.length !== 0 ? true : false,
+        );
         Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN_KAKAO);
       })();
     }
@@ -141,7 +144,10 @@ const SignIn = ({navigation}) => {
     if (mutationData2 && !mutationError2) {
       (async () => {
         websocketLink.subscriptionClient.close(false, false);
-        authContext.signIn(mutationData2.signInWithApple._id);
+        authContext.signIn(
+          mutationData2.signInWithApple._id,
+          mutationData2.signInWithApple.roomIdList.length !== 0 ? true : false,
+        );
         Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_SIGNIN_APPLE);
       })();
     }

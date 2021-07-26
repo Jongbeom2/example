@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -11,10 +10,8 @@ import {
   StyleSheet,
   View,
   TextInput,
-  SafeAreaView,
   Alert,
   FlatList,
-  Text,
   KeyboardAvoidingView,
   Platform,
   Image,
@@ -87,7 +84,7 @@ const RoomDetail = ({route, navigation}) => {
   const [chatFile, setChatFile] = useState(null);
   const [isPlusBtnPressed, setIsPlusBtnPressed] = useState(false);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
-  const [thumbnailImageURL, setThumbnailImageURL] = useState('');
+  const [thumbnailImageURL, setThumbnailImageURL] = useState(null);
   const [hashedThumbnailImageURL, setHashedThumbnailImageURL] = useState(null);
   const [isImageResizing, setIsImageResizing] = useState(false);
   let intervalRef = useRef();
@@ -183,7 +180,7 @@ const RoomDetail = ({route, navigation}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [lazyQueryError2, authContext]);
-  // 5. 이미지 및 파일 업로드
+  // presignedURL을 이용하여 이미지 및 파일 업로드하는 함수
   const uplaodFile = useCallback(
     async presignedURL => {
       try {
@@ -223,10 +220,11 @@ const RoomDetail = ({route, navigation}) => {
     },
     [chatFile, createChat, userId, roomId],
   );
-  // 썸네일 이미지 생성되면 그때 이미지 채팅 생성
+  // 썸네일 이미지 생성되면 그때 이미지 채팅 생성하는 muation 호출하도록 설정
   useEffect(() => {
     if (isImageResizing) {
-      intervalRef.current = setInterval(async () => {
+      setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
+      intervalRef.current = setInterval(() => {
         setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
         console.log('resize on', thumbnailImageURL + `#${Date.now()}`);
       }, 1000);
@@ -254,7 +252,6 @@ const RoomDetail = ({route, navigation}) => {
       clearInterval(intervalRef.current);
     };
   }, [thumbnailImageURL, isImageResizing, createChat, roomId, userId]);
-  //
   const onChangeContent = text => {
     setContent(text);
   };
@@ -351,6 +348,7 @@ const RoomDetail = ({route, navigation}) => {
       }
     }
   };
+
   return (
     <KeyboardAvoidingView style={styles.root}>
       <FlatList
@@ -363,18 +361,18 @@ const RoomDetail = ({route, navigation}) => {
         renderItem={({item, index}) => <ChatCard chat={item} userId={userId} />}
         ListHeaderComponent={() =>
           lazyQueryLoading2 || isUploadLoading ? (
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <View>
               <Image
                 style={{width: 1, height: 1}}
                 source={{
                   uri: hashedThumbnailImageURL,
                 }}
                 onLoad={() => {
-                  console.log('on Load');
+                  console.log('on Load', hashedThumbnailImageURL);
                   setIsImageResizing(false);
                 }}
                 onError={() => {
-                  console.log('on Error');
+                  console.log('on Error', hashedThumbnailImageURL);
                   setIsImageResizing(true);
                 }}
               />

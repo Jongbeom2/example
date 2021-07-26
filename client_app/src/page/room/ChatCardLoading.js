@@ -1,10 +1,10 @@
 import {useTheme} from 'react-native-paper';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Loading from 'src/component/Loading';
 const styles = StyleSheet.create({
   root: {
-    maxWidth: '100%',
+    width: '100%',
     marginVertical: 5,
     flexDirection: 'row',
     justifyContent: 'flex-end',
