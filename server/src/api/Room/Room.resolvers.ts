@@ -46,23 +46,30 @@ const resolvers: Resolvers = {
   Mutation: {
     createRoom: async (_, args, ctx) => {
       const { userId, name } = args.createRoomInput;
+      // user 조회
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        throw invalidUserIdError;
+      }
       // room 생성
       const room = await new RoomModel({
         name,
         userNum: 1,
         userIdList: [userId],
+        fcmTokenList: user.fcmTokenList,
       }).save();
       // user 수정
-      const user = await UserModel.findById(userId);
-      if (!user) {
-        throw invalidUserIdError;
-      }
       user.roomIdList.push(room._id);
       await user.save();
       return room;
     },
     updateUserAddRoom: async (_, args, ctx) => {
       const { userId, roomId } = args.updateUserAddRoomInput;
+      // user 조회
+      const user = await UserModel.findById(userId);
+      if (user === null) {
+        throw invalidUserIdError;
+      }
       // room 수정
       const room = await RoomModel.findById(roomId);
       if (room === null) {
@@ -70,13 +77,9 @@ const resolvers: Resolvers = {
       }
       room.userIdList.push(userId);
       room.userNum++;
+      room.fcmTokenList = [...room.fcmTokenList, ...user.fcmTokenList];
       await room.save();
       // user 수정
-      const user = await UserModel.findById(userId);
-      // _id에 해당하는 user 없음.
-      if (user === null) {
-        throw invalidUserIdError;
-      }
       user.roomIdList.push(room._id);
       await user.save();
       // chat 추가
@@ -94,6 +97,11 @@ const resolvers: Resolvers = {
     },
     updateUserRemoveRoom: async (_, args, ctx) => {
       const { userId, roomId } = args.updateUserRemoveRoomInput;
+      // user 조회
+      const user = await UserModel.findById(userId);
+      if (user === null) {
+        throw invalidUserIdError;
+      }
       // room 수정
       const room = await RoomModel.findById(roomId);
       if (room === null) {
@@ -101,13 +109,9 @@ const resolvers: Resolvers = {
       }
       room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
       room.userNum--;
+      room.fcmTokenList = room.fcmTokenList.filter((ele) => user.fcmTokenList.indexOf(ele) === -1);
       await room.save();
       // user 수정
-      const user = await UserModel.findById(userId);
-      // _id에 해당하는 user 없음.
-      if (user === null) {
-        throw invalidUserIdError;
-      }
       user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
       await user.save();
       // chat 추가
