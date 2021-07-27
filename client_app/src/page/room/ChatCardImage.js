@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {Image, Platform, StyleSheet, TouchableOpacity} from 'react-native';
 import PopupImage from 'src/component/PopupImage';
 const styles = StyleSheet.create({
   root: {
@@ -19,15 +19,9 @@ const ChatCardImage = ({
   const [imageHeight, setImageHeight] = useState(0);
   const [open, setOpen] = useState(false);
   const onLoad = () => {
-    Image.getSize(
-      sourceList[sourceIdx],
-      (width, height) => {
-        setImageHeight((imageWidth * height) / width);
-      },
-      error => {
-        console.log(error);
-      },
-    );
+    Image.getSize(sourceList[sourceIdx], (width, height) => {
+      setImageHeight((imageWidth * height) / width);
+    });
   };
   const onError = () => {
     setSourceIdx(prev => prev + 1);
@@ -41,8 +35,9 @@ const ChatCardImage = ({
         <Image
           style={[{height: imageHeight, width: imageWidth}, styles.root]}
           source={{uri: sourceList[sourceIdx]}}
+          onLoad={Platform.OS === 'ios' ? undefined : onLoad}
+          onLayout={Platform.OS === 'ios' ? onLoad : undefined}
           onError={onError}
-          onLoad={onLoad}
           {...rest}
         />
       </TouchableOpacity>

@@ -129,6 +129,13 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 
 [https://github.com/callstack/react-native-paper/issues/2172#issuecomment-725769818](https://github.com/callstack/react-native-paper/issues/2172#issuecomment-725769818)
 
+### **이슈5**
+
+- Recat native Image 컴포넌트 onLoad, onLayout 함수가 IOS, Android에 따라 다르게 작동함.
+  - Andorid의 경우 onLoad의 callback 함수에서 이미지의 크기를 설정함. IOS의 경우 onLoad의 callback 함수 자체가 호출이 안됨.
+  - IOS의 경우 onLayout의 callback 함수에서 이미지의 크기를 설정함. Android의 경우 onLayout의 callback 함수가 호출은 잘 되지만 unmount 돠어도 callback 함수가 실행되어 memory leak이 발생함. IOS의 경우 memory leak이 발생하지 않는데, 작동을 다르게 하는 듯함.
+  - 자세한 원인은 파악하지 못했고, 다른 사람의 글도 발견하지 못함.
+
 # **참고 웹사이트**
 
 ### **App Icon, Image 생성**

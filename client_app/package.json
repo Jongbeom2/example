@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "clean-android": "cd android && ./gradlew clean",
     "clean-ios": "cd ios && xcodebuild clean",
-    "build-android": "cd android && ./gradlew assembleRelease"
+    "build-android": "cd android && ./gradlew bundleRelease"
   },
   "dependencies": {
     "@apollo/client": "^3.3.20",

@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Image, StyleSheet} from 'react-native';
+import {Image, Platform, StyleSheet} from 'react-native';
 import {Dialog, Portal} from 'react-native-paper';
 import {Dimensions} from 'react-native';
 const styles = StyleSheet.create({
@@ -31,7 +31,8 @@ const PopupImage = ({
         <Image
           style={[{height: imageHeight, width: imageWidth}, styles.root]}
           source={{uri: sourceList[sourceIdx]}}
-          onLoad={onLoad}
+          onLoad={Platform.OS === 'ios' ? undefined : onLoad}
+          onLayout={Platform.OS === 'ios' ? onLoad : undefined}
           onError={onError}
           {...rest}
         />
