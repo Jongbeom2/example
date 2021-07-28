@@ -24,7 +24,8 @@ const styles = StyleSheet.create({
   systemChatText: {
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 20,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   myChatRoot: {
     maxWidth: '100%',
@@ -38,6 +39,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
+    overflow: 'hidden',
   },
   myChatFile: {
     maxWidth: '50%',
@@ -65,6 +67,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
+    overflow: 'hidden',
   },
   chatFile: {
     marginTop: 5,
@@ -158,9 +161,14 @@ const ChatCard = ({chat, userId}) => {
       <View style={styles.myChatRoot}>
         {isArchived ? (
           <Text
-            style={[{backgroundColor: colors.custom.yellow}, styles.myChatText]}
-            onLongPress={onLongPress}>
-            {isArchived ? '신고된 대화입니다.' : chat.content}
+            style={[
+              {
+                backgroundColor: colors.custom.yellow,
+                color: colors.custom.textSecondary,
+              },
+              styles.myChatText,
+            ]}>
+            ! 신고된 대화입니다.
           </Text>
         ) : chat.imageURL ? (
           <ChatCardImage
@@ -203,9 +211,14 @@ const ChatCard = ({chat, userId}) => {
         <Text style={styles.chatNickname}>{chat.user?.nickname}</Text>
         {isArchived ? (
           <Text
-            style={[{backgroundColor: colors.custom.white}, styles.chatText]}
-            onLongPress={onLongPress}>
-            {isArchived ? '신고된 대화입니다.' : chat.content}
+            style={[
+              {
+                backgroundColor: colors.custom.white,
+                color: colors.custom.textSecondary,
+              },
+              styles.chatText,
+            ]}>
+            ! 신고된 대화입니다.
           </Text>
         ) : chat.imageURL ? (
           <ChatCardImage
