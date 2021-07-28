@@ -281,7 +281,7 @@ const SignIn = ({navigation}) => {
             },
           ]}
           onPress={onClickKakoSignInBtn}>
-          카카오톡 로그인
+          카카오톡으로 로그인
         </Button>
         {Platform.OS === 'ios' && (
           <Button
@@ -292,8 +292,9 @@ const SignIn = ({navigation}) => {
                 backgroundColor: colors.custom.white,
               },
             ]}
-            onPress={onClickAppleSignInBtn}>
-            애플 로그인
+            onPress={onClickAppleSignInBtn}
+            uppercase={false}>
+            Apple로 로그인
           </Button>
         )}
       </View>

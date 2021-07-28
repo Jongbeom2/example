@@ -9,10 +9,12 @@ import {ARCHIVE_CHAT} from './room.query';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {AuthContext} from 'src/Main';
 import {
+  MESSAGE_CONFIRM_ARCHIEVE_CHAT,
   MESSAGE_ERROR,
   MESSAGE_SUCCESS_ARCHIVE_CHAT,
   MESSAGE_TITLE,
 } from 'src/res/message';
+import {useState} from 'react/cjs/react.development';
 const styles = StyleSheet.create({
   systemChatRoot: {
     marginVertical: 5,
@@ -74,6 +76,7 @@ const styles = StyleSheet.create({
 const ChatCard = ({chat, userId}) => {
   const {colors} = useTheme();
   const authContext = useContext(AuthContext);
+  const [isArchived, setIsArchived] = useState(chat.isArchived);
   // 신고
   const [
     archiveChat,
@@ -83,6 +86,7 @@ const ChatCard = ({chat, userId}) => {
   useEffect(() => {
     if (mutationData && !mutationError) {
       Alert.alert(MESSAGE_TITLE, MESSAGE_SUCCESS_ARCHIVE_CHAT);
+      setIsArchived(true);
     }
   }, [mutationData, mutationError]);
   // 신고 실패
@@ -116,7 +120,7 @@ const ChatCard = ({chat, userId}) => {
       });
   };
   const onLongPress = () => {
-    Alert.alert('신고하기', '부적절한 내용으로 신고하시겠습니까?', [
+    Alert.alert(MESSAGE_TITLE, MESSAGE_CONFIRM_ARCHIEVE_CHAT, [
       {
         text: '취소',
         style: 'cancel',
@@ -152,11 +156,11 @@ const ChatCard = ({chat, userId}) => {
   if (chat.user._id === userId) {
     return (
       <View style={styles.myChatRoot}>
-        {chat.isArchived ? (
+        {isArchived ? (
           <Text
             style={[{backgroundColor: colors.custom.yellow}, styles.myChatText]}
             onLongPress={onLongPress}>
-            {chat.isArchived ? '신고된 대화입니다.' : chat.content}
+            {isArchived ? '신고된 대화입니다.' : chat.content}
           </Text>
         ) : chat.imageURL ? (
           <ChatCardImage
@@ -197,11 +201,11 @@ const ChatCard = ({chat, userId}) => {
       />
       <View style={styles.chatUserWrapper}>
         <Text style={styles.chatNickname}>{chat.user?.nickname}</Text>
-        {chat.isArchived ? (
+        {isArchived ? (
           <Text
             style={[{backgroundColor: colors.custom.white}, styles.chatText]}
             onLongPress={onLongPress}>
-            {chat.isArchived ? '신고된 대화입니다.' : chat.content}
+            {isArchived ? '신고된 대화입니다.' : chat.content}
           </Text>
         ) : chat.imageURL ? (
           <ChatCardImage

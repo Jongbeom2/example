@@ -37,7 +37,10 @@ export const MESSAGE_ERROR_PDATE_RESTAURANT_RATING_INPUT_REQUIRED =
 export const MESSAGE_ERROR_UPDATE_RESTAURANT_RATING_EXIST_RATING =
   '이미 평점을 남겼습니다.';
 // Chat
+export const MESSAGE_CONFIRM_ARCHIEVE_CHAT =
+  '부적절한 내용으로 신고하시겠습니까?';
 export const MESSAGE_SUCCESS_ARCHIVE_CHAT =
   '대화 신고에 성공했습니다. 신고한 메세지는 곧 삭제됩니다';
 // Contact
-export const MESSAGE_CONTACT = '문의 사항이 있는 경우 연락주세요. 01067402570';
+export const MESSAGE_CONTACT =
+  '문의 사항이 있는 경우 연락주세요.\n 이메일 : n11334@naver.com\n 전화번호 : 01067402570';
