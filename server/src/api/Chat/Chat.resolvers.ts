@@ -6,6 +6,7 @@ import RoomModel from 'src/models/Room.model';
 import { invalidChatIdError, invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 import colors from 'colors';
 import admin from 'firebase-admin';
+import { logger } from 'src/middlewares/winston';
 
 const resolvers: Resolvers = {
   Query: {
@@ -110,7 +111,7 @@ const resolvers: Resolvers = {
       subscribe: withFilter(
         () => {
           return withCancel(pubsub.asyncIterator('CHAT_CREATED'), () => {
-            console.info(`## subscription cancel: ${colors.blue.bold('chatCreated')}`);
+            logger.info(`## subscription cancel: chatCreated`);
           });
         },
         (payload, variable) => {

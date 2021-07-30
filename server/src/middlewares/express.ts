@@ -7,9 +7,6 @@ const app = express().use(corsMiddleware()).use(routerMiddleware());
 // .use(cookieParser());
 export default app;
 
-// console.log('Cookies: ', req.cookies); // Cookies that have not been signed
-// console.log('Signed Cookies: ', req.signedCookies); // Cookies that have been signed
-
 // <cookie options>
 // secret : signing 암호. string/array 타입 가능
 // signed : cookie 서명 필요

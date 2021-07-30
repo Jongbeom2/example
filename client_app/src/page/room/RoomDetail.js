@@ -214,7 +214,6 @@ const RoomDetail = ({route, navigation}) => {
           setIsUploadLoading(false);
         }
       } catch (error) {
-        console.log(error);
         Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
       }
     },
@@ -226,7 +225,6 @@ const RoomDetail = ({route, navigation}) => {
       setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
       intervalRef.current = setInterval(() => {
         setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
-        console.log('resize on', thumbnailImageURL + `#${Date.now()}`);
       }, 1000);
     }
     if (intervalRef.current && !isImageResizing) {
@@ -287,7 +285,6 @@ const RoomDetail = ({route, navigation}) => {
   const onPressCameraBtn = () => {
     launchCamera({}, response => {
       if (response.errorCode) {
-        console.log(response.errorCode);
         return;
       }
       if (response.didCancel) {
@@ -368,11 +365,9 @@ const RoomDetail = ({route, navigation}) => {
                   uri: hashedThumbnailImageURL,
                 }}
                 onLoad={() => {
-                  console.log('on Load', hashedThumbnailImageURL);
                   setIsImageResizing(false);
                 }}
                 onError={() => {
-                  console.log('on Error', hashedThumbnailImageURL);
                   setIsImageResizing(true);
                 }}
               />

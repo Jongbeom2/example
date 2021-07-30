@@ -1,8 +1,8 @@
 import { generateJWT, decodeJWT, parseCookie } from 'src/lib/common';
 import { gql } from 'apollo-server-express';
-import colors from 'colors';
 import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
 import { COOKIE_DURATION_MILLISECONDS, COOKIE_REFRESH_TIME_LIMIT } from 'src/lib/const';
+import { logger } from 'src/middlewares/winston';
 const decodeCookieToken = (cookieString: any) => {
   let decoded: any;
   let errorFields: string[] = [];
@@ -12,7 +12,6 @@ const decodeCookieToken = (cookieString: any) => {
 
     if (accessToken) {
       decoded = decodeJWT(accessToken);
-      //   console.info('## my', { ...decoded.my });
     }
   } catch (err) {
     // If token value is manipulated or counterfeited, then cookie will be deleted
@@ -41,7 +40,7 @@ export const auth = (req: any, res: any) => {
 
   // To ignore playground introspection polling
   if (queryName !== '__schema') {
-    console.info(`## query: ${colors.blue.bold(queryName)}`);
+    logger.info(`## query: ${queryName}`);
   }
 
   const queryWhiteList = [
@@ -67,20 +66,16 @@ export const auth = (req: any, res: any) => {
     if (process.env.NODE_ENV === 'production') {
       throw notAuthorizedError;
     } else if (process.env.NODE_ENV === 'development') {
-      // throw notAuthorizedError;
+      throw notAuthorizedError;
     } else {
       throw environmentError;
     }
     return {};
   }
 
-  //   // Re-issue token if token will be expired soon.
+  // Re-issue token if token will be expired soon.
   const now = Math.floor(Date.now() / 1000);
   const timeLeft = decoded.exp - now;
-  //   console.info(now);
-  //   console.info(decoded.exp);
-  //   console.info(decoded.iat);
-  //   console.info(timeLeft);
   if (decoded?.exp && timeLeft < COOKIE_REFRESH_TIME_LIMIT) {
     const accessToken = generateJWT({ my: decoded.my });
     res.cookie('accessToken', accessToken, {
@@ -105,7 +100,7 @@ export const authSocket = (headers: any, query: any) => {
 
   // To ignore playground introspection polling
   if (queryName !== '__schema') {
-    console.info(`## subscription: ${colors.blue.bold(queryName)}`);
+    logger.info(`## subscription: ${queryName}`);
   }
 
   const queryWhiteList = [''];

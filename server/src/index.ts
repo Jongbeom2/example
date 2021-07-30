@@ -1,18 +1,17 @@
 import dotenv from 'dotenv';
 import rootDir from 'app-root-path';
 import path from 'path';
-import chalk from 'chalk';
 dotenv.config({ path: path.join(__dirname, '../.env') });
 import { connectDatabase } from 'src/middlewares/database';
 import { startServer } from 'src/apollo/server';
 import { environmentError } from 'src/error/ErrorObject';
 import { initFirebase } from 'src/middlewares/firebase';
+import { logger } from 'src/middlewares/winston';
 
 process.stdout.write('\x1Bc');
-console.clear();
-console.info(`\n\n\n`);
-console.info(`✔ Root directory is ${chalk.blue.bold(rootDir.path)}`);
-console.info(`✔ Environment: ${chalk.blue.bold(process.env.NODE_ENV)}`);
+logger.info(`Server Start`);
+logger.info(`✔ Root directory is ${rootDir.path}`);
+logger.info(`✔ Environment: ${process.env.NODE_ENV}`);
 
 // production mode에서는 데이터 베이스를 연결하고 서버를 실행함.
 // develoption mode에서는 동시에 데이터 베이스를 연결하고 서버를 실행함.

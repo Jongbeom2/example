@@ -32,7 +32,6 @@ const loaders = {
 
 const websocketContext = (connection: any, payload: any) => {
   // preserve until websocket disconnected
-  // console.info(connection, payload);
   // connection.context; // this is the context which insert to onConnect triggered
   const my = authSocket(connection.context.Headers, payload.query);
   return { my, loaders };

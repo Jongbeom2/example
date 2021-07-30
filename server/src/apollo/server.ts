@@ -4,6 +4,7 @@ import app from 'src/middlewares/express';
 import { schema } from 'src/schema';
 import { context } from 'src/apollo/context';
 import colors from 'colors';
+import { logger } from 'src/middlewares/winston';
 
 const PORT: string | undefined = process.env.PORT;
 const apolloServer = new ApolloServer({
@@ -14,33 +15,20 @@ const apolloServer = new ApolloServer({
     // path: '/subscriptions',
     // https://github.com/apollographql/subscriptions-transport-ws#constructoroptions-socketoptions--socketserver
     onConnect: (connectionParams, websocket, connectionContext) => {
-      console.info('## WebSocket Connected');
+      logger.info('## WebSocket Connected');
       return { Headers: connectionContext.request.headers };
-
-      // if (connectionParams.authToken) {
-      //   return validateToken(connectionParams.authToken)
-      //     .then(findUser(connectionParams.authToken))
-      //     .then((user) => {
-      //       return {
-      //         currentUser: user,
-      //       };
-      //     });
-      // }
-      // throw new Error('Missing auth token!');
     },
     onDisconnect: (webSocket, context) => {
-      console.info('## WebSocket Disconnected');
+      logger.info('## WebSocket Disconnected');
     },
     keepAlive: 3000,
   },
 
   formatError: (error) => {
-    console.group('\x1b[31m%s\x1b[0m', 'Server Error');
-    console.error('Path: ', error.path);
-    console.error('Message: ', error.message);
-    console.error('Code: ', error.extensions?.code);
-    console.error('Original Error: ', error.originalError);
-    console.groupEnd();
+    logger.error(`Path: ${error.path}`);
+    logger.error(`Message: ${error.message}`);
+    logger.error(`Code: ${error.extensions?.code}`);
+    logger.error(`Original Error: ${error.originalError}`);
     return error;
   },
   // https://stackoverflow.com/questions/59021384/how-to-pass-cookie-from-apollo-server-to-apollo-clenet
@@ -102,17 +90,9 @@ const startServer = () => {
   // By the way, when subscription is not in use, app(the Express instance) usually calls listen method directly. e.g., app.listen(PORT, () => { });
 
   httpServer.listen(PORT, () => {
-    console.log(
-      `✔ Server ready at ${
-        colors.blue.bold(process.env.SERVER_DOMAIN ?? '') +
-        colors.blue.bold(apolloServer.graphqlPath)
-      }`,
-    );
-    console.log(
-      `✔ Subscriptions ready at ${
-        colors.blue.bold(process.env.WEBSOCKET_SERVER_DOMAIN ?? '') +
-        colors.blue.bold(apolloServer.subscriptionsPath ?? '')
-      }`,
+    logger.info(`✔ Server ready at ${colors.blue.bold(apolloServer.graphqlPath)}`);
+    logger.info(
+      `✔ Subscriptions ready at ${colors.blue.bold(apolloServer.subscriptionsPath ?? '')}`,
     );
   });
 };
