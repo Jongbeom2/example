@@ -1,7 +1,6 @@
-import { generateJWT, decodeJWT, parseCookie } from 'src/lib/common';
+import { decodeJWT, parseCookie } from 'src/lib/common';
 import { gql } from 'apollo-server-express';
 import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
-import { COOKIE_DURATION_MILLISECONDS, COOKIE_REFRESH_TIME_LIMIT } from 'src/lib/const';
 import { logger } from 'src/middlewares/winston';
 const decodeCookieToken = (cookieString: any) => {
   let decoded: any;
@@ -51,8 +50,7 @@ export const auth = (req: any, res: any) => {
     'signOut',
     'getNow',
   ];
-  // Test
-  // queryWhiteList.push('getChatList');
+
   if (queryWhiteList.includes(queryName)) {
     return {};
   }
@@ -71,21 +69,6 @@ export const auth = (req: any, res: any) => {
       throw environmentError;
     }
     return {};
-  }
-
-  // Re-issue token if token will be expired soon.
-  const now = Math.floor(Date.now() / 1000);
-  const timeLeft = decoded.exp - now;
-  if (decoded?.exp && timeLeft < COOKIE_REFRESH_TIME_LIMIT) {
-    const accessToken = generateJWT({ my: decoded.my });
-    res.cookie('accessToken', accessToken, {
-      maxAge: COOKIE_DURATION_MILLISECONDS,
-      httpOnly: true,
-    });
-    res.cookie('_id', decoded.my.userId, {
-      maxAge: COOKIE_DURATION_MILLISECONDS,
-      httpOnly: false,
-    });
   }
 
   return decoded.my;

@@ -1,14 +1,10 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authSocket = exports.auth = void 0;
 const common_1 = require("../lib/common");
 const apollo_server_express_1 = require("apollo-server-express");
-const colors_1 = __importDefault(require("colors"));
 const ErrorObject_1 = require("../error/ErrorObject");
-const const_1 = require("../lib/const");
+const winston_1 = require("../middlewares/winston");
 const decodeCookieToken = (cookieString) => {
     let decoded;
     let errorFields = [];
@@ -17,7 +13,6 @@ const decodeCookieToken = (cookieString) => {
         const { accessToken } = cookieObject;
         if (accessToken) {
             decoded = common_1.decodeJWT(accessToken);
-            //   console.info('## my', { ...decoded.my });
         }
     }
     catch (err) {
@@ -45,7 +40,7 @@ exports.auth = (req, res) => {
     const queryName = queryObj.selectionSet.selections[0].name.value;
     // To ignore playground introspection polling
     if (queryName !== '__schema') {
-        console.info(`## query: ${colors_1.default.blue.bold(queryName)}`);
+        winston_1.logger.info(`## query: ${queryName}`);
     }
     const queryWhiteList = [
         'createUser',
@@ -55,8 +50,6 @@ exports.auth = (req, res) => {
         'signOut',
         'getNow',
     ];
-    // Test
-    // queryWhiteList.push('getChatList');
     if (queryWhiteList.includes(queryName)) {
         return {};
     }
@@ -69,30 +62,12 @@ exports.auth = (req, res) => {
             throw ErrorObject_1.notAuthorizedError;
         }
         else if (process.env.NODE_ENV === 'development') {
-            // throw notAuthorizedError;
+            throw ErrorObject_1.notAuthorizedError;
         }
         else {
             throw ErrorObject_1.environmentError;
         }
         return {};
-    }
-    //   // Re-issue token if token will be expired soon.
-    const now = Math.floor(Date.now() / 1000);
-    const timeLeft = decoded.exp - now;
-    //   console.info(now);
-    //   console.info(decoded.exp);
-    //   console.info(decoded.iat);
-    //   console.info(timeLeft);
-    if ((decoded === null || decoded === void 0 ? void 0 : decoded.exp) && timeLeft < const_1.COOKIE_REFRESH_TIME_LIMIT) {
-        const accessToken = common_1.generateJWT({ my: decoded.my });
-        res.cookie('accessToken', accessToken, {
-            maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
-            httpOnly: true,
-        });
-        res.cookie('_id', decoded.my.userId, {
-            maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
-            httpOnly: false,
-        });
     }
     return decoded.my;
 };
@@ -104,7 +79,7 @@ exports.authSocket = (headers, query) => {
     const queryName = queryObj.selectionSet.selections[0].name.value;
     // To ignore playground introspection polling
     if (queryName !== '__schema') {
-        console.info(`## subscription: ${colors_1.default.blue.bold(queryName)}`);
+        winston_1.logger.info(`## subscription: ${queryName}`);
     }
     const queryWhiteList = [''];
     if (queryWhiteList.includes(queryName)) {

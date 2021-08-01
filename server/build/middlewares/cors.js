@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
-const colors_1 = __importDefault(require("colors"));
 const ErrorObject_1 = require("../error/ErrorObject");
+const winston_1 = require("./winston");
 const allowedOrigins = ['https://example.jongbeom.com'];
 const corsMiddleware = () => cors_1.default({
     origin: (origin, callback) => {
@@ -17,7 +17,7 @@ const corsMiddleware = () => cors_1.default({
                 callback(null, true);
             }
             else {
-                console.error('origin:', colors_1.default.blue.bold(origin !== null && origin !== void 0 ? origin : ''));
+                winston_1.logger.error(`origin: ${origin !== null && origin !== void 0 ? origin : ''}`);
                 callback(ErrorObject_1.corsError);
                 // ⛔ 배포 테스트 너무 불편해서 항상 cros에러 안나도록 설정하고 싶은 경우
                 // callback(null, true);

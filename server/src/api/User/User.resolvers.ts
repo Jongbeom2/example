@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Resolvers } from 'src/types/graphql';
-import UserModel from 'src/models/User.model';
+import UserModel, { UserDoc } from 'src/models/User.model';
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
 import appleSigninAuth from 'apple-signin-auth';
@@ -42,49 +42,54 @@ const resolvers: Resolvers = {
   Mutation: {
     signIn: async (_, args, ctx) => {
       const session = await startSession();
+      let user: UserDoc | null;
       try {
-        session.startTransaction();
-        const { email, password, fcmToken } = args.signInInput;
-        const user = await UserModel.findOne({ email: email }, {}, { session });
-        // 존재하지 않는 user email임.
-        if (user === null) {
-          throw invalidUserEmailError;
-        }
-        const isValidPassword = await bcrypt.compare(password, user.password || '');
-        if (!isValidPassword) {
-          throw invalidUserPasswordError;
-        }
-        // notification을 위해 fcmToken 저장함.
-        if (fcmToken) {
-          // user fcmToken
-          if (user.fcmTokenList.indexOf(fcmToken) === -1) {
-            user.fcmTokenList.push(fcmToken);
+        await session.withTransaction(async () => {
+          const { email, password, fcmToken } = args.signInInput;
+          user = await UserModel.findOne({ email: email }, {}, { session });
+          // 존재하지 않는 user email임.
+          if (user === null) {
+            throw invalidUserEmailError;
           }
-          // room fcmToken
-          const promiseList: Promise<RoomDoc>[] = [];
-          const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } }, {}, { session });
-          roomList.forEach((room) => {
-            if (room.fcmTokenList.indexOf(fcmToken) === -1) {
-              room.fcmTokenList.push(fcmToken);
-              promiseList.push(room.save({ session }));
+          const isValidPassword = await bcrypt.compare(password, user.password || '');
+          if (!isValidPassword) {
+            throw invalidUserPasswordError;
+          }
+          // notification을 위해 fcmToken 저장함.
+          if (fcmToken) {
+            // user fcmToken
+            if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+              user.fcmTokenList.push(fcmToken);
             }
+            // room fcmToken
+            const promiseList: Promise<RoomDoc>[] = [];
+            const roomList = await RoomModel.find(
+              { _id: { $in: user.roomIdList } },
+              {},
+              { session },
+            );
+            roomList.forEach((room) => {
+              if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+                room.fcmTokenList.push(fcmToken);
+                promiseList.push(room.save({ session }));
+              }
+            });
+            Promise.all(promiseList);
+          }
+          // 유저 정보 저장함.
+          await user.save({ session });
+          // access token 생성함.
+          const accessToken = generateJWT({
+            access: true,
+            my: {
+              userId: user._id,
+            },
           });
-          Promise.all(promiseList);
-        }
-        await user.save();
-        // access token 생성함.
-        const accessToken = generateJWT({
-          access: true,
-          my: {
-            userId: user._id,
-          },
+          // 유저 정보 쿠키에 저장함.
+          saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
         });
-        // 유저 정보 쿠키에 저장함.
-        saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
-        await session.commitTransaction();
-        return user;
+        return user!;
       } catch (err) {
-        await session.abortTransaction();
         throw err;
       } finally {
         await session.endSession();
@@ -92,54 +97,58 @@ const resolvers: Resolvers = {
     },
     signInWithKakao: async (_, args, ctx) => {
       const session = await startSession();
+      let user: UserDoc | null;
       try {
-        session.startTransaction();
-        const { accessToken: kakaoAccessToken, fcmToken } = args.signInWithKakaoInput;
-        // accessToken으로 kakao user 정보 가져옴.
-        const { data } = await Axios.get(`https://kapi.kakao.com/v2/user/me`, {
-          headers: { Authorization: `Bearer ${kakaoAccessToken}` },
-        });
-        let user = await UserModel.findOne({ kakaoId: data.id }, {}, { session });
-        if (user === null) {
-          user = await new UserModel({
-            // nickname: data.kakao_account.profile.nickname,
-            kakaoId: data.id,
-            // profileImageURL: data.kakao_account.profile.profile_image_url,
-            // profileThumbnailImageURL: data.kakao_account.profile.thumbnail_image_url,
-            loginType: 'kakao',
+        await session.withTransaction(async () => {
+          const { accessToken: kakaoAccessToken, fcmToken } = args.signInWithKakaoInput;
+          // accessToken으로 kakao user 정보 가져옴.
+          const { data } = await Axios.get(`https://kapi.kakao.com/v2/user/me`, {
+            headers: { Authorization: `Bearer ${kakaoAccessToken}` },
           });
-        }
-        // notification을 위해 fcmToken 저장함.
-        if (fcmToken) {
-          // user fcmToken
-          if (user.fcmTokenList.indexOf(fcmToken) === -1) {
-            user.fcmTokenList.push(fcmToken);
+          let user = await UserModel.findOne({ kakaoId: data.id }, {}, { session });
+          if (user === null) {
+            user = await new UserModel({
+              // data.kakao_account를 이용하면 다양한 정보를 가져올 수 있음
+              // ex) data.kakao_account.profile.nickname
+              //     data.kakao_account.profile.profile_image_url
+              //     data.kakao_account.profile.thumbnail_image_url
+              kakaoId: data.id,
+              loginType: 'kakao',
+            });
           }
-          // room fcmToken
-          const promiseList: Promise<RoomDoc>[] = [];
-          const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } });
-          roomList.forEach((room) => {
-            if (room.fcmTokenList.indexOf(fcmToken) === -1) {
-              room.fcmTokenList.push(fcmToken);
-              promiseList.push(room.save({ session }));
+          // notification을 위해 fcmToken 저장함.
+          if (fcmToken) {
+            // user fcmToken
+            if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+              user.fcmTokenList.push(fcmToken);
             }
+            // room fcmToken
+            const promiseList: Promise<RoomDoc>[] = [];
+            const roomList = await RoomModel.find(
+              { _id: { $in: user.roomIdList } },
+              {},
+              { session },
+            );
+            roomList.forEach((room) => {
+              if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+                room.fcmTokenList.push(fcmToken);
+                promiseList.push(room.save({ session }));
+              }
+            });
+            await Promise.all(promiseList);
+          }
+          await user.save({ session });
+          // access token 생성함.
+          const accessToken = generateJWT({
+            access: true,
+            my: {
+              userId: user._id,
+            },
           });
-          await Promise.all(promiseList);
-        }
-        await user.save({ session });
-        // access token 생성함.
-        const accessToken = generateJWT({
-          access: true,
-          my: {
-            userId: user._id,
-          },
+          // 쿠키에 유저 정보 저장함.
+          saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
         });
-
-        saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
-
-        await session.commitTransaction();
-
-        return user;
+        return user!;
       } catch (err) {
         await session.abortTransaction();
         throw err;
@@ -149,50 +158,54 @@ const resolvers: Resolvers = {
     },
     signInWithApple: async (_, args, ctx) => {
       const session = await startSession();
+      let user: UserDoc | null;
       try {
-        session.startTransaction();
-        const { identityToken, fcmToken } = args.signInWithAppleInput;
-        // identityToken apple user 정보 가져옴.
-        const appleIdTokenClaims = await appleSigninAuth.verifyIdToken(identityToken);
-        let user = await UserModel.findOne({ appleId: appleIdTokenClaims.sub }, {}, { session });
-        if (user === null) {
-          user = await new UserModel({
-            appleId: appleIdTokenClaims.sub,
-            // nickname: appleIdTokenClaims.email,
-            loginType: 'apple',
-          });
-        }
-        // notification을 위해 fcmToken 저장함.
-        if (fcmToken) {
-          // user fcmToken
-          if (user.fcmTokenList.indexOf(fcmToken) === -1) {
-            user.fcmTokenList.push(fcmToken);
+        await session.withTransaction(async () => {
+          const { identityToken, fcmToken } = args.signInWithAppleInput;
+          // identityToken apple user 정보 가져옴.
+          const appleIdTokenClaims = await appleSigninAuth.verifyIdToken(identityToken);
+          let user = await UserModel.findOne({ appleId: appleIdTokenClaims.sub }, {}, { session });
+          if (user === null) {
+            user = await new UserModel({
+              // appleIdTokenClaims을 이용하면 다양한 정보를 가져올 수 있음
+              // ex) appleIdTokenClaims.email
+              appleId: appleIdTokenClaims.sub,
+              loginType: 'apple',
+            });
           }
-          // room fcmToken
-          const promiseList: Promise<RoomDoc>[] = [];
-          const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } });
-          roomList.forEach((room) => {
-            if (room.fcmTokenList.indexOf(fcmToken) === -1) {
-              room.fcmTokenList.push(fcmToken);
-              promiseList.push(room.save({ session }));
+          // notification을 위해 fcmToken 저장함.
+          if (fcmToken) {
+            // user fcmToken
+            if (user.fcmTokenList.indexOf(fcmToken) === -1) {
+              user.fcmTokenList.push(fcmToken);
             }
+            // room fcmToken
+            const promiseList: Promise<RoomDoc>[] = [];
+            const roomList = await RoomModel.find(
+              { _id: { $in: user.roomIdList } },
+              {},
+              { session },
+            );
+            roomList.forEach((room) => {
+              if (room.fcmTokenList.indexOf(fcmToken) === -1) {
+                room.fcmTokenList.push(fcmToken);
+                promiseList.push(room.save({ session }));
+              }
+            });
+            await Promise.all(promiseList);
+          }
+          await user.save({ session });
+          // access token 생성함.
+          const accessToken = generateJWT({
+            access: true,
+            my: {
+              userId: user._id,
+            },
           });
-          await Promise.all(promiseList);
-        }
-        await user.save({ session });
-        // access token 생성함.
-        const accessToken = generateJWT({
-          access: true,
-          my: {
-            userId: user._id,
-          },
+          // 쿠키에 유저 정보 저장함.
+          saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
         });
-
-        saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
-
-        await session.commitTransaction();
-
-        return user;
+        return user!;
       } catch (err) {
         await session.abortTransaction();
         throw err;
@@ -202,34 +215,39 @@ const resolvers: Resolvers = {
     },
     signOut: async (_, args, ctx) => {
       const session = await startSession();
+      let user: UserDoc | null;
       try {
-        session.startTransaction();
-        const { _id, fcmToken } = args.signOutInput;
-        ctx.res.clearCookie('accessToken');
-        ctx.res.clearCookie('_id');
-        const user = await UserModel.findById(_id, {}, { session });
-        // _id에 해당하는 user 없음.
-        if (user === null) {
-          throw invalidUserIdError;
-        }
-        // notification 끄기 위해 fcmToken 삭제함.
-        if (fcmToken) {
-          // user fcmToken
-          user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
-          // room fcmToken
-          const promiseList: Promise<RoomDoc>[] = [];
-          const roomList = await RoomModel.find({ _id: { $in: user.roomIdList } }, {}, { session });
-          roomList.forEach((room) => {
-            room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
-            promiseList.push(room.save({ session }));
-          });
-          Promise.all(promiseList);
-        }
-        await user.save();
-        await session.commitTransaction();
-        return user;
+        await session.withTransaction(async () => {
+          const { _id, fcmToken } = args.signOutInput;
+          user = await UserModel.findById(_id, {}, { session });
+          // _id에 해당하는 user 없음.
+          if (user === null) {
+            throw invalidUserIdError;
+          }
+          // notification 끄기 위해 fcmToken 삭제함.
+          if (fcmToken) {
+            // user fcmToken
+            user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
+            // room fcmToken
+            const promiseList: Promise<RoomDoc>[] = [];
+            const roomList = await RoomModel.find(
+              { _id: { $in: user.roomIdList } },
+              {},
+              { session },
+            );
+            roomList.forEach((room) => {
+              room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
+              promiseList.push(room.save({ session }));
+            });
+            Promise.all(promiseList);
+          }
+          await user.save({ session });
+          // 유저 정보 쿠키에서 삭제함.
+          ctx.res.clearCookie('accessToken');
+          ctx.res.clearCookie('_id');
+        });
+        return user!;
       } catch (err) {
-        await session.abortTransaction();
         throw err;
       } finally {
         await session.endSession();
@@ -252,30 +270,28 @@ const resolvers: Resolvers = {
     },
     updateUser: async (_, args, ctx) => {
       const session = await startSession();
+      let user: UserDoc | null;
       try {
-        session.startTransaction();
-        const ranNum = Math.floor(Math.random() * 6);
-        const DEFAULT_PROFILE_URL = `https://example-jb-dummy.s3.ap-northeast-2.amazonaws.com/profiles/${ranNum}.png`;
-        const { _id, nickname, profileImageURL, profileThumbnailImageURL } = args.updateUserInput;
-        const user = await UserModel.findByIdAndUpdate(
-          _id,
-          {
-            nickname,
-            profileImageURL: profileImageURL || DEFAULT_PROFILE_URL,
-            profileThumbnailImageURL: profileThumbnailImageURL || DEFAULT_PROFILE_URL,
-          },
-          { new: true, session },
-        );
-        // 존재하지 않는 user _id임.
-        if (user === null) {
-          throw invalidUserIdError;
-        }
-
-        await session.commitTransaction();
-
-        return user;
+        await session.withTransaction(async () => {
+          const ranNum = Math.floor(Math.random() * 6);
+          const DEFAULT_PROFILE_URL = `https://example-jb-dummy.s3.ap-northeast-2.amazonaws.com/profiles/${ranNum}.png`;
+          const { _id, nickname, profileImageURL, profileThumbnailImageURL } = args.updateUserInput;
+          user = await UserModel.findByIdAndUpdate(
+            _id,
+            {
+              nickname,
+              profileImageURL: profileImageURL || DEFAULT_PROFILE_URL,
+              profileThumbnailImageURL: profileThumbnailImageURL || DEFAULT_PROFILE_URL,
+            },
+            { new: true, session },
+          );
+          // 존재하지 않는 user _id임.
+          if (user === null) {
+            throw invalidUserIdError;
+          }
+        });
+        return user!;
       } catch (err) {
-        await session.abortTransaction();
         throw err;
       } finally {
         await session.endSession();

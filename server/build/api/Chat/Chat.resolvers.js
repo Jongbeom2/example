@@ -8,8 +8,8 @@ const Chat_model_1 = __importDefault(require("../../models/Chat.model"));
 const pubsub_1 = require("../../apollo/pubsub");
 const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const ErrorObject_1 = require("../../error/ErrorObject");
-const colors_1 = __importDefault(require("colors"));
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
+const winston_1 = require("../../middlewares/winston");
 const resolvers = {
     Query: {
         getChatList: async (_, args, ctx) => {
@@ -100,7 +100,7 @@ const resolvers = {
         chatCreated: {
             subscribe: apollo_server_1.withFilter(() => {
                 return withCancel(pubsub_1.pubsub.asyncIterator('CHAT_CREATED'), () => {
-                    console.info(`## subscription cancel: ${colors_1.default.blue.bold('chatCreated')}`);
+                    winston_1.logger.info(`## subscription cancel: chatCreated`);
                 });
             }, (payload, variable) => {
                 const payloadRoomId = payload.chatCreated.roomId;

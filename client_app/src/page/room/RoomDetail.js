@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
 });
 const RoomDetail = ({route, navigation}) => {
-  const PAGE_SIZE = 15;
+  const PAGE_SIZE = 30;
   const roomId = route?.params.roomId;
   const userId = route?.params?.userId;
   const {colors} = useTheme();
@@ -271,13 +271,15 @@ const RoomDetail = ({route, navigation}) => {
     });
   };
   const onEndReached = () => {
-    getChatList({
-      variables: {
-        roomId,
-        skip: chatList.length,
-        size: PAGE_SIZE,
-      },
-    });
+    if (!lazyQueryLoading) {
+      getChatList({
+        variables: {
+          roomId,
+          skip: chatList.length,
+          size: PAGE_SIZE,
+        },
+      });
+    }
   };
   const onPressPlusBtn = () => {
     setIsPlusBtnPressed(prev => !prev);

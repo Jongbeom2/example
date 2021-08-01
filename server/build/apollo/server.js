@@ -10,6 +10,7 @@ const express_1 = __importDefault(require("../middlewares/express"));
 const schema_1 = require("../schema");
 const context_1 = require("./context");
 const colors_1 = __importDefault(require("colors"));
+const winston_1 = require("../middlewares/winston");
 const PORT = process.env.PORT;
 const apolloServer = new apollo_server_express_1.ApolloServer({
     schema: schema_1.schema,
@@ -19,32 +20,20 @@ const apolloServer = new apollo_server_express_1.ApolloServer({
         // path: '/subscriptions',
         // https://github.com/apollographql/subscriptions-transport-ws#constructoroptions-socketoptions--socketserver
         onConnect: (connectionParams, websocket, connectionContext) => {
-            console.info('## WebSocket Connected');
+            winston_1.logger.info('## WebSocket Connected');
             return { Headers: connectionContext.request.headers };
-            // if (connectionParams.authToken) {
-            //   return validateToken(connectionParams.authToken)
-            //     .then(findUser(connectionParams.authToken))
-            //     .then((user) => {
-            //       return {
-            //         currentUser: user,
-            //       };
-            //     });
-            // }
-            // throw new Error('Missing auth token!');
         },
         onDisconnect: (webSocket, context) => {
-            console.info('## WebSocket Disconnected');
+            winston_1.logger.info('## WebSocket Disconnected');
         },
         keepAlive: 3000,
     },
     formatError: (error) => {
         var _a;
-        console.group('\x1b[31m%s\x1b[0m', 'Server Error');
-        console.error('Path: ', error.path);
-        console.error('Message: ', error.message);
-        console.error('Code: ', (_a = error.extensions) === null || _a === void 0 ? void 0 : _a.code);
-        console.error('Original Error: ', error.originalError);
-        console.groupEnd();
+        winston_1.logger.error(`Path: ${error.path}`);
+        winston_1.logger.error(`Message: ${error.message}`);
+        winston_1.logger.error(`Code: ${(_a = error.extensions) === null || _a === void 0 ? void 0 : _a.code}`);
+        winston_1.logger.error(`Original Error: ${error.originalError}`);
         return error;
     },
     // https://stackoverflow.com/questions/59021384/how-to-pass-cookie-from-apollo-server-to-apollo-clenet
@@ -92,11 +81,9 @@ const startServer = () => {
     // ⚠️ Pay attention to the fact that we are calling 'listen' on the http server variable, and not on 'app'.
     // By the way, when subscription is not in use, app(the Express instance) usually calls listen method directly. e.g., app.listen(PORT, () => { });
     httpServer.listen(PORT, () => {
-        var _a, _b, _c;
-        console.log(`✔ Server ready at ${colors_1.default.blue.bold((_a = process.env.SERVER_DOMAIN) !== null && _a !== void 0 ? _a : '') +
-            colors_1.default.blue.bold(apolloServer.graphqlPath)}`);
-        console.log(`✔ Subscriptions ready at ${colors_1.default.blue.bold((_b = process.env.WEBSOCKET_SERVER_DOMAIN) !== null && _b !== void 0 ? _b : '') +
-            colors_1.default.blue.bold((_c = apolloServer.subscriptionsPath) !== null && _c !== void 0 ? _c : '')}`);
+        var _a;
+        winston_1.logger.info(`✔ Server ready at ${colors_1.default.blue.bold(apolloServer.graphqlPath)}`);
+        winston_1.logger.info(`✔ Subscriptions ready at ${colors_1.default.blue.bold((_a = apolloServer.subscriptionsPath) !== null && _a !== void 0 ? _a : '')}`);
     });
 };
 exports.startServer = startServer;
