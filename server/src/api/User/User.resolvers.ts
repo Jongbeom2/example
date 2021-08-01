@@ -105,7 +105,7 @@ const resolvers: Resolvers = {
           const { data } = await Axios.get(`https://kapi.kakao.com/v2/user/me`, {
             headers: { Authorization: `Bearer ${kakaoAccessToken}` },
           });
-          let user = await UserModel.findOne({ kakaoId: data.id }, {}, { session });
+          user = await UserModel.findOne({ kakaoId: data.id }, {}, { session });
           if (user === null) {
             user = await new UserModel({
               // data.kakao_account를 이용하면 다양한 정보를 가져올 수 있음
@@ -164,7 +164,7 @@ const resolvers: Resolvers = {
           const { identityToken, fcmToken } = args.signInWithAppleInput;
           // identityToken apple user 정보 가져옴.
           const appleIdTokenClaims = await appleSigninAuth.verifyIdToken(identityToken);
-          let user = await UserModel.findOne({ appleId: appleIdTokenClaims.sub }, {}, { session });
+          user = await UserModel.findOne({ appleId: appleIdTokenClaims.sub }, {}, { session });
           if (user === null) {
             user = await new UserModel({
               // appleIdTokenClaims을 이용하면 다양한 정보를 가져올 수 있음

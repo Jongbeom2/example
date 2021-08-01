@@ -99,7 +99,7 @@ const resolvers = {
                     const { data } = await axios_1.default.get(`https://kapi.kakao.com/v2/user/me`, {
                         headers: { Authorization: `Bearer ${kakaoAccessToken}` },
                     });
-                    let user = await User_model_1.default.findOne({ kakaoId: data.id }, {}, { session });
+                    user = await User_model_1.default.findOne({ kakaoId: data.id }, {}, { session });
                     if (user === null) {
                         user = await new User_model_1.default({
                             // data.kakao_account를 이용하면 다양한 정보를 가져올 수 있음
@@ -156,7 +156,7 @@ const resolvers = {
                     const { identityToken, fcmToken } = args.signInWithAppleInput;
                     // identityToken apple user 정보 가져옴.
                     const appleIdTokenClaims = await apple_signin_auth_1.default.verifyIdToken(identityToken);
-                    let user = await User_model_1.default.findOne({ appleId: appleIdTokenClaims.sub }, {}, { session });
+                    user = await User_model_1.default.findOne({ appleId: appleIdTokenClaims.sub }, {}, { session });
                     if (user === null) {
                         user = await new User_model_1.default({
                             // appleIdTokenClaims을 이용하면 다양한 정보를 가져올 수 있음

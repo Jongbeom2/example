@@ -9,7 +9,6 @@ const http_1 = __importDefault(require("http"));
 const express_1 = __importDefault(require("../middlewares/express"));
 const schema_1 = require("../schema");
 const context_1 = require("./context");
-const colors_1 = __importDefault(require("colors"));
 const winston_1 = require("../middlewares/winston");
 const PORT = process.env.PORT;
 const apolloServer = new apollo_server_express_1.ApolloServer({
@@ -82,8 +81,8 @@ const startServer = () => {
     // By the way, when subscription is not in use, app(the Express instance) usually calls listen method directly. e.g., app.listen(PORT, () => { });
     httpServer.listen(PORT, () => {
         var _a;
-        winston_1.logger.info(`✔ Server ready at ${colors_1.default.blue.bold(apolloServer.graphqlPath)}`);
-        winston_1.logger.info(`✔ Subscriptions ready at ${colors_1.default.blue.bold((_a = apolloServer.subscriptionsPath) !== null && _a !== void 0 ? _a : '')}`);
+        winston_1.logger.info(`✔ Server ready at ${apolloServer.graphqlPath}`);
+        winston_1.logger.info(`✔ Subscriptions ready at ${(_a = apolloServer.subscriptionsPath) !== null && _a !== void 0 ? _a : ''}`);
     });
 };
 exports.startServer = startServer;

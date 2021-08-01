@@ -90,10 +90,8 @@ const startServer = () => {
   // By the way, when subscription is not in use, app(the Express instance) usually calls listen method directly. e.g., app.listen(PORT, () => { });
 
   httpServer.listen(PORT, () => {
-    logger.info(`✔ Server ready at ${colors.blue.bold(apolloServer.graphqlPath)}`);
-    logger.info(
-      `✔ Subscriptions ready at ${colors.blue.bold(apolloServer.subscriptionsPath ?? '')}`,
-    );
+    logger.info(`✔ Server ready at ${apolloServer.graphqlPath}`);
+    logger.info(`✔ Subscriptions ready at ${apolloServer.subscriptionsPath ?? ''}`);
   });
 };
 
