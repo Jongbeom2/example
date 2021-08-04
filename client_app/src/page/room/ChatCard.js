@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {StyleSheet, View, Image, Alert} from 'react-native';
 import {Avatar, Button, Text, useTheme} from 'react-native-paper';
 import ChatCardImage from 'src/page/room/ChatCardImage';
@@ -14,7 +14,6 @@ import {
   MESSAGE_SUCCESS_ARCHIVE_CHAT,
   MESSAGE_TITLE,
 } from 'src/res/message';
-import {useState} from 'react/cjs/react.development';
 const styles = StyleSheet.create({
   systemChatRoot: {
     marginVertical: 5,
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
 const ChatCard = ({chat, userId}) => {
   const {colors} = useTheme();
   const authContext = useContext(AuthContext);
-  const [isArchived, setIsArchived] = useState(chat.isArchived);
+  const [isArchived, setIsArchived] = useState(false);
   // 신고
   const [
     archiveChat,
@@ -159,7 +158,7 @@ const ChatCard = ({chat, userId}) => {
   if (chat.user._id === userId) {
     return (
       <View style={styles.myChatRoot}>
-        {isArchived ? (
+        {isArchived || chat.isArchived ? (
           <Text
             style={[
               {
@@ -209,7 +208,7 @@ const ChatCard = ({chat, userId}) => {
       />
       <View style={styles.chatUserWrapper}>
         <Text style={styles.chatNickname}>{chat.user?.nickname}</Text>
-        {isArchived ? (
+        {isArchived || chat.isArchived ? (
           <Text
             style={[
               {

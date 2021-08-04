@@ -4,7 +4,10 @@ import UserModel, { UserDoc } from 'src/models/User.model';
 import Axios from 'axios';
 import { generateJWT } from 'src/lib/common';
 import appleSigninAuth from 'apple-signin-auth';
-import { COOKIE_DURATION_MILLISECONDS } from 'src/lib/const';
+import {
+  COOKIE_DURATION_MILLISECONDS,
+  COOKIE_REFRESH_TOKEN_DURATION_MILLISECONDS,
+} from 'src/lib/const';
 import {
   invalidUserEmailError,
   invalidUserIdError,
@@ -74,19 +77,12 @@ const resolvers: Resolvers = {
                 promiseList.push(room.save({ session }));
               }
             });
-            Promise.all(promiseList);
+            await Promise.all(promiseList);
           }
           // 유저 정보 저장함.
           await user.save({ session });
-          // access token 생성함.
-          const accessToken = generateJWT({
-            access: true,
-            my: {
-              userId: user._id,
-            },
-          });
           // 유저 정보 쿠키에 저장함.
-          saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
+          saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
         });
         return user!;
       } catch (err) {
@@ -138,15 +134,8 @@ const resolvers: Resolvers = {
             await Promise.all(promiseList);
           }
           await user.save({ session });
-          // access token 생성함.
-          const accessToken = generateJWT({
-            access: true,
-            my: {
-              userId: user._id,
-            },
-          });
           // 쿠키에 유저 정보 저장함.
-          saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
+          saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
         });
         return user!;
       } catch (err) {
@@ -195,15 +184,8 @@ const resolvers: Resolvers = {
             await Promise.all(promiseList);
           }
           await user.save({ session });
-          // access token 생성함.
-          const accessToken = generateJWT({
-            access: true,
-            my: {
-              userId: user._id,
-            },
-          });
           // 쿠키에 유저 정보 저장함.
-          saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
+          saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
         });
         return user!;
       } catch (err) {
@@ -239,11 +221,12 @@ const resolvers: Resolvers = {
               room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
               promiseList.push(room.save({ session }));
             });
-            Promise.all(promiseList);
+            await Promise.all(promiseList);
           }
           await user.save({ session });
           // 유저 정보 쿠키에서 삭제함.
           ctx.res.clearCookie('accessToken');
+          ctx.res.clearCookie('refreshToken');
           ctx.res.clearCookie('_id');
         });
         return user!;
@@ -297,36 +280,43 @@ const resolvers: Resolvers = {
         await session.endSession();
       }
     },
+    refreshAccessToken: async (_, args, ctx) => {
+      // refreshToken 유효하고, db refreshToken과 같으면 accessToken 발급
+      console.log(ctx.isRefreshTokenValid);
+      console.log(ctx.refreshToken);
+      return null;
+    },
   },
 };
 
 export default resolvers;
 
-const saveCookie = (
-  isNodeEnvDevelopment: boolean,
-  ctx: GraphqlContext,
-  accessToken: string,
-  userId: string,
-) => {
-  if (isNodeEnvDevelopment) {
-    ctx.res.cookie('accessToken', accessToken, {
-      maxAge: COOKIE_DURATION_MILLISECONDS,
-      httpOnly: true,
-    });
-    ctx.res.cookie('_id', userId, {
-      maxAge: COOKIE_DURATION_MILLISECONDS,
-      httpOnly: false,
-    });
-  } else {
-    ctx.res.cookie('accessToken', accessToken, {
-      maxAge: COOKIE_DURATION_MILLISECONDS,
-      httpOnly: true,
-      domain: '.jongbeom.com',
-    });
-    ctx.res.cookie('_id', userId, {
-      maxAge: COOKIE_DURATION_MILLISECONDS,
-      httpOnly: false,
-      domain: '.jongbeom.com',
-    });
-  }
+const saveCookie = (isNodeEnvDevelopment: boolean, ctx: GraphqlContext, userId: string) => {
+  const accessToken = generateJWT(
+    {
+      accessToken: true,
+    },
+    COOKIE_DURATION_MILLISECONDS,
+  );
+  const refreshToken = generateJWT(
+    {
+      refreshToken: true,
+    },
+    COOKIE_DURATION_MILLISECONDS,
+  );
+  ctx.res.cookie('accessToken', accessToken, {
+    maxAge: COOKIE_DURATION_MILLISECONDS,
+    httpOnly: true,
+    domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+  });
+  ctx.res.cookie('refreshToken', refreshToken, {
+    maxAge: COOKIE_REFRESH_TOKEN_DURATION_MILLISECONDS,
+    httpOnly: true,
+    domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+  });
+  ctx.res.cookie('_id', userId, {
+    maxAge: COOKIE_DURATION_MILLISECONDS,
+    httpOnly: false,
+    domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+  });
 };

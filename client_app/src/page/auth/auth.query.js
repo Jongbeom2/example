@@ -55,3 +55,11 @@ export const SIGNOUT = gql`
     }
   }
 `;
+
+export const REFRESH_ACCESS_TOKEN = gql`
+  mutation refreshAccessToken {
+    refreshAccessToken {
+      _id
+    }
+  }
+`;

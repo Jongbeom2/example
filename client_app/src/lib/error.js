@@ -8,3 +8,10 @@ export const isNotAuthorizedError = error => {
 export const isNotAuthorizedErrorSubscription = error => {
   return error?.message.includes('NOT_AUTHORIZED');
 };
+
+export const isNotAuthorizedNetworkError = networkError => {
+  return (
+    networkError?.message.includes('NOT_AUTHORIZED') ||
+    networkError?.result?.errors?.[0]?.extensions?.code === 'NOT_AUTHORIZED'
+  );
+};

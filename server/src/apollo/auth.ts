@@ -3,20 +3,22 @@ import { gql } from 'apollo-server-express';
 import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
 import { logger } from 'src/middlewares/winston';
 const decodeCookieToken = (cookieString: any) => {
-  let decoded: any;
+  let decodedAccessToken: any;
+  let decodedRefreshToken: any;
   let errorFields: string[] = [];
+  const cookieObject = parseCookie(cookieString);
+  const { accessToken, refreshToken } = cookieObject;
   try {
-    const cookieObject = parseCookie(cookieString);
-    const { accessToken } = cookieObject;
-
     if (accessToken) {
-      decoded = decodeJWT(accessToken);
+      decodedAccessToken = decodeJWT(accessToken);
     }
-  } catch (err) {
-    // If token value is manipulated or counterfeited, then cookie will be deleted
-    errorFields = ['accessToken'];
-  }
-  return { decoded, errorFields };
+  } catch (error) {}
+  try {
+    if (refreshToken) {
+      decodedRefreshToken = decodeJWT(refreshToken);
+    }
+  } catch (error) {}
+  return { decodedAccessToken, decodedRefreshToken, errorFields };
 };
 
 export const auth = (req: any, res: any) => {
@@ -42,36 +44,37 @@ export const auth = (req: any, res: any) => {
     logger.info(`## query: ${queryName}`);
   }
 
+  // token verification
+  const { decodedAccessToken, decodedRefreshToken, errorFields } = decodeCookieToken(
+    req.headers.cookie || '',
+  );
+
+  // If unauthorized request, then throw error
   const queryWhiteList = [
     'createUser',
     'signIn',
     'signInWithKakao',
     'signInWithApple',
     'signOut',
+    'refreshAccessToken',
     'getNow',
   ];
-
-  if (queryWhiteList.includes(queryName)) {
-    return {};
-  }
-
-  // Access token verification
-  const { decoded, errorFields } = decodeCookieToken(req.headers.cookie);
-  errorFields.forEach((field) => res.clearCookie(field));
-
-  // If unauthorized request, then throw error
-  if (!decoded?.my) {
-    if (process.env.NODE_ENV === 'production') {
-      throw notAuthorizedError;
-    } else if (process.env.NODE_ENV === 'development') {
-      throw notAuthorizedError;
-    } else {
-      throw environmentError;
+  if (!queryWhiteList.includes(queryName)) {
+    if (!decodedAccessToken?.accessToken) {
+      if (process.env.NODE_ENV === 'production') {
+        throw notAuthorizedError;
+      } else if (process.env.NODE_ENV === 'development') {
+        throw notAuthorizedError;
+      } else {
+        throw environmentError;
+      }
     }
-    return {};
   }
 
-  return decoded.my;
+  return {
+    isRefreshTokenValid: decodedRefreshToken?.refreshToken || false,
+    refreshToken: parseCookie(req.headers.cookie || '')?.refreshToken || '',
+  };
 };
 
 export const authSocket = (headers: any, query: any) => {
@@ -86,24 +89,26 @@ export const authSocket = (headers: any, query: any) => {
     logger.info(`## subscription: ${queryName}`);
   }
 
-  const queryWhiteList = [''];
-  if (queryWhiteList.includes(queryName)) {
-    return {};
-  }
-
-  const { decoded, errorFields } = decodeCookieToken(headers.cookie);
+  const { decodedAccessToken, decodedRefreshToken, errorFields } = decodeCookieToken(
+    headers.cookie || '',
+  );
 
   // If unauthorized request, then throw error
-  if (!decoded?.my) {
-    if (process.env.NODE_ENV === 'production') {
-      throw notAuthorizedError;
-    } else if (process.env.NODE_ENV === 'development') {
-      throw notAuthorizedError;
-    } else {
-      throw environmentError;
+  const queryWhiteList = [''];
+  if (!queryWhiteList.includes(queryName)) {
+    if (!decodedAccessToken?.accessToken) {
+      if (process.env.NODE_ENV === 'production') {
+        throw notAuthorizedError;
+      } else if (process.env.NODE_ENV === 'development') {
+        throw notAuthorizedError;
+      } else {
+        throw environmentError;
+      }
     }
-    return {};
   }
 
-  return decoded.my;
+  return {
+    isRefreshTokenValid: decodedRefreshToken?.refreshToken || false,
+    refreshToken: parseCookie(headers.cookie || '')?.refreshToken || '',
+  };
 };

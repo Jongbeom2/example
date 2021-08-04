@@ -1,10 +1,11 @@
-import RoomModel from 'src/models/Room.model';
-import { ApolloError } from 'apollo-server';
+import RoomModel, { RoomDoc } from 'src/models/Room.model';
 import { Resolvers } from 'src/types/graphql';
 import UserModel from 'src/models/User.model';
 import { invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
 import ChatModel from 'src/models/Chat.model';
 import { pubsub } from 'src/apollo/pubsub';
+import { startSession } from 'mongoose';
+
 const resolvers: Resolvers = {
   Query: {
     getRoom: async (_, args, ctx) => {
@@ -64,68 +65,90 @@ const resolvers: Resolvers = {
       return room;
     },
     updateUserAddRoom: async (_, args, ctx) => {
-      const { userId, roomId } = args.updateUserAddRoomInput;
-      // user 조회
-      const user = await UserModel.findById(userId);
-      if (user === null) {
-        throw invalidUserIdError;
+      const session = await startSession();
+      let room: RoomDoc | null;
+      try {
+        await session.withTransaction(async () => {
+          const { userId, roomId } = args.updateUserAddRoomInput;
+          // user 조회
+          const user = await UserModel.findById(userId, {}, { session });
+          if (user === null) {
+            throw invalidUserIdError;
+          }
+          // room 수정
+          room = await RoomModel.findById(roomId, {}, { session });
+          if (room === null) {
+            throw invalidRoomIdError;
+          }
+          room.userIdList.push(userId);
+          room.userNum++;
+          room.fcmTokenList = [...room.fcmTokenList, ...user.fcmTokenList];
+          await room.save({ session });
+          // user 수정
+          user.roomIdList.push(room._id);
+          await user.save({ session });
+          // chat 추가
+          const chat = await new ChatModel({
+            roomId,
+            userId,
+            isSystem: true,
+            content: '님이 입장하셨습니다.',
+          }).save({ session });
+          // publish
+          pubsub.publish('CHAT_CREATED', {
+            chatCreated: chat,
+          });
+        });
+      } catch (err) {
+        throw err;
+      } finally {
+        await session.endSession();
       }
-      // room 수정
-      const room = await RoomModel.findById(roomId);
-      if (room === null) {
-        throw invalidRoomIdError;
-      }
-      room.userIdList.push(userId);
-      room.userNum++;
-      room.fcmTokenList = [...room.fcmTokenList, ...user.fcmTokenList];
-      await room.save();
-      // user 수정
-      user.roomIdList.push(room._id);
-      await user.save();
-      // chat 추가
-      const chat = await new ChatModel({
-        roomId,
-        userId,
-        isSystem: true,
-        content: '님이 입장하셨습니다.',
-      }).save();
-      // publish
-      pubsub.publish('CHAT_CREATED', {
-        chatCreated: chat,
-      });
-      return room;
+      return room!;
     },
     updateUserRemoveRoom: async (_, args, ctx) => {
-      const { userId, roomId } = args.updateUserRemoveRoomInput;
-      // user 조회
-      const user = await UserModel.findById(userId);
-      if (user === null) {
-        throw invalidUserIdError;
+      const session = await startSession();
+      let room: RoomDoc | null;
+      try {
+        await session.withTransaction(async () => {
+          const { userId, roomId } = args.updateUserRemoveRoomInput;
+          // user 조회
+          const user = await UserModel.findById(userId, {}, { session });
+          if (user === null) {
+            throw invalidUserIdError;
+          }
+          // room 수정
+          room = await RoomModel.findById(roomId, {}, { session });
+          if (room === null) {
+            throw invalidRoomIdError;
+          }
+          room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
+          room.userNum--;
+          room.fcmTokenList = room.fcmTokenList.filter(
+            (ele) => user.fcmTokenList.indexOf(ele) === -1,
+          );
+          await room.save({ session });
+          // user 수정
+          user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
+          await user.save({ session });
+          // chat 추가
+          const chat = await new ChatModel({
+            roomId,
+            userId,
+            isSystem: true,
+            content: '님이 퇴장하셨습니다.',
+          }).save({ session });
+          // publish
+          pubsub.publish('CHAT_CREATED', {
+            chatCreated: chat,
+          });
+        });
+      } catch (err) {
+        throw err;
+      } finally {
+        await session.endSession();
       }
-      // room 수정
-      const room = await RoomModel.findById(roomId);
-      if (room === null) {
-        throw invalidRoomIdError;
-      }
-      room.userIdList = room.userIdList.filter((ele) => ele.toString() !== userId.toString());
-      room.userNum--;
-      room.fcmTokenList = room.fcmTokenList.filter((ele) => user.fcmTokenList.indexOf(ele) === -1);
-      await room.save();
-      // user 수정
-      user.roomIdList = user.roomIdList.filter((ele) => ele.toString() !== roomId.toString());
-      await user.save();
-      // chat 추가
-      const chat = await new ChatModel({
-        roomId,
-        userId,
-        isSystem: true,
-        content: '님이 퇴장하셨습니다.',
-      }).save();
-      // publish
-      pubsub.publish('CHAT_CREATED', {
-        chatCreated: chat,
-      });
-      return room;
+      return room!;
     },
   },
 };
