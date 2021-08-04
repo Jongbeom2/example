@@ -1,27 +1,36 @@
-import { decodeJWT, parseCookie } from 'src/lib/common';
+import { DecodedJWT, decodeJWT, parseCookie } from 'src/lib/common';
 import { gql } from 'apollo-server-express';
 import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
 import { logger } from 'src/middlewares/winston';
-const decodeCookieToken = (cookieString: any) => {
-  let decodedAccessToken: any;
-  let decodedRefreshToken: any;
-  let errorFields: string[] = [];
-  const cookieObject = parseCookie(cookieString);
-  const { accessToken, refreshToken } = cookieObject;
+
+type DecodeCookieTokenFunction = (
+  cookieString: string,
+) => { decodedAccessToken?: DecodedJWT; decodedRefreshToken?: DecodedJWT };
+
+const decodeCookieToken: DecodeCookieTokenFunction = (cookieString) => {
+  let decodedAccessToken;
+  let decodedRefreshToken;
+  const { accessToken, refreshToken } = parseCookie(cookieString);
   try {
     if (accessToken) {
       decodedAccessToken = decodeJWT(accessToken);
     }
-  } catch (error) {}
+  } catch (err) {
+    throw new Error(err);
+  }
   try {
     if (refreshToken) {
       decodedRefreshToken = decodeJWT(refreshToken);
     }
-  } catch (error) {}
-  return { decodedAccessToken, decodedRefreshToken, errorFields };
+  } catch (err) {
+    throw new Error(err);
+  }
+  return { decodedAccessToken, decodedRefreshToken };
 };
 
-export const auth = (req: any, res: any) => {
+type AuthFunction = (req: any, res: any) => { isRefreshTokenValid: boolean; refreshToken: string };
+
+export const auth: AuthFunction = (req, res) => {
   /**
    * case 1: 로그인 요청 쿼리일때
    * query name으로 로그인 요청 쿼리 구분
@@ -45,9 +54,7 @@ export const auth = (req: any, res: any) => {
   }
 
   // token verification
-  const { decodedAccessToken, decodedRefreshToken, errorFields } = decodeCookieToken(
-    req.headers.cookie || '',
-  );
+  const { decodedAccessToken, decodedRefreshToken } = decodeCookieToken(req.headers.cookie || '');
 
   // If unauthorized request, then throw error
   const queryWhiteList = [
@@ -60,7 +67,7 @@ export const auth = (req: any, res: any) => {
     'getNow',
   ];
   if (!queryWhiteList.includes(queryName)) {
-    if (!decodedAccessToken?.accessToken) {
+    if (!decodedAccessToken) {
       if (process.env.NODE_ENV === 'production') {
         throw notAuthorizedError;
       } else if (process.env.NODE_ENV === 'development') {
@@ -73,11 +80,16 @@ export const auth = (req: any, res: any) => {
 
   return {
     isRefreshTokenValid: decodedRefreshToken?.refreshToken || false,
-    refreshToken: parseCookie(req.headers.cookie || '')?.refreshToken || '',
+    refreshToken: parseCookie(req.headers.cookie || '').refreshToken || '',
   };
 };
 
-export const authSocket = (headers: any, query: any) => {
+type AuthSocketFunction = (
+  headers: any,
+  query: any,
+) => { isRefreshTokenValid: boolean; refreshToken: string };
+
+export const authSocket: AuthSocketFunction = (headers, query) => {
   const gqlObject = gql`
     ${query}
   `;
@@ -89,14 +101,12 @@ export const authSocket = (headers: any, query: any) => {
     logger.info(`## subscription: ${queryName}`);
   }
 
-  const { decodedAccessToken, decodedRefreshToken, errorFields } = decodeCookieToken(
-    headers.cookie || '',
-  );
+  const { decodedAccessToken, decodedRefreshToken } = decodeCookieToken(headers.cookie || '');
 
   // If unauthorized request, then throw error
   const queryWhiteList = [''];
   if (!queryWhiteList.includes(queryName)) {
-    if (!decodedAccessToken?.accessToken) {
+    if (!decodedAccessToken) {
       if (process.env.NODE_ENV === 'production') {
         throw notAuthorizedError;
       } else if (process.env.NODE_ENV === 'development') {
@@ -109,6 +119,6 @@ export const authSocket = (headers: any, query: any) => {
 
   return {
     isRefreshTokenValid: decodedRefreshToken?.refreshToken || false,
-    refreshToken: parseCookie(headers.cookie || '')?.refreshToken || '',
+    refreshToken: parseCookie(headers.cookie || '').refreshToken || '',
   };
 };

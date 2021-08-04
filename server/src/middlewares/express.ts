@@ -1,10 +1,8 @@
 import express from 'express';
 import corsMiddleware from 'src/middlewares/cors';
 import routerMiddleware from 'src/middlewares/router';
-// import cookieParser from 'cookie-parser';
 
 const app = express().use(corsMiddleware()).use(routerMiddleware());
-// .use(cookieParser());
 export default app;
 
 // <cookie options>
