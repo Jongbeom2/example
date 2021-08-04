@@ -66,4 +66,4 @@ const splitedLink = split(
 );
 
 // compose
-export const link = from([errorLink, splitedLink]);
+export const link = from([splitedLink]);
