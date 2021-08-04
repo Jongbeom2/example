@@ -294,7 +294,7 @@ const SignIn = ({navigation}) => {
             ]}
             onPress={onClickAppleSignInBtn}
             uppercase={false}>
-            Apple로 로그인
+             Apple로 로그인
           </Button>
         )}
       </View>
