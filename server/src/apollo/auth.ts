@@ -1,11 +1,10 @@
-import { DecodedJWT, decodeJWT, parseCookie } from 'src/lib/common';
+import { decodeJWT, parseCookie } from 'src/lib/common';
 import { gql } from 'apollo-server-express';
 import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
 import { logger } from 'src/middlewares/winston';
+import express from 'express';
 
-type DecodeCookieTokenFunction = (
-  cookieString: string,
-) => { decodedAccessToken?: DecodedJWT; decodedRefreshToken?: DecodedJWT };
+type DecodeCookieTokenFunction = (cookieString: string) => any;
 
 const decodeCookieToken: DecodeCookieTokenFunction = (cookieString) => {
   let decodedAccessToken;

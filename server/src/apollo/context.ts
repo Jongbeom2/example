@@ -30,9 +30,9 @@ const loaders = {
   },
 };
 
-const websocketContext = (connection: any, payload: any) => {
-  // preserve until websocket disconnected
-  // connection.context; // this is the context which insert to onConnect triggered
+// Websocket Context
+type WebsocketContextFunction = (connection: any, payload: any) => GraphqlContext;
+const websocketContext: WebsocketContextFunction = (connection, payload) => {
   const { isRefreshTokenValid, refreshToken } = authSocket(
     connection.context.Headers,
     payload.query,
@@ -40,17 +40,24 @@ const websocketContext = (connection: any, payload: any) => {
   return { isRefreshTokenValid, refreshToken, loaders };
 };
 
-// "context", "argument" variable names are different depends on Server Framework types.
-// e.g., in Express, variable names are "req" and "res" but in Koa, Lambda, names are "request" and "response".
-
-const graphqlContext = (req: any, res: any) => {
+// Graphql Context
+type GrahpqlContextFunction = (req: any, res: any) => GraphqlContext;
+const graphqlContext: GrahpqlContextFunction = (req, res) => {
   const { isRefreshTokenValid, refreshToken } = auth(req, res);
   return { req, res, isRefreshTokenValid, refreshToken, loaders };
 };
 
-export const context = async (ctx: any) => {
+// Context
+type ContextFunction = (context: ContextFunctionParams) => GraphqlContext;
+type ContextFunctionParams = {
+  req?: any;
+  res?: any;
+  connection?: any;
+  payload?: any;
+};
+export const context: ContextFunction = (ctx) => {
   const { req, res, connection, payload } = ctx;
-  if (connection) {
+  if (connection && payload) {
     return websocketContext(connection, payload);
   } else if (req && res) {
     return graphqlContext(req, res);
@@ -60,8 +67,10 @@ export const context = async (ctx: any) => {
 };
 
 export interface GraphqlContext {
-  isRefreshTokenValid?: any;
-  refreshToken?: any;
+  req?: any;
+  res?: any;
+  isRefreshTokenValid?: boolean;
+  refreshToken?: string;
   loaders: {
     user: {
       byId: DataLoader<string, UserDoc>;
@@ -71,7 +80,4 @@ export interface GraphqlContext {
       byId: DataLoader<string, RoomDoc>;
     };
   };
-  req: any;
-  res: any;
-  session: any;
 }

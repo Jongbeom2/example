@@ -28,19 +28,14 @@ export const generateJWT: GenerateJWTFunction = (payload: object, duration: numb
   });
 };
 
-type DecodeJWTFunction = (token: string) => DecodedJWT;
-
-export interface DecodedJWT {
-  refreshToken?: boolean;
-  accessToken?: boolean;
-}
+type DecodeJWTFunction = (token: string) => any;
 
 export const decodeJWT: DecodeJWTFunction = (token) => {
   if (token.startsWith('Bearer ')) {
     token = token.split('Bearer ').join('');
   }
   // jwt.verify의 return type을 설정하는 방법이 없음
-  return jwt.verify(token, process.env.JWT_SECRET_KEY || '') as DecodedJWT;
+  return jwt.verify(token, process.env.JWT_SECRET_KEY || '') as any;
 };
 
 type ParseCookieFunction = (cookieString: string) => CookieType;

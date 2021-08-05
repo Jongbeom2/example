@@ -225,9 +225,9 @@ const resolvers: Resolvers = {
           }
           await user.save({ session });
           // 유저 정보 쿠키에서 삭제함.
-          ctx.res.clearCookie('accessToken');
-          ctx.res.clearCookie('refreshToken');
-          ctx.res.clearCookie('_id');
+          ctx.res?.clearCookie('accessToken');
+          ctx.res?.clearCookie('refreshToken');
+          ctx.res?.clearCookie('_id');
         });
         return user!;
       } catch (err) {
@@ -304,17 +304,17 @@ const saveCookie = (isNodeEnvDevelopment: boolean, ctx: GraphqlContext, userId: 
     },
     COOKIE_DURATION_MILLISECONDS,
   );
-  ctx.res.cookie('accessToken', accessToken, {
+  ctx.res?.cookie('accessToken', accessToken, {
     maxAge: COOKIE_DURATION_MILLISECONDS,
     httpOnly: true,
     domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
   });
-  ctx.res.cookie('refreshToken', refreshToken, {
+  ctx.res?.cookie('refreshToken', refreshToken, {
     maxAge: COOKIE_REFRESH_TOKEN_DURATION_MILLISECONDS,
     httpOnly: true,
     domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
   });
-  ctx.res.cookie('_id', userId, {
+  ctx.res?.cookie('_id', userId, {
     maxAge: COOKIE_DURATION_MILLISECONDS,
     httpOnly: false,
     domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',

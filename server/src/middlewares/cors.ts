@@ -1,5 +1,4 @@
 import cors from 'cors';
-import colors from 'colors';
 import { corsError, environmentError } from 'src/error/ErrorObject';
 import { logger } from 'src/middlewares/winston';
 

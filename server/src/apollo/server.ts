@@ -3,10 +3,9 @@ import http from 'http';
 import app from 'src/middlewares/express';
 import { schema } from 'src/schema';
 import { context } from 'src/apollo/context';
-import colors from 'colors';
 import { logger } from 'src/middlewares/winston';
 
-const PORT: string | undefined = process.env.PORT;
+const PORT = process.env.PORT || 3200;
 const apolloServer = new ApolloServer({
   schema,
   context,
