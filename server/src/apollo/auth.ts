@@ -2,7 +2,6 @@ import { decodeJWT, parseCookie } from 'src/lib/common';
 import { gql } from 'apollo-server-express';
 import { environmentError, notAuthorizedError } from 'src/error/ErrorObject';
 import { logger } from 'src/middlewares/winston';
-import express from 'express';
 
 type DecodeCookieTokenFunction = (cookieString: string) => any;
 
@@ -27,7 +26,7 @@ const decodeCookieToken: DecodeCookieTokenFunction = (cookieString) => {
   return { decodedAccessToken, decodedRefreshToken };
 };
 
-type AuthFunction = (req: any, res: any) => { isRefreshTokenValid: boolean; refreshToken: string };
+type AuthFunction = (req: any, res: any) => { userId: string; refreshToken: string };
 
 export const auth: AuthFunction = (req, res) => {
   /**
@@ -76,17 +75,16 @@ export const auth: AuthFunction = (req, res) => {
       }
     }
   }
-
+  const isRefreshTokenValid = Boolean(decodedRefreshToken?.userId);
   return {
-    isRefreshTokenValid: decodedRefreshToken?.refreshToken || false,
-    refreshToken: parseCookie(req.headers.cookie || '').refreshToken || '',
+    userId: isRefreshTokenValid ? decodedRefreshToken.userId : '',
+    refreshToken: isRefreshTokenValid
+      ? parseCookie(req.headers.cookie || '').refreshToken || ''
+      : '',
   };
 };
 
-type AuthSocketFunction = (
-  headers: any,
-  query: any,
-) => { isRefreshTokenValid: boolean; refreshToken: string };
+type AuthSocketFunction = (headers: any, query: any) => { userId: string; refreshToken: string };
 
 export const authSocket: AuthSocketFunction = (headers, query) => {
   const gqlObject = gql`
@@ -116,8 +114,9 @@ export const authSocket: AuthSocketFunction = (headers, query) => {
     }
   }
 
+  const isRefreshTokenValid = Boolean(decodedRefreshToken?.userId);
   return {
-    isRefreshTokenValid: decodedRefreshToken?.refreshToken || false,
-    refreshToken: parseCookie(headers.cookie || '').refreshToken || '',
+    userId: isRefreshTokenValid ? decodedRefreshToken.userId : '',
+    refreshToken: isRefreshTokenValid ? parseCookie(headers.cookie || '').refreshToken || '' : '',
   };
 };

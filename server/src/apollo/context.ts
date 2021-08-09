@@ -33,18 +33,15 @@ const loaders = {
 // Websocket Context
 type WebsocketContextFunction = (connection: any, payload: any) => GraphqlContext;
 const websocketContext: WebsocketContextFunction = (connection, payload) => {
-  const { isRefreshTokenValid, refreshToken } = authSocket(
-    connection.context.Headers,
-    payload.query,
-  );
-  return { isRefreshTokenValid, refreshToken, loaders };
+  const { userId, refreshToken } = authSocket(connection.context.Headers, payload.query);
+  return { userId, refreshToken, loaders };
 };
 
 // Graphql Context
 type GrahpqlContextFunction = (req: any, res: any) => GraphqlContext;
 const graphqlContext: GrahpqlContextFunction = (req, res) => {
-  const { isRefreshTokenValid, refreshToken } = auth(req, res);
-  return { req, res, isRefreshTokenValid, refreshToken, loaders };
+  const { userId, refreshToken } = auth(req, res);
+  return { req, res, userId, refreshToken, loaders };
 };
 
 // Context
@@ -69,8 +66,8 @@ export const context: ContextFunction = (ctx) => {
 export interface GraphqlContext {
   req?: any;
   res?: any;
-  isRefreshTokenValid?: boolean;
-  refreshToken?: string;
+  userId: string;
+  refreshToken: string;
   loaders: {
     user: {
       byId: DataLoader<string, UserDoc>;

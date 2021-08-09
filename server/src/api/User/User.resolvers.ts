@@ -79,10 +79,16 @@ const resolvers: Resolvers = {
             });
             await Promise.all(promiseList);
           }
+          // 쿠키값 저장함.
+          const { refreshToken } = saveCookie(
+            process.env.NODE_ENV === 'development',
+            ctx,
+            user._id.toString(),
+          );
+          // token refresh를 위해 refresh token 저장함.
+          user.refreshToken = refreshToken;
           // 유저 정보 저장함.
           await user.save({ session });
-          // 유저 정보 쿠키에 저장함.
-          saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
         });
         return user!;
       } catch (err) {
@@ -133,9 +139,16 @@ const resolvers: Resolvers = {
             });
             await Promise.all(promiseList);
           }
+          // 쿠키값 저장함.
+          const { refreshToken } = saveCookie(
+            process.env.NODE_ENV === 'development',
+            ctx,
+            user._id.toString(),
+          );
+          // token refresh를 위해 refresh token 저장함.
+          user.refreshToken = refreshToken;
+          // 유저 정보 저장함.
           await user.save({ session });
-          // 쿠키에 유저 정보 저장함.
-          saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
         });
         return user!;
       } catch (err) {
@@ -183,9 +196,16 @@ const resolvers: Resolvers = {
             });
             await Promise.all(promiseList);
           }
+          // 쿠키값 저장함.
+          const { refreshToken } = saveCookie(
+            process.env.NODE_ENV === 'development',
+            ctx,
+            user._id.toString(),
+          );
+          // token refresh를 위해 refresh token 저장함.
+          user.refreshToken = refreshToken;
+          // 유저 정보 저장함.
           await user.save({ session });
-          // 쿠키에 유저 정보 저장함.
-          saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
         });
         return user!;
       } catch (err) {
@@ -223,8 +243,9 @@ const resolvers: Resolvers = {
             });
             await Promise.all(promiseList);
           }
+          // 유저 정보 저장함.
           await user.save({ session });
-          // 유저 정보 쿠키에서 삭제함.
+          // 쿠키 삭제함.
           ctx.res?.clearCookie('accessToken');
           ctx.res?.clearCookie('refreshToken');
           ctx.res?.clearCookie('_id');
@@ -281,26 +302,41 @@ const resolvers: Resolvers = {
       }
     },
     refreshAccessToken: async (_, args, ctx) => {
-      // refreshToken 유효하고, db refreshToken과 같으면 accessToken 발급
-      console.log(ctx.isRefreshTokenValid);
-      console.log(ctx.refreshToken);
-      return null;
+      if (ctx.userId) {
+        // 토큰을 재발급하기 위해서는 refreshToken이 유효해야하고 user의 refreshToken과 일치해야함.
+        // 조건을 만족하는 경우만 accessToken을 발급함.
+        const user = await UserModel.findById(ctx.userId);
+        // _id에 해당하는 user 없음.
+        if (user === null) {
+          throw invalidUserIdError;
+        }
+        if (user.refreshToken === ctx.refreshToken) {
+          refreshCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
+        }
+        return user;
+      } else {
+        return null;
+      }
     },
   },
 };
 
 export default resolvers;
 
-const saveCookie = (isNodeEnvDevelopment: boolean, ctx: GraphqlContext, userId: string) => {
+const saveCookie = (
+  isNodeEnvDevelopment: boolean,
+  ctx: GraphqlContext,
+  userId: string,
+): { accessToken: string; refreshToken: string } => {
   const accessToken = generateJWT(
     {
-      accessToken: true,
+      userId,
     },
     COOKIE_DURATION_MILLISECONDS,
   );
   const refreshToken = generateJWT(
     {
-      refreshToken: true,
+      userId,
     },
     COOKIE_DURATION_MILLISECONDS,
   );
@@ -319,4 +355,34 @@ const saveCookie = (isNodeEnvDevelopment: boolean, ctx: GraphqlContext, userId: 
     httpOnly: false,
     domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
   });
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
+
+const refreshCookie = (
+  isNodeEnvDevelopment: boolean,
+  ctx: GraphqlContext,
+  userId: string,
+): { accessToken: string } => {
+  const accessToken = generateJWT(
+    {
+      userId,
+    },
+    COOKIE_DURATION_MILLISECONDS,
+  );
+  ctx.res?.cookie('accessToken', accessToken, {
+    maxAge: COOKIE_DURATION_MILLISECONDS,
+    httpOnly: true,
+    domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+  });
+  ctx.res?.cookie('_id', userId, {
+    maxAge: COOKIE_DURATION_MILLISECONDS,
+    httpOnly: false,
+    domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+  });
+  return {
+    accessToken,
+  };
 };

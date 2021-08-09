@@ -38,6 +38,9 @@ export const UserSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true },
 );
@@ -55,6 +58,7 @@ interface User {
   appleId?: string;
   roomIdList: string[];
   fcmTokenList: string[];
+  refreshToken?: string;
 }
 
 export interface UserDoc extends User, Document {}
