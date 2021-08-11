@@ -81,6 +81,7 @@ const RoomDetail = ({route, navigation}) => {
   let flatlistRef = useRef();
   const [content, setContent] = useState('');
   const [chatList, setChatList] = useState([]);
+  const [lastId, setLastId] = useState(null);
   const [chatFile, setChatFile] = useState(null);
   const [isPlusBtnPressed, setIsPlusBtnPressed] = useState(false);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
@@ -125,7 +126,6 @@ const RoomDetail = ({route, navigation}) => {
     getChatList({
       variables: {
         roomId,
-        skip: 0,
         size: PAGE_SIZE,
       },
     });
@@ -137,6 +137,12 @@ const RoomDetail = ({route, navigation}) => {
         ...preChatList,
         ...lazyQueryData.getChatList,
       ]);
+      const chatListLength = lazyQueryData.getChatList.length;
+      if (chatListLength) {
+        setLastId(
+          lazyQueryData.getChatList[lazyQueryData.getChatList.length - 1]._id,
+        );
+      }
     }
   }, [lazyQueryData, lazyQueryError, setChatList]);
   // 대화 로드 실패
@@ -180,46 +186,7 @@ const RoomDetail = ({route, navigation}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [lazyQueryError2, authContext]);
-  // presignedURL을 이용하여 이미지 및 파일 업로드하는 함수
-  const uplaodFile = useCallback(
-    async presignedURL => {
-      try {
-        // Presigned put url을 이용하여 업로드
-        const file = await getBlob(chatFile.uri);
-        const result = await fetch(presignedURL, {
-          method: 'PUT',
-          body: file,
-        });
-        const url = result.url.split('?')[0];
-        const type = file.data.type.split('/')[0];
-        const name = file.data.name;
-        if (type === 'image') {
-          // 리사이즈된 이미지가 확인되면 그때 채팅 생성
-          setThumbnailImageURL(
-            url.replace('example-jb', 'example-jb-thumbnail'),
-          );
-          setIsImageResizing(true);
-        } else {
-          createChat({
-            variables: {
-              createChatInput: {
-                roomId,
-                userId,
-                content: '파일',
-                fileURL: url,
-                fileName: name,
-              },
-            },
-          });
-          setIsUploadLoading(false);
-        }
-      } catch (error) {
-        Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
-      }
-    },
-    [chatFile, createChat, userId, roomId],
-  );
-  // 썸네일 이미지 생성되면 그때 이미지 채팅 생성하는 muation 호출하도록 설정
+  // 6. 썸네일 이미지 생성되면 그때 이미지 채팅 생성하는 muation 호출하도록 설정
   useEffect(() => {
     if (isImageResizing) {
       setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
@@ -250,6 +217,47 @@ const RoomDetail = ({route, navigation}) => {
       clearInterval(intervalRef.current);
     };
   }, [thumbnailImageURL, isImageResizing, createChat, roomId, userId]);
+  // presignedURL을 이용하여 이미지 및 파일 업로드하는 함수
+  const uplaodFile = useCallback(
+    async presignedURL => {
+      try {
+        // Presigned put url을 이용하여 업로드
+        const file = await getBlob(chatFile.uri);
+        const result = await fetch(presignedURL, {
+          method: 'PUT',
+          body: file,
+        });
+        const url = result.url.split('?')[0];
+        const type = file.data.type.split('/')[0];
+        const name = file.data.name;
+        if (type === 'image') {
+          // 사진인 경우 업로드 하더라도 리사이즈된 이미지가 확인되면 그때 채팅 생성
+          // 이를 위해 imageResizing state true로 설정
+          setThumbnailImageURL(
+            url.replace('example-jb', 'example-jb-thumbnail'),
+          );
+          setIsImageResizing(true);
+        } else {
+          // 파일인 경우 업로드만 하면 되므로 채팅 생성
+          createChat({
+            variables: {
+              createChatInput: {
+                roomId,
+                userId,
+                content: '파일',
+                fileURL: url,
+                fileName: name,
+              },
+            },
+          });
+          setIsUploadLoading(false);
+        }
+      } catch (error) {
+        Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
+      }
+    },
+    [chatFile, createChat, userId, roomId],
+  );
   const onChangeContent = text => {
     setContent(text);
   };
@@ -275,7 +283,7 @@ const RoomDetail = ({route, navigation}) => {
       getChatList({
         variables: {
           roomId,
-          skip: chatList.length,
+          lastId,
           size: PAGE_SIZE,
         },
       });

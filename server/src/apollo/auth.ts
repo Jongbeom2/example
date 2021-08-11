@@ -69,7 +69,7 @@ export const auth: AuthFunction = (req, res) => {
       if (process.env.NODE_ENV === 'production') {
         throw notAuthorizedError;
       } else if (process.env.NODE_ENV === 'development') {
-        throw notAuthorizedError;
+        // throw notAuthorizedError;
       } else {
         throw environmentError;
       }
@@ -107,7 +107,7 @@ export const authSocket: AuthSocketFunction = (headers, query) => {
       if (process.env.NODE_ENV === 'production') {
         throw notAuthorizedError;
       } else if (process.env.NODE_ENV === 'development') {
-        throw notAuthorizedError;
+        // throw notAuthorizedError;
       } else {
         throw environmentError;
       }

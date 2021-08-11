@@ -1,5 +1,5 @@
 type Query {
-  getChatList(roomId: ID!, skip: Int!, size: Int!): [Chat!]!
+  getChatList(roomId: ID!, lastId: ID, size: Int!): [Chat!]!
 }
 
 type Chat {

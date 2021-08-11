@@ -4,17 +4,15 @@ import { Resolvers } from 'src/types/graphql';
 import { pubsub } from 'src/apollo/pubsub';
 import RoomModel from 'src/models/Room.model';
 import { invalidChatIdError, invalidRoomIdError, invalidUserIdError } from 'src/error/ErrorObject';
-import colors from 'colors';
 import admin from 'firebase-admin';
 import { logger } from 'src/middlewares/winston';
 
 const resolvers: Resolvers = {
   Query: {
     getChatList: async (_, args, ctx) => {
-      const { roomId, skip, size } = args;
-      const chatList = await ChatModel.find({ roomId })
-        .sort({ createdAt: -1 })
-        .skip(skip)
+      const { roomId, lastId, size } = args;
+      const chatList = await ChatModel.find(lastId ? { roomId, _id: { $lt: lastId } } : { roomId })
+        .sort({ _id: -1 })
         .limit(size);
       return chatList;
     },
