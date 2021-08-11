@@ -88,7 +88,8 @@ const RoomDetail = ({route, navigation}) => {
   const [thumbnailImageURL, setThumbnailImageURL] = useState(null);
   const [hashedThumbnailImageURL, setHashedThumbnailImageURL] = useState(null);
   const [isImageResizing, setIsImageResizing] = useState(false);
-  let intervalRef = useRef();
+  const intervalRef = useRef();
+  const timeoutRef = useRef();
   // 1. 대화 구독
   const {
     data: subscriptionData,
@@ -186,17 +187,30 @@ const RoomDetail = ({route, navigation}) => {
       Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR);
     }
   }, [lazyQueryError2, authContext]);
-  // 6. 썸네일 이미지 생성되면 그때 이미지 채팅 생성하는 muation 호출하도록 설정
+  // 5. 썸네일 이미지 생성되면 그때 이미지 채팅 생성하는 muation 호출하도록 설정
   useEffect(() => {
     if (isImageResizing) {
+      // 1초 간격으로 썸네일 이미지 호출
       setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
       intervalRef.current = setInterval(() => {
         setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
       }, 1000);
+      // 10초가 지나도 얻을 수 없다면 로딩 취소하고 interval, timeout 삭제
+      timeoutRef.current = setTimeout(() => {
+        Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
+        clearInterval(intervalRef.current);
+        clearTimeout(timeoutRef.current);
+        intervalRef.current = null;
+        timeoutRef.current = null;
+        setIsUploadLoading(false);
+      }, 10000);
     }
     if (intervalRef.current && !isImageResizing) {
+      // 성공시 대화 생성후 interval, timeout 삭제
       clearInterval(intervalRef.current);
+      clearTimeout(timeoutRef.current);
       intervalRef.current = null;
+      timeoutRef.current = null;
       createChat({
         variables: {
           createChatInput: {
@@ -215,6 +229,7 @@ const RoomDetail = ({route, navigation}) => {
     }
     return () => {
       clearInterval(intervalRef.current);
+      clearTimeout(timeoutRef.current);
     };
   }, [thumbnailImageURL, isImageResizing, createChat, roomId, userId]);
   // presignedURL을 이용하여 이미지 및 파일 업로드하는 함수
