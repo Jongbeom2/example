@@ -1,4 +1,4 @@
-const sharp = require("sharp");
+const jimp = require("jimp");
 const AWS = require("aws-sdk");
 const s3Client = new AWS.S3();
 
@@ -60,12 +60,13 @@ exports.handler = async (event) => {
 
 const resizeImage = async ({ bucket, file, width, height }) => {
   const imageBuffer = await S3.get(file, bucket);
-  const resizedImageBuffer = await sharp(imageBuffer.Body)
-    .rotate()
-    .resize({ width })
-    .toBuffer();
+  const jimpImage = await jimp.read(imageBuffer.Body);
+  const mime = jimpImage.getMIME();
 
+  const resizedImageBuffer = await jimpImage
+    .scaleToFit(width, jimp.AUTO, jimp.RESIZE_BEZIER)
+    .getBufferAsync(mime);
   const newFileName = file;
-  await S3.write(resizedImageBuffer, newFileName, bucket, undefined, "image/*");
+  await S3.write(resizedImageBuffer, newFileName, bucket, undefined, mime);
   return newFileName;
 };
