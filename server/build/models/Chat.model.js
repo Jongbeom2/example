@@ -44,9 +44,6 @@ exports.ChatSchema = new mongoose_1.default.Schema({
     imageURL: {
         type: String,
     },
-    thumbnailImageURL: {
-        type: String,
-    },
     fileURL: {
         type: String,
     },

@@ -15,14 +15,12 @@ const resolvers: Resolvers = {
         const password = await bcrypt.hash('qwe123!', 10);
         const nickname = faker.internet.userName();
         const profileImageURL = faker.image.avatar();
-        const profileThumbnailImageURL = profileImageURL;
         const loginType = 'host';
         const user = new UserModel({
           email,
           password,
           nickname,
           profileImageURL,
-          profileThumbnailImageURL,
           loginType,
         });
         promiseList.push(user.save());

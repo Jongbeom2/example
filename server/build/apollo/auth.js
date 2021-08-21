@@ -6,20 +6,26 @@ const apollo_server_express_1 = require("apollo-server-express");
 const ErrorObject_1 = require("../error/ErrorObject");
 const winston_1 = require("../middlewares/winston");
 const decodeCookieToken = (cookieString) => {
-    let decoded;
-    let errorFields = [];
+    let decodedAccessToken;
+    let decodedRefreshToken;
+    const { accessToken, refreshToken } = common_1.parseCookie(cookieString);
     try {
-        const cookieObject = common_1.parseCookie(cookieString);
-        const { accessToken } = cookieObject;
         if (accessToken) {
-            decoded = common_1.decodeJWT(accessToken);
+            decodedAccessToken = common_1.decodeJWT(accessToken);
         }
     }
     catch (err) {
-        // If token value is manipulated or counterfeited, then cookie will be deleted
-        errorFields = ['accessToken'];
+        throw new Error(err);
     }
-    return { decoded, errorFields };
+    try {
+        if (refreshToken) {
+            decodedRefreshToken = common_1.decodeJWT(refreshToken);
+        }
+    }
+    catch (err) {
+        throw new Error(err);
+    }
+    return { decodedAccessToken, decodedRefreshToken };
 };
 exports.auth = (req, res) => {
     /**
@@ -42,34 +48,38 @@ exports.auth = (req, res) => {
     if (queryName !== '__schema') {
         winston_1.logger.info(`## query: ${queryName}`);
     }
+    // token verification
+    const { decodedAccessToken, decodedRefreshToken } = decodeCookieToken(req.headers.cookie || '');
+    // If unauthorized request, then throw error
     const queryWhiteList = [
         'createUser',
         'signIn',
         'signInWithKakao',
         'signInWithApple',
         'signOut',
+        'refreshAccessToken',
         'getNow',
     ];
-    if (queryWhiteList.includes(queryName)) {
-        return {};
+    if (!queryWhiteList.includes(queryName)) {
+        if (!decodedAccessToken) {
+            if (process.env.NODE_ENV === 'production') {
+                throw ErrorObject_1.notAuthorizedError;
+            }
+            else if (process.env.NODE_ENV === 'development') {
+                // throw notAuthorizedError;
+            }
+            else {
+                throw ErrorObject_1.environmentError;
+            }
+        }
     }
-    // Access token verification
-    const { decoded, errorFields } = decodeCookieToken(req.headers.cookie);
-    errorFields.forEach((field) => res.clearCookie(field));
-    // If unauthorized request, then throw error
-    if (!(decoded === null || decoded === void 0 ? void 0 : decoded.my)) {
-        if (process.env.NODE_ENV === 'production') {
-            throw ErrorObject_1.notAuthorizedError;
-        }
-        else if (process.env.NODE_ENV === 'development') {
-            throw ErrorObject_1.notAuthorizedError;
-        }
-        else {
-            throw ErrorObject_1.environmentError;
-        }
-        return {};
-    }
-    return decoded.my;
+    const isRefreshTokenValid = Boolean(decodedRefreshToken === null || decodedRefreshToken === void 0 ? void 0 : decodedRefreshToken.userId);
+    return {
+        userId: isRefreshTokenValid ? decodedRefreshToken.userId : '',
+        refreshToken: isRefreshTokenValid
+            ? common_1.parseCookie(req.headers.cookie || '').refreshToken || ''
+            : '',
+    };
 };
 exports.authSocket = (headers, query) => {
     const gqlObject = apollo_server_express_1.gql `
@@ -81,23 +91,25 @@ exports.authSocket = (headers, query) => {
     if (queryName !== '__schema') {
         winston_1.logger.info(`## subscription: ${queryName}`);
     }
-    const queryWhiteList = [''];
-    if (queryWhiteList.includes(queryName)) {
-        return {};
-    }
-    const { decoded, errorFields } = decodeCookieToken(headers.cookie);
+    const { decodedAccessToken, decodedRefreshToken } = decodeCookieToken(headers.cookie || '');
     // If unauthorized request, then throw error
-    if (!(decoded === null || decoded === void 0 ? void 0 : decoded.my)) {
-        if (process.env.NODE_ENV === 'production') {
-            throw ErrorObject_1.notAuthorizedError;
+    const queryWhiteList = [''];
+    if (!queryWhiteList.includes(queryName)) {
+        if (!decodedAccessToken) {
+            if (process.env.NODE_ENV === 'production') {
+                throw ErrorObject_1.notAuthorizedError;
+            }
+            else if (process.env.NODE_ENV === 'development') {
+                // throw notAuthorizedError;
+            }
+            else {
+                throw ErrorObject_1.environmentError;
+            }
         }
-        else if (process.env.NODE_ENV === 'development') {
-            throw ErrorObject_1.notAuthorizedError;
-        }
-        else {
-            throw ErrorObject_1.environmentError;
-        }
-        return {};
     }
-    return decoded.my;
+    const isRefreshTokenValid = Boolean(decodedRefreshToken === null || decodedRefreshToken === void 0 ? void 0 : decodedRefreshToken.userId);
+    return {
+        userId: isRefreshTokenValid ? decodedRefreshToken.userId : '',
+        refreshToken: isRefreshTokenValid ? common_1.parseCookie(headers.cookie || '').refreshToken || '' : '',
+    };
 };

@@ -14,6 +14,7 @@ import {
   MESSAGE_SUCCESS_ARCHIVE_CHAT,
   MESSAGE_TITLE,
 } from 'src/res/message';
+import {REACT_APP_STORAGE_URL, REACT_APP_STORAGE_RESIZED_URL} from '@env';
 const styles = StyleSheet.create({
   systemChatRoot: {
     marginVertical: 5,
@@ -54,6 +55,9 @@ const styles = StyleSheet.create({
   },
   chatAvatar: {
     marginLeft: 5,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   chatUserWrapper: {
     marginLeft: 5,
@@ -79,6 +83,12 @@ const ChatCard = ({chat, userId}) => {
   const {colors} = useTheme();
   const authContext = useContext(AuthContext);
   const [isArchived, setIsArchived] = useState(false);
+  const [sourceIdx, setSourceIdx] = useState(0);
+  const sourceList = [
+    REACT_APP_STORAGE_RESIZED_URL + chat.user.profileImageURL,
+    REACT_APP_STORAGE_URL + chat.user.profileImageURL,
+    Image.resolveAssetSource(invalidImage).uri,
+  ];
   // 신고
   const [
     archiveChat,
@@ -140,6 +150,9 @@ const ChatCard = ({chat, userId}) => {
       },
     ]);
   };
+  const onError = () => {
+    setSourceIdx(prev => prev + 1);
+  };
   // 시스템 채팅
   if (chat.isSystem) {
     return (
@@ -172,8 +185,8 @@ const ChatCard = ({chat, userId}) => {
         ) : chat.imageURL ? (
           <ChatCardImage
             sourceList={[
-              chat.thumbnailImageURL,
-              chat.imageURL,
+              REACT_APP_STORAGE_RESIZED_URL + chat.imageURL,
+              REACT_APP_STORAGE_URL + chat.imageURL,
               Image.resolveAssetSource(invalidImage).uri,
             ]}
           />
@@ -200,14 +213,13 @@ const ChatCard = ({chat, userId}) => {
   // 상대 채팅
   return (
     <View style={styles.chatRoot}>
-      <Avatar.Image
+      <Image
         style={styles.chatAvatar}
-        size={40}
-        label="A"
-        source={{uri: chat.user?.profileThumbnailImageURL}}
+        source={{uri: sourceList[sourceIdx]}}
+        onError={onError}
       />
       <View style={styles.chatUserWrapper}>
-        <Text style={styles.chatNickname}>{chat.user?.nickname}</Text>
+        <Text style={styles.chatNickname}>{chat.user.nickname}</Text>
         {isArchived || chat.isArchived ? (
           <Text
             style={[
@@ -222,8 +234,8 @@ const ChatCard = ({chat, userId}) => {
         ) : chat.imageURL ? (
           <ChatCardImage
             sourceList={[
-              chat.thumbnailImageURL,
-              chat.imageURL,
+              REACT_APP_STORAGE_RESIZED_URL + chat.imageURL,
+              REACT_APP_STORAGE_URL + chat.imageURL,
               Image.resolveAssetSource(invalidImage).uri,
             ]}
             onLongPress={onLongPress}

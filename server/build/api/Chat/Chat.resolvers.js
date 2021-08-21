@@ -13,10 +13,9 @@ const winston_1 = require("../../middlewares/winston");
 const resolvers = {
     Query: {
         getChatList: async (_, args, ctx) => {
-            const { roomId, skip, size } = args;
-            const chatList = await Chat_model_1.default.find({ roomId })
-                .sort({ createdAt: -1 })
-                .skip(skip)
+            const { roomId, lastId, size } = args;
+            const chatList = await Chat_model_1.default.find(lastId ? { roomId, _id: { $lt: lastId } } : { roomId })
+                .sort({ _id: -1 })
                 .limit(size);
             return chatList;
         },
@@ -41,7 +40,7 @@ const resolvers = {
     },
     Mutation: {
         createChat: async (_, args, ctx) => {
-            const { roomId, userId, content, imageURL, thumbnailImageURL, fileURL, fileName, } = args.createChatInput;
+            const { roomId, userId, content, imageURL, fileURL, fileName } = args.createChatInput;
             // room 수정
             const room = await Room_model_1.default.findByIdAndUpdate(roomId, {
                 recentMessageContent: content || undefined,
@@ -57,7 +56,6 @@ const resolvers = {
                 isSystem: false,
                 content,
                 imageURL,
-                thumbnailImageURL,
                 fileURL,
                 fileName,
             }).save();

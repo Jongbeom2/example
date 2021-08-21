@@ -9,7 +9,6 @@ type Chat {
   isSystem: Boolean!
   content: String!
   imageURL: String
-  thumbnailImageURL: String
   fileURL: String
   fileName: String
   isArchived: Boolean!
@@ -26,7 +25,7 @@ input CreateChatInput {
   userId: ID
   content: String!
   imageURL: String
-  thumbnailImageURL: String
+
   fileURL: String
   fileName: String
 }

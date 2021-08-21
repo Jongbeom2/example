@@ -34,36 +34,16 @@ const loaders = {
     },
 };
 const websocketContext = (connection, payload) => {
-    // preserve until websocket disconnected
-    // connection.context; // this is the context which insert to onConnect triggered
-    const my = auth_1.authSocket(connection.context.Headers, payload.query);
-    return { my, loaders };
+    const { userId, refreshToken } = auth_1.authSocket(connection.context.Headers, payload.query);
+    return { userId, refreshToken, loaders };
 };
-// "context", "argument" variable names are different depends on Server Framework types.
-// e.g., in Express, variable names are "req" and "res" but in Koa, Lambda, names are "request" and "response".
 const graphqlContext = (req, res) => {
-    // test only
-    if (process.env.NODE_ENV === 'development') {
-        // Cookie settings
-        if (res.cookie) {
-            res.cookie('contextLevelCookie1', 'contextLevelCookie1', {
-                httpOnly: true,
-                secure: false,
-                maxAge: 1000 * 30,
-            });
-            res.cookie('contextLevelCookie2', 'contextLevelCookie2', {
-                httpOnly: false,
-                secure: false,
-                maxAge: 1000 * 30,
-            });
-        }
-    }
-    const my = auth_1.auth(req, res);
-    return { req, res, my, loaders };
+    const { userId, refreshToken } = auth_1.auth(req, res);
+    return { req, res, userId, refreshToken, loaders };
 };
-exports.context = async (ctx) => {
+exports.context = (ctx) => {
     const { req, res, connection, payload } = ctx;
-    if (connection) {
+    if (connection && payload) {
         return websocketContext(connection, payload);
     }
     else if (req && res) {

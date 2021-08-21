@@ -34,9 +34,6 @@ exports.UserSchema = new mongoose_1.default.Schema({
     profileImageURL: {
         type: String,
     },
-    profileThumbnailImageURL: {
-        type: String,
-    },
     loginType: {
         type: String,
         required: true,
@@ -59,6 +56,9 @@ exports.UserSchema = new mongoose_1.default.Schema({
             type: String,
         },
     ],
+    refreshToken: {
+        type: String,
+    },
 }, { timestamps: true });
 const UserModel = mongoose_1.default.model('User', exports.UserSchema);
 exports.default = UserModel;

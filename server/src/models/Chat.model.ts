@@ -24,9 +24,6 @@ export const ChatSchema = new mongoose.Schema(
     imageURL: {
       type: String,
     },
-    thumbnailImageURL: {
-      type: String,
-    },
     fileURL: {
       type: String,
     },
@@ -50,7 +47,6 @@ interface Chat {
   isSystem: boolean;
   content: string;
   imageURL?: string;
-  thumbnailImageURL?: string;
   fileURL?: string;
   fileName?: string;
   isArchived: boolean;

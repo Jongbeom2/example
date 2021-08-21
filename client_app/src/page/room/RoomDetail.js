@@ -38,6 +38,7 @@ import DocumentPicker from 'react-native-document-picker';
 import {AuthContext} from 'src/Main';
 import ChatCardLoading from './ChatCardLoading';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import {REACT_APP_STORAGE_URL, REACT_APP_STORAGE_RESIZED_URL} from '@env';
 
 const styles = StyleSheet.create({
   root: {
@@ -85,8 +86,8 @@ const RoomDetail = ({route, navigation}) => {
   const [chatFile, setChatFile] = useState(null);
   const [isPlusBtnPressed, setIsPlusBtnPressed] = useState(false);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
-  const [thumbnailImageURL, setThumbnailImageURL] = useState(null);
-  const [hashedThumbnailImageURL, setHashedThumbnailImageURL] = useState(null);
+  const [imageURL, setImageURL] = useState(null);
+  const [hashedImageURL, setHashedImageURL] = useState(null);
   const [isImageResizing, setIsImageResizing] = useState(false);
   const intervalRef = useRef();
   const timeoutRef = useRef();
@@ -191,9 +192,9 @@ const RoomDetail = ({route, navigation}) => {
   useEffect(() => {
     if (isImageResizing) {
       // 1초 간격으로 썸네일 이미지 호출
-      setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
+      setHashedImageURL(imageURL + `#${Date.now()}`);
       intervalRef.current = setInterval(() => {
-        setHashedThumbnailImageURL(thumbnailImageURL + `#${Date.now()}`);
+        setHashedImageURL(imageURL + `#${Date.now()}`);
       }, 1000);
       // 10초가 지나도 얻을 수 없다면 로딩 취소하고 interval, timeout 삭제
       timeoutRef.current = setTimeout(() => {
@@ -217,11 +218,7 @@ const RoomDetail = ({route, navigation}) => {
             roomId,
             userId,
             content: '사진',
-            imageURL: thumbnailImageURL.replace(
-              'example-jb-thumbnail',
-              'example-jb',
-            ),
-            thumbnailImageURL: thumbnailImageURL,
+            imageURL: imageURL,
           },
         },
       });
@@ -231,7 +228,7 @@ const RoomDetail = ({route, navigation}) => {
       clearInterval(intervalRef.current);
       clearTimeout(timeoutRef.current);
     };
-  }, [thumbnailImageURL, isImageResizing, createChat, roomId, userId]);
+  }, [imageURL, isImageResizing, createChat, roomId, userId]);
   // presignedURL을 이용하여 이미지 및 파일 업로드하는 함수
   const uplaodFile = useCallback(
     async presignedURL => {
@@ -242,15 +239,13 @@ const RoomDetail = ({route, navigation}) => {
           method: 'PUT',
           body: file,
         });
-        const url = result.url.split('?')[0];
+        const url = result.url.split('?')[0].replace(REACT_APP_STORAGE_URL, '');
         const type = file.data.type.split('/')[0];
         const name = file.data.name;
         if (type === 'image') {
           // 사진인 경우 업로드 하더라도 리사이즈된 이미지가 확인되면 그때 채팅 생성
           // 이를 위해 imageResizing state true로 설정
-          setThumbnailImageURL(
-            url.replace('example-jb', 'example-jb-thumbnail'),
-          );
+          setImageURL(url);
           setIsImageResizing(true);
         } else {
           // 파일인 경우 업로드만 하면 되므로 채팅 생성
@@ -387,7 +382,7 @@ const RoomDetail = ({route, navigation}) => {
               <Image
                 style={{width: 1, height: 1}}
                 source={{
-                  uri: hashedThumbnailImageURL,
+                  uri: REACT_APP_STORAGE_RESIZED_URL + hashedImageURL,
                 }}
                 onLoad={() => {
                   setIsImageResizing(false);

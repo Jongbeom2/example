@@ -66,19 +66,14 @@ const resolvers = {
                                 promiseList.push(room.save({ session }));
                             }
                         });
-                        Promise.all(promiseList);
+                        await Promise.all(promiseList);
                     }
+                    // 쿠키값 저장함.
+                    const { refreshToken } = saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
+                    // token refresh를 위해 refresh token 저장함.
+                    user.refreshToken = refreshToken;
                     // 유저 정보 저장함.
                     await user.save({ session });
-                    // access token 생성함.
-                    const accessToken = common_1.generateJWT({
-                        access: true,
-                        my: {
-                            userId: user._id,
-                        },
-                    });
-                    // 유저 정보 쿠키에 저장함.
-                    saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
                 });
                 return user;
             }
@@ -127,16 +122,12 @@ const resolvers = {
                         });
                         await Promise.all(promiseList);
                     }
+                    // 쿠키값 저장함.
+                    const { refreshToken } = saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
+                    // token refresh를 위해 refresh token 저장함.
+                    user.refreshToken = refreshToken;
+                    // 유저 정보 저장함.
                     await user.save({ session });
-                    // access token 생성함.
-                    const accessToken = common_1.generateJWT({
-                        access: true,
-                        my: {
-                            userId: user._id,
-                        },
-                    });
-                    // 쿠키에 유저 정보 저장함.
-                    saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
                 });
                 return user;
             }
@@ -182,16 +173,12 @@ const resolvers = {
                         });
                         await Promise.all(promiseList);
                     }
+                    // 쿠키값 저장함.
+                    const { refreshToken } = saveCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
+                    // token refresh를 위해 refresh token 저장함.
+                    user.refreshToken = refreshToken;
+                    // 유저 정보 저장함.
                     await user.save({ session });
-                    // access token 생성함.
-                    const accessToken = common_1.generateJWT({
-                        access: true,
-                        my: {
-                            userId: user._id,
-                        },
-                    });
-                    // 쿠키에 유저 정보 저장함.
-                    saveCookie(process.env.NODE_ENV === 'development', ctx, accessToken, user._id.toString());
                 });
                 return user;
             }
@@ -205,32 +192,35 @@ const resolvers = {
         },
         signOut: async (_, args, ctx) => {
             const session = await mongoose_1.startSession();
-            let user;
+            let user = null;
             try {
                 await session.withTransaction(async () => {
+                    var _a, _b, _c;
                     const { _id, fcmToken } = args.signOutInput;
                     user = await User_model_1.default.findById(_id, {}, { session });
-                    // _id에 해당하는 user 없음.
-                    if (user === null) {
-                        throw ErrorObject_1.invalidUserIdError;
+                    // 로그아웃은 제약조건 없이 항상 처리할 수 있도록 함.
+                    // 로그인 상태인데, 유저가 삭제된 경우 로그아웃 할 수 있어야함.
+                    if (user !== null) {
+                        // notification 끄기 위해 fcmToken 삭제함.
+                        if (fcmToken) {
+                            // user fcmToken
+                            user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
+                            // room fcmToken
+                            const promiseList = [];
+                            const roomList = await Room_model_1.default.find({ _id: { $in: user.roomIdList } }, {}, { session });
+                            roomList.forEach((room) => {
+                                room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
+                                promiseList.push(room.save({ session }));
+                            });
+                            await Promise.all(promiseList);
+                        }
+                        // 유저 정보 저장함.
+                        await user.save({ session });
                     }
-                    // notification 끄기 위해 fcmToken 삭제함.
-                    if (fcmToken) {
-                        // user fcmToken
-                        user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
-                        // room fcmToken
-                        const promiseList = [];
-                        const roomList = await Room_model_1.default.find({ _id: { $in: user.roomIdList } }, {}, { session });
-                        roomList.forEach((room) => {
-                            room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
-                            promiseList.push(room.save({ session }));
-                        });
-                        Promise.all(promiseList);
-                    }
-                    await user.save({ session });
-                    // 유저 정보 쿠키에서 삭제함.
-                    ctx.res.clearCookie('accessToken');
-                    ctx.res.clearCookie('_id');
+                    // 쿠키 삭제함.
+                    (_a = ctx.res) === null || _a === void 0 ? void 0 : _a.clearCookie('accessToken');
+                    (_b = ctx.res) === null || _b === void 0 ? void 0 : _b.clearCookie('refreshToken');
+                    (_c = ctx.res) === null || _c === void 0 ? void 0 : _c.clearCookie('_id');
                 });
                 return user;
             }
@@ -262,12 +252,11 @@ const resolvers = {
             try {
                 await session.withTransaction(async () => {
                     const ranNum = Math.floor(Math.random() * 6);
-                    const DEFAULT_PROFILE_URL = `https://example-jb-dummy.s3.ap-northeast-2.amazonaws.com/profiles/${ranNum}.png`;
-                    const { _id, nickname, profileImageURL, profileThumbnailImageURL } = args.updateUserInput;
+                    const DEFAULT_PROFILE_URL = `/profile/${ranNum}.png`;
+                    const { _id, nickname, profileImageURL } = args.updateUserInput;
                     user = await User_model_1.default.findByIdAndUpdate(_id, {
                         nickname,
                         profileImageURL: profileImageURL || DEFAULT_PROFILE_URL,
-                        profileThumbnailImageURL: profileThumbnailImageURL || DEFAULT_PROFILE_URL,
                     }, { new: true, session });
                     // 존재하지 않는 user _id임.
                     if (user === null) {
@@ -283,30 +272,71 @@ const resolvers = {
                 await session.endSession();
             }
         },
+        refreshAccessToken: async (_, args, ctx) => {
+            if (ctx.userId) {
+                // 토큰을 재발급하기 위해서는 refreshToken이 유효해야하고 user의 refreshToken과 일치해야함.
+                // 조건을 만족하는 경우만 accessToken을 발급함.
+                const user = await User_model_1.default.findById(ctx.userId);
+                // _id에 해당하는 user 없음.
+                if (user === null) {
+                    throw ErrorObject_1.invalidUserIdError;
+                }
+                if (user.refreshToken === ctx.refreshToken) {
+                    refreshCookie(process.env.NODE_ENV === 'development', ctx, user._id.toString());
+                }
+                return user;
+            }
+            else {
+                return null;
+            }
+        },
     },
 };
 exports.default = resolvers;
-const saveCookie = (isNodeEnvDevelopment, ctx, accessToken, userId) => {
-    if (isNodeEnvDevelopment) {
-        ctx.res.cookie('accessToken', accessToken, {
-            maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
-            httpOnly: true,
-        });
-        ctx.res.cookie('_id', userId, {
-            maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
-            httpOnly: false,
-        });
-    }
-    else {
-        ctx.res.cookie('accessToken', accessToken, {
-            maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
-            httpOnly: true,
-            domain: '.jongbeom.com',
-        });
-        ctx.res.cookie('_id', userId, {
-            maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
-            httpOnly: false,
-            domain: '.jongbeom.com',
-        });
-    }
+const saveCookie = (isNodeEnvDevelopment, ctx, userId) => {
+    var _a, _b, _c;
+    const accessToken = common_1.generateJWT({
+        userId,
+    }, const_1.COOKIE_DURATION_MILLISECONDS);
+    const refreshToken = common_1.generateJWT({
+        userId,
+    }, const_1.COOKIE_DURATION_MILLISECONDS);
+    (_a = ctx.res) === null || _a === void 0 ? void 0 : _a.cookie('accessToken', accessToken, {
+        maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+        httpOnly: true,
+        domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+    });
+    (_b = ctx.res) === null || _b === void 0 ? void 0 : _b.cookie('refreshToken', refreshToken, {
+        maxAge: const_1.COOKIE_REFRESH_TOKEN_DURATION_MILLISECONDS,
+        httpOnly: true,
+        domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+    });
+    (_c = ctx.res) === null || _c === void 0 ? void 0 : _c.cookie('_id', userId, {
+        maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+        httpOnly: false,
+        domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+    });
+    return {
+        accessToken,
+        refreshToken,
+    };
+};
+const refreshCookie = (isNodeEnvDevelopment, ctx, userId) => {
+    var _a, _b;
+    const accessToken = common_1.generateJWT({
+        userId,
+    }, const_1.COOKIE_DURATION_MILLISECONDS);
+    (_a = ctx.res) === null || _a === void 0 ? void 0 : _a.cookie('accessToken', accessToken, {
+        maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+        httpOnly: true,
+        domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+    });
+    (_b = ctx.res) === null || _b === void 0 ? void 0 : _b.cookie('_id', userId, {
+        maxAge: const_1.COOKIE_DURATION_MILLISECONDS,
+        httpOnly: false,
+        domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
+    });
+    return {
+        accessToken,
+    };
 };

@@ -6,9 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("./cors"));
 const router_1 = __importDefault(require("./router"));
-// import cookieParser from 'cookie-parser';
 const app = express_1.default().use(cors_1.default()).use(router_1.default());
-// .use(cookieParser());
 exports.default = app;
 // <cookie options>
 // secret : signing 암호. string/array 타입 가능

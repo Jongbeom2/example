@@ -9,7 +9,6 @@ type User {
   password: String
   nickname: String
   profileImageURL: String
-  profileThumbnailImageURL: String
   loginType: String!
   kakaoId: String
   roomIdList: [ID!]!
@@ -20,9 +19,10 @@ type Mutation {
   signIn(signInInput: SignInInput!): User!
   signInWithKakao(signInWithKakaoInput: SignInWithKakaoInput!): User!
   signInWithApple(signInWithAppleInput: SignInWithAppleInput!): User!
-  signOut(signOutInput: SignOutInput!): User!
+  signOut(signOutInput: SignOutInput!): User
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
+  refreshAccessToken: User
 }
 
 input SignInInput {
@@ -55,5 +55,4 @@ input UpdateUserInput {
   _id: ID!
   nickname: String!
   profileImageURL: String
-  profileThumbnailImageURL: String
 }

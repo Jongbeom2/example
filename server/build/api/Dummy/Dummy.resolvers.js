@@ -19,14 +19,12 @@ const resolvers = {
                 const password = await bcrypt_1.default.hash('qwe123!', 10);
                 const nickname = faker_1.default.internet.userName();
                 const profileImageURL = faker_1.default.image.avatar();
-                const profileThumbnailImageURL = profileImageURL;
                 const loginType = 'host';
                 const user = new User_model_1.default({
                     email,
                     password,
                     nickname,
                     profileImageURL,
-                    profileThumbnailImageURL,
                     loginType,
                 });
                 promiseList.push(user.save());

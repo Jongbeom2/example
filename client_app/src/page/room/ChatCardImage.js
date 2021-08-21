@@ -35,8 +35,7 @@ const ChatCardImage = ({
         <Image
           style={[{height: imageHeight, width: imageWidth}, styles.root]}
           source={{uri: sourceList[sourceIdx]}}
-          onLoad={Platform.OS === 'ios' ? undefined : onLoad}
-          onLayout={Platform.OS === 'ios' ? onLoad : undefined}
+          onLoad={onLoad}
           onError={onError}
           {...rest}
         />

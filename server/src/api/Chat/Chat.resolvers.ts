@@ -37,15 +37,7 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     createChat: async (_, args, ctx) => {
-      const {
-        roomId,
-        userId,
-        content,
-        imageURL,
-        thumbnailImageURL,
-        fileURL,
-        fileName,
-      } = args.createChatInput;
+      const { roomId, userId, content, imageURL, fileURL, fileName } = args.createChatInput;
       // room 수정
       const room = await RoomModel.findByIdAndUpdate(roomId, {
         recentMessageContent: content || undefined,
@@ -61,7 +53,6 @@ const resolvers: Resolvers = {
         isSystem: false,
         content,
         imageURL,
-        thumbnailImageURL,
         fileURL,
         fileName,
       }).save();

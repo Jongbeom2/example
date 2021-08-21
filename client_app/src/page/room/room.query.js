@@ -66,12 +66,11 @@ export const GET_CHAT_LIST = gql`
       user {
         _id
         nickname
-        profileThumbnailImageURL
+        profileImageURL
       }
       isSystem
       content
       imageURL
-      thumbnailImageURL
       fileURL
       fileName
       isArchived
@@ -95,12 +94,11 @@ export const CHAT_CREATED = gql`
       user {
         _id
         nickname
-        profileThumbnailImageURL
+        profileImageURL
       }
       isSystem
       content
       imageURL
-      thumbnailImageURL
       fileURL
       fileName
       createdAt

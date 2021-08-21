@@ -10,7 +10,7 @@ const express_1 = __importDefault(require("../middlewares/express"));
 const schema_1 = require("../schema");
 const context_1 = require("./context");
 const winston_1 = require("../middlewares/winston");
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3200;
 const apolloServer = new apollo_server_express_1.ApolloServer({
     schema: schema_1.schema,
     context: context_1.context,
