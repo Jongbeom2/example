@@ -1,7 +1,8 @@
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {Image, StyleSheet, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {Avatar} from 'react-native-paper';
+import {REACT_APP_STORAGE_URL, REACT_APP_STORAGE_RESIZED_URL} from '@env';
+import invalidImage from 'src/res/img/invalid_image.png';
 const styles = StyleSheet.create({
   root: {
     marginLeft: 20,
@@ -13,19 +14,33 @@ const styles = StyleSheet.create({
   nickname: {
     marginLeft: 20,
   },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
 });
 const UserCard = ({navigation, user}) => {
+  const [sourceIdx, setSourceIdx] = useState(0);
+  const sourceList = [
+    REACT_APP_STORAGE_RESIZED_URL + user?.profileImageURL,
+    REACT_APP_STORAGE_URL + user?.profileImageURL,
+    Image.resolveAssetSource(invalidImage).uri,
+  ];
   const onPress = () => {
     navigation.navigate('user', {
       userId: user._id,
     });
   };
+  const onError = () => {
+    setSourceIdx(prev => prev + 1);
+  };
   return (
     <TouchableOpacity style={styles.root} onPress={onPress}>
-      <Avatar.Image
-        size={40}
-        label="A"
-        source={{uri: user?.profileThumbnailImageURL}}
+      <Image
+        style={styles.avatar}
+        source={{uri: sourceList[sourceIdx]}}
+        onError={onError}
       />
       <Text style={styles.nickname}>{user?.nickname}</Text>
     </TouchableOpacity>

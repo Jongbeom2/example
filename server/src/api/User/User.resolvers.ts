@@ -217,40 +217,41 @@ const resolvers: Resolvers = {
     },
     signOut: async (_, args, ctx) => {
       const session = await startSession();
-      let user: UserDoc | null;
+      let user: UserDoc | null = null;
       try {
         await session.withTransaction(async () => {
           const { _id, fcmToken } = args.signOutInput;
           user = await UserModel.findById(_id, {}, { session });
-          // _id에 해당하는 user 없음.
-          if (user === null) {
-            throw invalidUserIdError;
+          // 로그아웃은 제약조건 없이 항상 처리할 수 있도록 함.
+          // 로그인 상태인데, 유저가 삭제된 경우 로그아웃 할 수 있어야함.
+          if (user !== null) {
+            // notification 끄기 위해 fcmToken 삭제함.
+            if (fcmToken) {
+              // user fcmToken
+              user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
+              // room fcmToken
+              const promiseList: Promise<RoomDoc>[] = [];
+              const roomList = await RoomModel.find(
+                { _id: { $in: user.roomIdList } },
+                {},
+                { session },
+              );
+              roomList.forEach((room) => {
+                room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
+                promiseList.push(room.save({ session }));
+              });
+              await Promise.all(promiseList);
+            }
+            // 유저 정보 저장함.
+            await user.save({ session });
           }
-          // notification 끄기 위해 fcmToken 삭제함.
-          if (fcmToken) {
-            // user fcmToken
-            user.fcmTokenList = user.fcmTokenList.filter((ele) => ele !== fcmToken);
-            // room fcmToken
-            const promiseList: Promise<RoomDoc>[] = [];
-            const roomList = await RoomModel.find(
-              { _id: { $in: user.roomIdList } },
-              {},
-              { session },
-            );
-            roomList.forEach((room) => {
-              room.fcmTokenList = room.fcmTokenList.filter((ele) => ele !== fcmToken);
-              promiseList.push(room.save({ session }));
-            });
-            await Promise.all(promiseList);
-          }
-          // 유저 정보 저장함.
-          await user.save({ session });
+
           // 쿠키 삭제함.
           ctx.res?.clearCookie('accessToken');
           ctx.res?.clearCookie('refreshToken');
           ctx.res?.clearCookie('_id');
         });
-        return user!;
+        return user;
       } catch (err) {
         throw err;
       } finally {
@@ -278,14 +279,13 @@ const resolvers: Resolvers = {
       try {
         await session.withTransaction(async () => {
           const ranNum = Math.floor(Math.random() * 6);
-          const DEFAULT_PROFILE_URL = `https://example-jb-dummy.s3.ap-northeast-2.amazonaws.com/profiles/${ranNum}.png`;
-          const { _id, nickname, profileImageURL, profileThumbnailImageURL } = args.updateUserInput;
+          const DEFAULT_PROFILE_URL = `/profile/${ranNum}.png`;
+          const { _id, nickname, profileImageURL } = args.updateUserInput;
           user = await UserModel.findByIdAndUpdate(
             _id,
             {
               nickname,
               profileImageURL: profileImageURL || DEFAULT_PROFILE_URL,
-              profileThumbnailImageURL: profileThumbnailImageURL || DEFAULT_PROFILE_URL,
             },
             { new: true, session },
           );

@@ -13,9 +13,6 @@ export const UserSchema = new mongoose.Schema(
     profileImageURL: {
       type: String,
     },
-    profileThumbnailImageURL: {
-      type: String,
-    },
     loginType: {
       type: String,
       required: true,
@@ -52,7 +49,6 @@ interface User {
   password?: string;
   nickname: string;
   profileImageURL?: string;
-  profileThumbnailImageURL?: string;
   loginType?: string;
   kakaoId?: string;
   appleId?: string;

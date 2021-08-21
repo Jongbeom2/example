@@ -2,6 +2,7 @@ import {useLazyQuery, useMutation, useQuery} from '@apollo/client';
 import React, {useContext, useEffect, useState} from 'react';
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -18,7 +19,6 @@ import {AuthContext} from 'src/Main';
 import {isNotAuthorizedError} from 'src/lib/error';
 import {
   MESSAGE_ERROR,
-  MESSAGE_ERROR_AUTH,
   MESSAGE_ERROR_UPLOAD,
   MESSAGE_SUCCESS_UPDATE_USER,
   MESSAGE_TITLE,
@@ -27,7 +27,8 @@ import {GET_USER, UPDATE_USER} from 'src/page/user/user.query';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {GET_PRESIGNED_PUT_URL} from 'src/lib/file.query';
 import Loading from 'src/component/Loading';
-
+import {REACT_APP_STORAGE_URL, REACT_APP_STORAGE_RESIZED_URL} from '@env';
+import invalidImage from 'src/res/img/invalid_image.png';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
@@ -46,6 +47,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     marginBottom: 20,
   },
   textInput: {
@@ -63,7 +67,14 @@ const UserEdit = ({route, navigation}) => {
   const theme = useTheme();
   const authContext = useContext(AuthContext);
   const [user, setUser] = useState(null);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [sourceIdx, setSourceIdx] = useState(0);
+  const sourceList = [
+    REACT_APP_STORAGE_RESIZED_URL + user?.profileImageURL,
+    REACT_APP_STORAGE_URL + user?.profileImageURL,
+    Image.resolveAssetSource(invalidImage).uri,
+  ];
   // 유저 정보 로드
   const {data, loading, error} = useQuery(GET_USER, {
     variables: {_id: userId},
@@ -102,15 +113,14 @@ const UserEdit = ({route, navigation}) => {
             method: 'PUT',
             body: file,
           });
-          const url = result.url.split('?')[0];
+          const url = result.url
+            .split('?')[0]
+            .replace(REACT_APP_STORAGE_URL, '');
           setUser(preUser => ({
             ...preUser,
             profileImageURL: url,
-            profileThumbnailImageURL: url.replace(
-              'example-jb',
-              'example-jb-thumbnail',
-            ),
           }));
+          setIsImageLoading(false);
         } catch (e) {
           console.log(e);
           Alert.alert(MESSAGE_TITLE, MESSAGE_ERROR_UPLOAD);
@@ -153,7 +163,6 @@ const UserEdit = ({route, navigation}) => {
           _id: user._id,
           nickname: user.nickname,
           profileImageURL: user.profileImageURL,
-          profileThumbnailImageURL: user.profileThumbnailImageURL,
         },
       },
     });
@@ -162,10 +171,11 @@ const UserEdit = ({route, navigation}) => {
     navigation.goBack();
   };
   const onPressDeleteBtn = () => {
-    setUser({...user, profileImageURL: '', profileThumbnailImageURL: ''});
+    setUser({...user, profileImageURL: ''});
   };
   const onPressCameraBtn = () => {
     launchCamera({}, response => {
+      setIsImageLoading(true);
       if (response.errorCode) {
         console.log(response.errorCode);
         return;
@@ -185,6 +195,7 @@ const UserEdit = ({route, navigation}) => {
   };
   const onPressImageBtn = () => {
     launchImageLibrary({}, response => {
+      setIsImageLoading(true);
       if (response.didCancel) {
         return;
       }
@@ -198,13 +209,19 @@ const UserEdit = ({route, navigation}) => {
       });
     });
   };
+  const onError = () => {
+    setSourceIdx(prev => prev + 1);
+  };
   if (mutaionLoading) {
     return <Loading />;
   }
-  if (!data && loading) {
+  if (loading) {
     return <Loading />;
   }
   if (lazyQueryLoading) {
+    return <Loading />;
+  }
+  if (isImageLoading) {
     return <Loading />;
   }
   return (
@@ -214,13 +231,10 @@ const UserEdit = ({route, navigation}) => {
       <View>
         {user?.profileImageURL ? (
           <>
-            <Avatar.Image
-              size={100}
+            <Image
               style={styles.avatar}
-              label="A"
-              source={{
-                uri: user?.profileImageURL,
-              }}
+              source={{uri: sourceList[sourceIdx]}}
+              onError={onError}
             />
             <IconButton
               style={styles.iconCamera}
