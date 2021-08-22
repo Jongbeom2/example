@@ -5,7 +5,7 @@ export const GET_USER_LIST = gql`
     getUserList(_id: $_id) {
       _id
       nickname
-      profileThumbnailImageURL
+      profileImageURL
     }
   }
 `;

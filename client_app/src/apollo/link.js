@@ -36,8 +36,7 @@ const errorLink = onError(
 
 // http
 const httpLink = new HttpLink({
-  // uri: REACT_APP_GRAPHQL_API_URL,
-  uri: 'http://localhost:4200/graphql',
+  uri: REACT_APP_GRAPHQL_API_URL,
   credentials: 'include',
   headers: {'X-EXAMPLE-Header': 'EXAMPLE'},
 });
@@ -46,8 +45,7 @@ const composedHttpLink = from([httpLink]);
 
 // websocket
 export const websocketLink = new WebSocketLink({
-  // uri: REACT_APP_GRAPHQL_WEBSOCKET_URL,
-  uri: 'ws://localhost:4200/graphql',
+  uri: REACT_APP_GRAPHQL_WEBSOCKET_URL,
   options: {
     reconnect: true,
     lazy: true,

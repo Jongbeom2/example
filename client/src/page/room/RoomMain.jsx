@@ -96,7 +96,7 @@ const RoomMain = () => {
         </div>
         <div className={classes.body}>
           {roomList.map((room) => (
-            <RoomCard room={room} />
+            <RoomCard key={room._id} room={room} />
           ))}
         </div>
       </div>

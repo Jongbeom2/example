@@ -59,7 +59,7 @@ const Home = () => {
         </div>
         <div className={classes.body}>
           {userList.map((user) => (
-            <UserCard user={user} />
+            <UserCard key={user._id} user={user} />
           ))}
         </div>
       </div>

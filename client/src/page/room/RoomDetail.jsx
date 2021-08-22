@@ -29,6 +29,7 @@ import {
 } from 'src/lib/error';
 import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
 import axios from 'axios';
+import ResizeLoading from 'src/components/ResizeLoading';
 const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.custom.lightBlue,
@@ -82,18 +83,29 @@ const useStyles = makeStyles((theme) => ({
     },
     '& .MuiSvgIcon-root': {},
   },
+  resizeLoadingWrapper: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
 }));
 const RoomDetail = () => {
   const PAGE_SIZE = 30;
   const userId = useMemo(() => Cookie.get('_id'), []);
   const classes = useStyles();
   const history = useHistory();
+  const [isLoading, setIsLoading] = useState(false);
   const { roomId } = useParams();
   const [content, setContent] = useState('');
   const [chatList, setChatList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const [lastId, setLastId] = useState(null);
+  const [imageURL, setImageURL] = useState();
+  const [hashedImageURL, setHashedImageURL] = useState(null);
+  const [isImageResizing, setIsImageResizing] = useState(false);
   const contentRef = useRef(null);
+  const intervalRef = useRef();
+  const timeoutRef = useRef();
   // 1. 대화 구독
   const {
     data: subscriptionData,
@@ -131,7 +143,6 @@ const RoomDetail = () => {
     getChatList({
       variables: {
         roomId,
-        skip: 0,
         size: PAGE_SIZE,
       },
     });
@@ -139,6 +150,12 @@ const RoomDetail = () => {
   // 대화 로드 성공
   useEffect(() => {
     if (lazyQueryData && !lazyQueryError) {
+      const chatListLength = lazyQueryData.getChatList.length;
+      if (chatListLength) {
+        setLastId(
+          lazyQueryData.getChatList[lazyQueryData.getChatList.length - 1]._id,
+        );
+      }
       setChatList((preChatList) => [
         ...preChatList,
         ...lazyQueryData.getChatList,
@@ -166,6 +183,10 @@ const RoomDetail = () => {
       history.push('/signin');
     } else if (mutationError) {
       alert(MESSAGE_ERROR);
+    } else if (mutationData && !mutationLoading) {
+      const scroll =
+        contentRef.current.scrollHeight - contentRef.current.clientHeight;
+      contentRef.current.scrollTo(0, scroll);
     }
   }, [mutationError, history]);
   // 4. 대화방 나가기
@@ -203,49 +224,7 @@ const RoomDetail = () => {
   useEffect(() => {
     if (lazyQueryData2 && !lazyQueryError2) {
       const presignedURL = lazyQueryData2.getPresignedPutURL.presignedURL;
-      (async function () {
-        try {
-          // Presigned put url을 이용하여 업로드
-          const result = await axios.put(presignedURL, file);
-          const url = result.config.url.split('?')[0];
-          const type = file.type.split('/')[0];
-          const name = file.name;
-          if (type === 'image') {
-            createChat({
-              variables: {
-                createChatInput: {
-                  roomId,
-                  userId,
-                  content: '사진',
-                  imageURL: url,
-                  thumbnailImageURL: url.replace(
-                    'example-jb',
-                    'example-jb-thumbnail',
-                  ),
-                },
-              },
-            });
-          } else {
-            createChat({
-              variables: {
-                createChatInput: {
-                  roomId,
-                  userId,
-                  content: '파일',
-                  fileURL: url,
-                  fileName: name,
-                },
-              },
-            });
-          }
-          const scroll =
-            contentRef.current.scrollHeight - contentRef.current.clientHeight;
-          contentRef.current.scrollTo(0, scroll);
-        } catch (error) {
-          alert(MESSAGE_ERROR_UPLOAD);
-        }
-        setIsLoading(false);
-      })();
+      uplaodFile(presignedURL);
     }
   }, [lazyQueryData2, lazyQueryError2, createChat, file, roomId, userId]);
   // presigned url 로드 실패
@@ -257,6 +236,77 @@ const RoomDetail = () => {
       alert(MESSAGE_ERROR);
     }
   }, [lazyQueryError2, history]);
+  // 썸네일 이미지 생성되면 그때 이미지 채팅 생성하는 muation 호출하도록 설정
+  useEffect(() => {
+    if (isImageResizing) {
+      // 1초 간격으로 썸네일 이미지 호출
+      setHashedImageURL(imageURL + `#${Date.now()}`);
+      intervalRef.current = setInterval(() => {
+        setHashedImageURL(imageURL + `#${Date.now()}`);
+      }, 1000);
+      // 10초가 지나도 얻을 수 없다면 로딩 취소하고 interval, timeout 삭제
+      timeoutRef.current = setTimeout(() => {
+        alert(MESSAGE_ERROR_UPLOAD);
+        clearInterval(intervalRef.current);
+        clearTimeout(timeoutRef.current);
+        intervalRef.current = null;
+        timeoutRef.current = null;
+        setIsLoading(false);
+      }, 10000);
+    }
+    if (intervalRef.current && !isImageResizing) {
+      // 성공시 대화 생성후 interval, timeout 삭제
+      clearInterval(intervalRef.current);
+      clearTimeout(timeoutRef.current);
+      intervalRef.current = null;
+      timeoutRef.current = null;
+      createChat({
+        variables: {
+          createChatInput: {
+            roomId,
+            userId,
+            content: '사진',
+            imageURL,
+          },
+        },
+      });
+      setIsLoading(false);
+    }
+    return () => {
+      clearInterval(intervalRef.current);
+      clearTimeout(timeoutRef.current);
+    };
+  }, [imageURL, isImageResizing, createChat, roomId, userId]);
+  // presignedURL을 이용하여 이미지 및 파일 업로드하는 함수
+  const uplaodFile = async (presignedURL) => {
+    try {
+      // Presigned put url을 이용하여 업로드
+      const result = await axios.put(presignedURL, file);
+      const url = result.config.url
+        .split('?')[0]
+        .replace(process.env.REACT_APP_STORAGE_URL, '');
+      const type = file.type.split('/')[0];
+      const name = file.name;
+      if (type === 'image') {
+        setImageURL(url);
+      } else {
+        createChat({
+          variables: {
+            createChatInput: {
+              roomId,
+              userId,
+              content: '파일',
+              fileURL: url,
+              fileName: name,
+            },
+          },
+        });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      alert(MESSAGE_ERROR_UPLOAD);
+    }
+  };
   const onChangeContent = (event) => {
     setContent(event.target.value);
   };
@@ -274,9 +324,6 @@ const RoomDetail = () => {
         },
       },
     });
-    const scroll =
-      contentRef.current.scrollHeight - contentRef.current.clientHeight;
-    contentRef.current.scrollTo(0, scroll);
   };
   const onClickBackBtn = () => {
     history.goBack();
@@ -301,7 +348,7 @@ const RoomDetail = () => {
     getChatList({
       variables: {
         roomId,
-        skip: chatList.length,
+        lastId,
         size: PAGE_SIZE,
       },
     });
@@ -333,6 +380,23 @@ const RoomDetail = () => {
         </Fab>
       </div>
       <div className={classes.content} id='scrollableDiv' ref={contentRef}>
+        {isLoading && (
+          <div className={classes.resizeLoadingWrapper}>
+            {imageURL && (
+              <img
+                style={{ display: 'none' }}
+                src={process.env.REACT_APP_STORAGE_RESIZED_URL + hashedImageURL}
+                onLoad={() => {
+                  setIsImageResizing(false);
+                }}
+                onError={() => {
+                  setIsImageResizing(true);
+                }}
+              />
+            )}
+            <ResizeLoading />
+          </div>
+        )}
         <InfiniteScroll
           dataLength={chatList.length}
           next={onScrollTop}
@@ -342,7 +406,7 @@ const RoomDetail = () => {
           scrollableTarget='scrollableDiv'
         >
           {chatList.map((chat) => (
-            <ChatCard chat={chat} userId={userId} />
+            <ChatCard key={chat._id} chat={chat} userId={userId} />
           ))}
         </InfiniteScroll>
       </div>
@@ -350,7 +414,6 @@ const RoomDetail = () => {
         <div className={classes.inputTop}>
           <InputBase
             fullWidth
-            disableUnderline
             multiline
             autoFocus
             rowsMax={2}
@@ -360,7 +423,7 @@ const RoomDetail = () => {
           />
           <Button
             variant='contained'
-            color={content ? 'primary' : 'disabled'}
+            color={content ? 'primary' : 'default'}
             onClick={onClickCreateChatBtn}
           >
             전송

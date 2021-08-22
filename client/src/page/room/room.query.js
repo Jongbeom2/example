@@ -50,18 +50,17 @@ export const UPDATE_USER_REMOVE_ROOM = gql`
 `;
 
 export const GET_CHAT_LIST = gql`
-  query getChatList($roomId: ID!, $skip: Int!, $size: Int!) {
-    getChatList(roomId: $roomId, skip: $skip, size: $size) {
+  query getChatList($roomId: ID!, $lastId: ID, $size: Int!) {
+    getChatList(roomId: $roomId, lastId: $lastId, size: $size) {
       _id
       user {
         _id
         nickname
-        profileThumbnailImageURL
+        profileImageURL
       }
       isSystem
       content
       imageURL
-      thumbnailImageURL
       fileURL
       fileName
       createdAt
@@ -84,12 +83,11 @@ export const CHAT_CREATED = gql`
       user {
         _id
         nickname
-        profileThumbnailImageURL
+        profileImageURL
       }
       isSystem
       content
       imageURL
-      thumbnailImageURL
       fileURL
       fileName
       createdAt

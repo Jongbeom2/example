@@ -379,18 +379,20 @@ const RoomDetail = ({route, navigation}) => {
         ListHeaderComponent={() =>
           lazyQueryLoading2 || isUploadLoading ? (
             <View>
-              <Image
-                style={{width: 1, height: 1}}
-                source={{
-                  uri: REACT_APP_STORAGE_RESIZED_URL + hashedImageURL,
-                }}
-                onLoad={() => {
-                  setIsImageResizing(false);
-                }}
-                onError={() => {
-                  setIsImageResizing(true);
-                }}
-              />
+              {imageURL && (
+                <Image
+                  style={{width: 1, height: 1}}
+                  source={{
+                    uri: REACT_APP_STORAGE_RESIZED_URL + hashedImageURL,
+                  }}
+                  onLoad={() => {
+                    setIsImageResizing(false);
+                  }}
+                  onError={() => {
+                    setIsImageResizing(true);
+                  }}
+                />
+              )}
               <ChatCardLoading />
             </View>
           ) : null

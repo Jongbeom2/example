@@ -15,6 +15,7 @@ console.log(
 );
 console.log('REACT_APP_STORAGE_URL', REACT_APP_STORAGE_URL);
 console.log('REACT_APP_STORAGE_RESIZED_URL', REACT_APP_STORAGE_RESIZED_URL);
+
 const App = ({...rest}) => {
   return (
     <ApolloProvider client={client}>

@@ -6,7 +6,6 @@ export const GET_USER = gql`
       _id
       nickname
       profileImageURL
-      profileThumbnailImageURL
     }
   }
 `;
@@ -17,7 +16,6 @@ export const UPDATE_USER = gql`
       _id
       nickname
       profileImageURL
-      profileThumbnailImageURL
     }
   }
 `;

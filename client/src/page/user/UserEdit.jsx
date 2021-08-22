@@ -15,6 +15,10 @@ import { Avatar, Button, Grid, TextField, Typography } from '@material-ui/core';
 import { GET_PRESIGNED_PUT_URL } from 'src/lib/file.query';
 import axios from 'axios';
 import { isNotAuthorizedError } from 'src/lib/error';
+import invalidImage from 'src/res/img/invalid_image.png';
+import { useImage } from 'react-image';
+import { Suspense } from 'react';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'relative',
@@ -40,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiAvatar-root': {
       width: '10rem',
       height: '10rem',
+    },
+    '& img': {
+      width: '10rem',
+      height: '10rem',
+      borderRadius: '50%',
     },
     '& .MuiButtonBase-root': {
       position: 'absolute',
@@ -102,16 +111,15 @@ const UserEdit = () => {
         try {
           // Presigned put url을 이용하여 업로드
           const result = await axios.put(presignedURL, imageFile);
-          const url = result.config.url.split('?')[0];
+          const url = result.config.url
+            .split('?')[0]
+            .replace(process.env.REACT_APP_STORAGE_URL, '');
           setUser({
             ...user,
             profileImageURL: url,
-            profileThumbnailImageURL: url.replace(
-              'example-jb',
-              'example-jb-thumbnail',
-            ),
           });
         } catch (error) {
+          console.log(error);
           alert(MESSAGE_ERROR_UPLOAD);
         }
         setIsLoading(false);
@@ -158,7 +166,6 @@ const UserEdit = () => {
           _id: user._id,
           nickname: user.nickname,
           profileImageURL: user.profileImageURL,
-          profileThumbnailImageURL: user.profileThumbnailImageURL,
         },
       },
       update(cache, { data: { updateUser } }) {
@@ -169,7 +176,6 @@ const UserEdit = () => {
               _id: user._id,
               nickname: user.nickname,
               profileImageURL: user.profileImageURL,
-              profileThumbnailImageURL: user.profileThumbnailImageURL,
             },
           },
           data: {
@@ -180,7 +186,7 @@ const UserEdit = () => {
     });
   };
   const onClickDeleteBtn = () => {
-    setUser({ ...user, profileImageURL: '', profileThumbnailImageURL: '' });
+    setUser({ ...user, profileImageURL: undefined });
   };
   const onChangeFileChange = (event) => {
     setIsLoading(true);
@@ -228,7 +234,9 @@ const UserEdit = () => {
             <div className={classes.profileWrapper}>
               {user?.profileImageURL ? (
                 <>
-                  <Avatar alt='Avatar' src={user?.profileImageURL || ''} />
+                  <Suspense fallback={null}>
+                    <ImageComponent imageURL={user?.profileImageURL} />
+                  </Suspense>
                   <Button
                     color='primary'
                     variant='contained'
@@ -242,7 +250,7 @@ const UserEdit = () => {
                   <Avatar
                     classes={{ root: classes.defaultProfile }}
                     alt='Avatar'
-                    src={user?.profileImageURL || ''}
+                    src={''}
                   />
                   <input
                     id='image-upload-input-tag'
@@ -264,5 +272,23 @@ const UserEdit = () => {
       </div>
     </MainWrapper>
   );
+};
+const useStyles1 = makeStyles((theme) => ({
+  root: {
+    width: '10rem',
+    height: '10rem',
+    borderRadius: '50%',
+  },
+}));
+const ImageComponent = ({ imageURL, ...rest }) => {
+  const classes = useStyles1();
+  const { src } = useImage({
+    srcList: [
+      process.env.REACT_APP_STORAGE_RESIZED_URL + imageURL,
+      process.env.REACT_APP_STORAGE_URL + imageURL,
+      invalidImage,
+    ],
+  });
+  return <img alt='user' {...rest} src={src} className={classes.root} />;
 };
 export default UserEdit;

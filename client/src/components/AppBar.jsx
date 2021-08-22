@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client';
 import {
-  Avatar,
   Button,
   ClickAwayListener,
   Grow,
@@ -23,6 +22,9 @@ import { SIGNOUT } from 'src/page/auth/auth.query';
 import { MESSAGE_ERROR } from 'src/res/message';
 import { GET_USER } from 'src/page/user/user.query';
 import { userVar } from 'src/apollo/reactiveVariables';
+import invalidImage from 'src/res/img/invalid_image.png';
+import { useImage } from 'react-image';
+import { Suspense } from 'react';
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {},
@@ -59,6 +61,11 @@ const useStyles = makeStyles((theme) =>
     popper: {
       zIndex: theme.zIndex.popper,
     },
+    avatar: {
+      width: 40,
+      height: 40,
+      borderRadius: '50%',
+    },
   }),
 );
 
@@ -82,7 +89,6 @@ const CustomAppBar = () => {
         _id: data.getUser._id,
         nickname: data.getUser.nickname,
         profileImageURL: data.getUser.profileImageURL,
-        profileThumbnailImageURL: data.getUser.profileThumbnailImageURL,
       });
     }
   }, [data, error]);
@@ -170,11 +176,9 @@ const CustomAppBar = () => {
               <Typography color='textPrimary' variant='body1'>
                 {user.nickname}
               </Typography>
-              {/* profileThumbnailImageURL 존재하면 보여주고,
-               유효하지 않으면 profileImageURL 보여줌 */}
-              <Avatar src={user.profileThumbnailImageURL}>
-                <Avatar alt='avatar' src={user.profileImageURL} />
-              </Avatar>
+              <Suspense fallback={null}>
+                <ImageComponent imageURL={user.profileImageURL} />
+              </Suspense>
               <IconButton
                 aria-label='delete'
                 className={classes.margin}
@@ -226,5 +230,22 @@ const CustomAppBar = () => {
     </div>
   );
 };
-
+const useStyles1 = makeStyles((theme) => ({
+  root: {
+    width: '2.5rem',
+    height: '2.5rem',
+    borderRadius: '50%',
+  },
+}));
+const ImageComponent = ({ imageURL, ...rest }) => {
+  const classes = useStyles1();
+  const { src } = useImage({
+    srcList: [
+      process.env.REACT_APP_STORAGE_RESIZED_URL + imageURL,
+      process.env.REACT_APP_STORAGE_URL + imageURL,
+      invalidImage,
+    ],
+  });
+  return <img alt='user' {...rest} src={src} className={classes.root} />;
+};
 export default CustomAppBar;

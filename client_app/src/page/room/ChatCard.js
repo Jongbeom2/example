@@ -123,7 +123,7 @@ const ChatCard = ({chat, userId}) => {
         description: 'File',
       },
     })
-      .fetch('GET', chat.fileURL, {
+      .fetch('GET', REACT_APP_STORAGE_URL + chat.fileURL, {
         //some headers ..
       })
       .then(res => {

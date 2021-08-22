@@ -5,6 +5,10 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import ChatCardImage from './ChatCardImage';
 import { getShortStr } from 'src/lib/common';
+import { useState } from 'react';
+import invalidImage from 'src/res/img/invalid_image.png';
+import { Suspense } from 'react';
+import { useImage } from 'react-image';
 const useStyles = makeStyles((theme) => ({
   systemChatRoot: {
     display: 'flex',
@@ -54,9 +58,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-start',
     margin: theme.spacing(1),
-  },
-  chatAvatar: {
-    marginRight: theme.spacing(1),
   },
   chatContent: {
     width: 'fit-content',
@@ -110,10 +111,7 @@ const ChatCard = ({ chat, userId }) => {
         </Typography>
         {chat.imageURL ? (
           // 이미지
-          <ChatCardImage
-            thumbnailImageURL={chat.thumbnailImageURL}
-            imageURL={chat.imageURL}
-          />
+          <ChatCardImage imageURL={chat.imageURL} />
         ) : chat.fileURL ? (
           // 파일
           <a className={classes.myChatFile} href={chat.fileURL}>
@@ -133,18 +131,14 @@ const ChatCard = ({ chat, userId }) => {
   // 상대 채팅
   return (
     <div className={classes.chatRoot}>
-      <Avatar
-        className={classes.chatAvatar}
-        src={chat.user.profileThumbnailImageURL}
-      />
+      <Suspense fallback={null}>
+        <ImageComponent imageURL={chat.user.profileImageURL} />
+      </Suspense>
       <div>
         <Typography>{chat.user.nickname}</Typography>
         {chat.imageURL ? (
           // 이미지
-          <ChatCardImage
-            thumbnailImageURL={chat.thumbnailImageURL}
-            imageURL={chat.imageURL}
-          />
+          <ChatCardImage imageURL={chat.imageURL} />
         ) : chat.fileURL ? (
           // 파일
           <a className={classes.chatFile} href={chat.fileURL}>
@@ -168,5 +162,24 @@ const ChatCard = ({ chat, userId }) => {
       </Typography>
     </div>
   );
+};
+const useStyles1 = makeStyles((theme) => ({
+  root: {
+    wmarginRight: theme.spacing(1),
+    width: '2.5rem',
+    height: '2.5rem',
+    borderRadius: '50%',
+  },
+}));
+const ImageComponent = ({ imageURL, ...rest }) => {
+  const classes = useStyles1();
+  const { src } = useImage({
+    srcList: [
+      process.env.REACT_APP_STORAGE_RESIZED_URL + imageURL,
+      process.env.REACT_APP_STORAGE_URL + imageURL,
+      invalidImage,
+    ],
+  });
+  return <img alt='user' {...rest} src={src} className={classes.root} />;
 };
 export default ChatCard;

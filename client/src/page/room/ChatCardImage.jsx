@@ -3,7 +3,7 @@ import React, { Suspense, useState } from 'react';
 import { useImage } from 'react-image';
 import invalidImage from 'src/res/img/invalid_image.png';
 
-const ChatCardImage = ({ thumbnailImageURL, imageURL }) => {
+const ChatCardImage = ({ imageURL }) => {
   const [open, setOpen] = useState(false);
   const onClick = () => {
     setOpen(true);
@@ -14,11 +14,7 @@ const ChatCardImage = ({ thumbnailImageURL, imageURL }) => {
   return (
     <>
       <Suspense fallback={null}>
-        <ImageComponent
-          thumbnailImageURL={thumbnailImageURL}
-          imageURL={imageURL}
-          onClick={onClick}
-        />
+        <ImageComponent imageURL={imageURL} onClick={onClick} />
       </Suspense>
       <Suspense fallback={null}>
         <Dialog onClose={onClose} open={open}>
@@ -38,10 +34,14 @@ const useStyles1 = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
 }));
-const ImageComponent = ({ thumbnailImageURL, imageURL, ...rest }) => {
+const ImageComponent = ({ imageURL, ...rest }) => {
   const classes = useStyles1();
   const { src } = useImage({
-    srcList: [thumbnailImageURL, imageURL, invalidImage],
+    srcList: [
+      process.env.REACT_APP_STORAGE_RESIZED_URL + imageURL,
+      process.env.REACT_APP_STORAGE_URL + imageURL,
+      invalidImage,
+    ],
   });
   return <img alt='chat-image1' {...rest} src={src} className={classes.root} />;
 };
@@ -49,7 +49,7 @@ const useStyles2 = makeStyles((theme) => ({}));
 const ImageComponent2 = ({ imageURL, ...rest }) => {
   const classes = useStyles2();
   const { src } = useImage({
-    srcList: [imageURL, invalidImage],
+    srcList: [process.env.REACT_APP_STORAGE_URL + imageURL, invalidImage],
   });
   return <img alt='chat-image2' {...rest} src={src} className={classes.root} />;
 };

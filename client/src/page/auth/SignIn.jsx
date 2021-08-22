@@ -11,7 +11,7 @@ import {
   MESSAGE_ERROR,
 } from 'src/res/message';
 import Loading from 'src/components/Loading';
-import { websocketLink } from 'src/apollo/link';
+import { websocketLink } from 'src/apollo/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {

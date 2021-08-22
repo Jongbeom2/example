@@ -14,7 +14,6 @@ export const SINGIN = gql`
       _id
       nickname
       profileImageURL
-      profileThumbnailImageURL
     }
   }
 `;
@@ -25,7 +24,6 @@ export const SIGNIN_WITH_KAKAO = gql`
       _id
       nickname
       profileImageURL
-      profileThumbnailImageURL
     }
   }
 `;
@@ -36,7 +34,14 @@ export const SIGNOUT = gql`
       _id
       nickname
       profileImageURL
-      profileThumbnailImageURL
+    }
+  }
+`;
+
+export const REFRESH_ACCESS_TOKEN = gql`
+  mutation refreshAccessToken {
+    refreshAccessToken {
+      _id
     }
   }
 `;

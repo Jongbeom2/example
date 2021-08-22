@@ -10,6 +10,9 @@ import { useHistory, useParams } from 'react-router';
 import Cookie from 'js-cookie';
 import { isNotAuthorizedError } from 'src/lib/error';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import invalidImage from 'src/res/img/invalid_image.png';
+import { useImage } from 'react-image';
+import { Suspense } from 'react';
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'relative',
@@ -29,10 +32,6 @@ const useStyles = makeStyles((theme) => ({
   content: {
     display: 'flex',
     padding: theme.spacing(5),
-    '& .MuiAvatar-root': {
-      width: '10rem',
-      height: '10rem',
-    },
   },
   contentText: {
     marginLeft: theme.spacing(5),
@@ -82,7 +81,9 @@ const UserMain = () => {
           </Fab>
         </div>
         <div className={classes.content}>
-          <Avatar alt='Avatar' src={user?.profileImageURL || ''} />
+          <Suspense fallback={null}>
+            <ImageComponent imageURL={user?.profileImageURL} />
+          </Suspense>
           <div className={classes.contentText}>
             <Typography variant='h6' gutterBottom>
               {user?.nickname || ''}
@@ -106,5 +107,23 @@ const UserMain = () => {
       </div>
     </MainWrapper>
   );
+};
+const useStyles1 = makeStyles((theme) => ({
+  root: {
+    width: '10rem',
+    height: '10rem',
+    borderRadius: '50%',
+  },
+}));
+const ImageComponent = ({ imageURL, ...rest }) => {
+  const classes = useStyles1();
+  const { src } = useImage({
+    srcList: [
+      process.env.REACT_APP_STORAGE_RESIZED_URL + imageURL,
+      process.env.REACT_APP_STORAGE_URL + imageURL,
+      invalidImage,
+    ],
+  });
+  return <img alt='user' {...rest} src={src} className={classes.root} />;
 };
 export default UserMain;

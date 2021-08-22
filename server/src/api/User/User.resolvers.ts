@@ -351,7 +351,7 @@ const saveCookie = (
     domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
   });
   ctx.res?.cookie('_id', userId, {
-    maxAge: COOKIE_DURATION_MILLISECONDS,
+    maxAge: COOKIE_REFRESH_TOKEN_DURATION_MILLISECONDS,
     httpOnly: false,
     domain: isNodeEnvDevelopment ? undefined : '.jongbeom.com',
   });

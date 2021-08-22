@@ -53,7 +53,7 @@ const CustomAppTabBar = () => {
   const history = useHistory();
   // 전달 받은 page에 맞게 tab 하이라이트
   const getValue = () => {
-    let value = -1;
+    let value = 0;
     tabList.forEach((tab, idx) => {
       if (tab.route === page) {
         value = idx;
