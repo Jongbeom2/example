@@ -66,7 +66,7 @@ exports.auth = (req, res) => {
                 throw ErrorObject_1.notAuthorizedError;
             }
             else if (process.env.NODE_ENV === 'development') {
-                // throw notAuthorizedError;
+                throw ErrorObject_1.notAuthorizedError;
             }
             else {
                 throw ErrorObject_1.environmentError;
@@ -100,7 +100,7 @@ exports.authSocket = (headers, query) => {
                 throw ErrorObject_1.notAuthorizedError;
             }
             else if (process.env.NODE_ENV === 'development') {
-                // throw notAuthorizedError;
+                throw ErrorObject_1.notAuthorizedError;
             }
             else {
                 throw ErrorObject_1.environmentError;
