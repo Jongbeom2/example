@@ -326,6 +326,9 @@ const RoomDetail = ({route, navigation}) => {
   };
   const onPressImageBtn = () => {
     launchImageLibrary({}, response => {
+      if (response.errorCode) {
+        return;
+      }
       if (response.didCancel) {
         return;
       }
