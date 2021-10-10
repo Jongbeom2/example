@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const ErrorObject_1 = require("../error/ErrorObject");
 const winston_1 = require("./winston");
-const allowedOrigins = ['https://example.jongbeom.com'];
+const allowedOrigins = ['http://example.jongbeom.com'];
 const corsMiddleware = () => cors_1.default({
     origin: (origin, callback) => {
         if (process.env.NODE_ENV === 'development') {
