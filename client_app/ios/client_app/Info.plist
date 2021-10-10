@@ -53,6 +53,11 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>example-api.jongbeom.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>localhost</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
